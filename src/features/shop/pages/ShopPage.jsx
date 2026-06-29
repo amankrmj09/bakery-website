@@ -9,8 +9,17 @@ import { toast } from 'sonner';
 export default function ShopPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const searchQuery = searchParams.get('search');
+  
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    if (value) {
+      setSearchParams({ search: value });
+    } else {
+      setSearchParams({});
+    }
+  };
   
   const { products, categories } = useSelector((state) => state.shop);
   const { cart } = useSelector((state) => state.cart);
@@ -24,10 +33,14 @@ export default function ShopPage() {
   }, [dispatch]);
 
   useEffect(() => {
-    const params = {};
-    if (searchQuery) params.query = searchQuery;
-    if (selectedCategory) params.categoryId = selectedCategory;
-    dispatch(fetchProducts(params));
+    const timer = setTimeout(() => {
+      const params = {};
+      if (searchQuery) params.query = searchQuery;
+      if (selectedCategory) params.categoryId = selectedCategory;
+      dispatch(fetchProducts(params));
+    }, 300);
+
+    return () => clearTimeout(timer);
   }, [dispatch, searchQuery, selectedCategory]);
 
   const handleAddToCart = async (product) => {
@@ -69,7 +82,7 @@ export default function ShopPage() {
               type="text" 
               placeholder="Search our menu..." 
               value={searchQuery || ''}
-              onChange={(e) => dispatch({ type: 'shop/setSearchQuery', payload: e.target.value })}
+              onChange={handleSearchChange}
               className="flex-1 bg-transparent border-none focus:outline-none text-foreground text-sm"
             />
           </div>
