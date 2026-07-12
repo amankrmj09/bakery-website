@@ -24,3 +24,15 @@ export const fetchCategories = createAsyncThunk(
     }
   }
 );
+
+export const fetchSiteConfig = createAsyncThunk(
+  'shop/fetchSiteConfig',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await shopApi.fetchSiteConfig();
+      return response.data;
+    } catch (error) {
+      return rejectWithValue('Failed to fetch site config');
+    }
+  }
+);

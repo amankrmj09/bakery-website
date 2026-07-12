@@ -11,4 +11,5 @@ export const shopApi = {
     return api.get(url);
   },
   fetchCategories: () => api.get('/api/categories'),
+  fetchSiteConfig: () => api.get('/api/site-config/frontpage'),
 };

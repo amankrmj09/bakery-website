@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { fetchProducts, fetchCategories } from './shopThunk';
+import { fetchProducts, fetchCategories, fetchSiteConfig } from './shopThunk';
 
 const initialState = {
   products: {
@@ -9,6 +9,10 @@ const initialState = {
   },
   categories: {
     data: [],
+    error: null,
+  },
+  siteConfig: {
+    data: null,
     loading: false,
     error: null,
   }
@@ -37,6 +41,15 @@ const shopSlice = createSlice({
       .addCase(fetchCategories.rejected, (state, action) => {
         state.categories.loading = false;
         state.categories.error = action.payload;
+      })
+      .addCase(fetchSiteConfig.pending, (state) => { state.siteConfig.loading = true; })
+      .addCase(fetchSiteConfig.fulfilled, (state, action) => {
+        state.siteConfig.loading = false;
+        state.siteConfig.data = action.payload;
+      })
+      .addCase(fetchSiteConfig.rejected, (state, action) => {
+        state.siteConfig.loading = false;
+        state.siteConfig.error = action.payload;
       });
   },
 });
