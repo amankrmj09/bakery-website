@@ -193,7 +193,7 @@ export default function HomePage() {
                                             e.target.onerror = null;
                                             e.target.src = '/images/placeholder_bakery.png';
                                         }}
-                                        className="w-full h-full object-contain"
+                                        className="w-full h-full object-cover"
                                     />
                                 </div>
                                 <h4 className="font-bold text-foreground text-center mb-1">{cat.name}</h4>
@@ -221,7 +221,7 @@ export default function HomePage() {
                                             e.target.onerror = null;
                                             e.target.src = '/images/placeholder_bakery.png';
                                         }}
-                                        className="w-full h-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-500"
+                                        className="w-full h-full object-cover mix-blend-multiply group-hover:scale-110 transition-transform duration-500"
                                     />
                                 </div>
                                 <div className="px-2 flex-1 flex flex-col">

@@ -174,7 +174,7 @@ export default function ShopPage() {
                       src={product.primaryImageUrl || product.mediaUrls?.[0] || '/images/placeholder_bakery.png'} 
                       alt={product.name} 
                       onError={(e) => { e.target.onerror = null; e.target.src = '/images/placeholder_bakery.png'; }}
-                      className="object-contain w-full h-full mix-blend-multiply group-hover:scale-110 transition-transform duration-500" 
+                      className="object-cover w-full h-full mix-blend-multiply group-hover:scale-110 transition-transform duration-500" 
                     />
                     {product.status !== 'ACTIVE' && (
                       <div className="absolute top-2 right-2 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wide">
