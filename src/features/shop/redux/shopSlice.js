@@ -27,7 +27,7 @@ const shopSlice = createSlice({
       .addCase(fetchProducts.pending, (state) => { state.products.loading = true; })
       .addCase(fetchProducts.fulfilled, (state, action) => {
         state.products.loading = false;
-        state.products.data = action.payload || [];
+        state.products.data = action.payload?.content || action.payload || [];
       })
       .addCase(fetchProducts.rejected, (state, action) => {
         state.products.loading = false;
@@ -36,7 +36,7 @@ const shopSlice = createSlice({
       .addCase(fetchCategories.pending, (state) => { state.categories.loading = true; })
       .addCase(fetchCategories.fulfilled, (state, action) => {
         state.categories.loading = false;
-        state.categories.data = action.payload || [];
+        state.categories.data = action.payload?.content || action.payload || [];
       })
       .addCase(fetchCategories.rejected, (state, action) => {
         state.categories.loading = false;
@@ -55,3 +55,4 @@ const shopSlice = createSlice({
 });
 
 export default shopSlice.reducer;
+
