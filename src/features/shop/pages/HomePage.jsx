@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {Link} from 'react-router-dom';
-import {fetchCategories, fetchProducts, fetchSiteConfig} from '../redux/shopThunk';
+import {fetchCategories, fetchProducts, fetchStorefront} from '../redux/shopThunk';
 import {addItemToCart} from '../../cart/redux/cartThunk';
 import {
   ArrowRight,
@@ -24,13 +24,13 @@ const IconMap = {
 
 export default function HomePage() {
     const dispatch = useDispatch();
-    const {products, categories, siteConfig} = useSelector((state) => state.shop);
+    const {products, categories, storefront} = useSelector((state) => state.shop);
     const {cart} = useSelector((state) => state.cart);
 
     useEffect(() => {
         dispatch(fetchCategories());
         dispatch(fetchProducts());
-        dispatch(fetchSiteConfig());
+        dispatch(fetchStorefront());
     }, [dispatch]);
 
     const handleAddToCart = (productId) => {
@@ -44,7 +44,7 @@ export default function HomePage() {
     };
 
     const productList = products.data || [];
-    const config = siteConfig.data;
+    const config = storefront.data;
 
     const [activeIndex, setActiveIndex] = useState(0);
 
@@ -481,5 +481,6 @@ function ShoppingCartIcon(props) {
         </svg>
     );
 }
+
 
 
