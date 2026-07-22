@@ -96,8 +96,8 @@ export default function HomePage() {
         <div className="flex flex-col bg-background min-h-screen">
 
             {/* 1. HERO SECTION (Carousel) */}
-            <section className="max-w-7xl mx-auto w-full px-6 py-8">
-                <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 lg:gap-6 lg:h-[500px]">
+            <section className="max-w-7xl mx-auto w-full px-6 py-4 lg:py-6">
+                <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 lg:gap-6 lg:h-[calc(100vh-180px)] lg:max-h-[450px] lg:min-h-[350px]">
                     {/* Main Hero Image (Left, 3:2 width ratio -> 3/5 width) */}
                     <div className="lg:col-span-3 rounded-[2rem] overflow-hidden relative shadow-md h-[300px] lg:h-auto">
                         <img 
@@ -481,6 +481,7 @@ function ShoppingCartIcon(props) {
         </svg>
     );
 }
+
 
 
 
