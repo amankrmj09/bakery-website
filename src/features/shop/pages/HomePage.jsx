@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {Link} from 'react-router-dom';
 import {fetchCategories, fetchProducts, fetchSiteConfig} from '../redux/shopThunk';
@@ -46,15 +46,21 @@ export default function HomePage() {
     const productList = products.data || [];
     const config = siteConfig.data;
 
-    // Fallbacks just in case the API hasn't responded or hasn't been seeded yet
-    const hero = config?.heroSection || {
-      tag: 'Artisanal Bakery',
-      headline: 'FRESH, SWEET &\nTASTY',
-      subtitle: 'Sale 20% every Monday',
-      heroImageUrl: '/images/hero_burger.png',
-      sideCard1: { subtitle: 'Freshly Baked', title: 'Signature Cake', price: '$24.50', imageUrl: '/images/hero_cake.png' },
-      sideCard2: { subtitle: 'Sweet Treat', title: 'Vanilla Cupcakes', imageUrl: '/images/hero_cupcakes.png' }
-    };
+    const [activeIndex, setActiveIndex] = useState(0);
+
+    const campaigns = config?.heroSection?.campaigns?.length >= 3 ? config.heroSection.campaigns : [
+      { largeImageUrl: '/images/hero_burger.png', smallImageUrl: '/images/hero_cake.png' },
+      { largeImageUrl: '/images/hero_cake.png', smallImageUrl: '/images/hero_cupcakes.png' },
+      { largeImageUrl: '/images/hero_cupcakes.png', smallImageUrl: '/images/hero_burger.png' }
+    ];
+
+    useEffect(() => {
+        if (!campaigns || campaigns.length === 0) return;
+        const interval = setInterval(() => {
+            setActiveIndex((prev) => (prev + 1) % campaigns.length);
+        }, 5000);
+        return () => clearInterval(interval);
+    }, [campaigns]);
 
     const about = config?.aboutSection || {
       tag: 'Savor the Flavor, Anytime, Anywhere',
@@ -89,54 +95,41 @@ export default function HomePage() {
     return (
         <div className="flex flex-col bg-background min-h-screen">
 
-            {/* 1. HERO SECTION */}
+            {/* 1. HERO SECTION (Carousel) */}
             <section className="max-w-7xl mx-auto w-full px-6 py-8">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                    {/* Main Hero Card (Yellow) */}
-                    <div
-                        className="lg:col-span-8 bg-[#eab308] rounded-[2rem] p-10 flex items-center justify-between overflow-hidden relative shadow-md">
-                        <div className="z-10 text-white max-w-sm">
-                            <span className="text-red-500 font-bold uppercase tracking-wider text-sm mb-4 block">{hero.tag}</span>
-                            <h1 className="text-5xl font-extrabold leading-tight mb-4 whitespace-pre-line">
-                                {hero.headline}
-                            </h1>
-                            <p className="text-white/80 mb-8 font-medium">{hero.subtitle}</p>
-                            <Link to="/shop"
-                                  className="bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-8 rounded-full transition-colors shadow-lg shadow-red-500/30">
-                                Shop Now
-                            </Link>
-                        </div>
-                        {/* The giant floating hero image */}
-                        <img src={hero.heroImageUrl} alt="Hero image"
-                             className="absolute -right-20 top-1/2 -translate-y-1/2 h-[120%] object-contain drop-shadow-2xl"/>
+                <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 lg:gap-6 lg:h-[500px]">
+                    {/* Main Hero Image (Left, 3:2 width ratio -> 3/5 width) */}
+                    <div className="lg:col-span-3 rounded-[2rem] overflow-hidden relative shadow-md h-[300px] lg:h-auto">
+                        <img 
+                            key={"large-${activeIndex}"}
+                            src={campaigns[activeIndex]?.largeImageUrl} 
+                            alt="Campaign Main" 
+                            className="w-full h-full object-cover animate-in fade-in duration-700"
+                        />
                     </div>
 
-                    {/* Side Cards */}
-                    <div className="lg:col-span-4 flex flex-col gap-6">
-                        <div className="bg-[#f0e8dc] rounded-[2rem] p-6 flex-1 flex relative overflow-hidden shadow-sm">
-                            <div className="z-10 flex flex-col justify-end w-1/2">
-                                <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{hero.sideCard1?.subtitle}</span>
-                                <h3 className="text-xl font-bold text-foreground">{hero.sideCard1?.title}</h3>
-                                <span className="text-primary-500 font-extrabold text-lg">{hero.sideCard1?.price}</span>
-                            </div>
-                            <img src={hero.sideCard1?.imageUrl} alt={hero.sideCard1?.title}
-                                 className="absolute -right-8 -top-8 h-[140%] object-contain drop-shadow-lg"/>
+                    {/* Side Images (Right, 2/5 width, 1:1 vertical split) */}
+                    <div className="lg:col-span-2 flex flex-col gap-4 lg:gap-6 h-[300px] lg:h-auto">
+                        <div className="flex-1 rounded-[2rem] relative overflow-hidden shadow-sm">
+                            <img 
+                                key={"small1-${activeIndex}"}
+                                src={campaigns[(activeIndex + 1) % campaigns.length]?.smallImageUrl} 
+                                alt="Campaign Side 1" 
+                                className="w-full h-full object-cover animate-in fade-in duration-700"
+                            />
                         </div>
 
-                        <div
-                            className="bg-[#3e2723] rounded-[2rem] p-8 flex-1 flex items-center justify-center relative overflow-hidden shadow-sm">
-                            <div className="z-10 text-white w-full">
-                                <span
-                                    className="text-xs font-bold text-muted-foreground uppercase tracking-wider block mb-1">{hero.sideCard2?.subtitle}</span>
-                                <h3 className="text-xl font-bold mb-4">{hero.sideCard2?.title}</h3>
-                                <img src={hero.sideCard2?.imageUrl} alt={hero.sideCard2?.title}
-                                     className="absolute -right-4 -bottom-6 w-3/5 object-contain drop-shadow-xl"/>
-                            </div>
+                        <div className="flex-1 rounded-[2rem] relative overflow-hidden shadow-sm">
+                            <img 
+                                key={"small2-${activeIndex}"}
+                                src={campaigns[(activeIndex + 2) % campaigns.length]?.smallImageUrl} 
+                                alt="Campaign Side 2" 
+                                className="w-full h-full object-cover animate-in fade-in duration-700"
+                            />
                         </div>
                     </div>
                 </div>
             </section>
-
 
             {/* 3. NEW PRODUCTS SHOWCASE (Colored Cards) */}
             <section className="max-w-7xl mx-auto w-full px-6 py-16">
@@ -488,3 +481,5 @@ function ShoppingCartIcon(props) {
         </svg>
     );
 }
+
+

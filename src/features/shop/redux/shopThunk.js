@@ -25,14 +25,15 @@ export const fetchCategories = createAsyncThunk(
   }
 );
 
-export const fetchSiteConfig = createAsyncThunk(
-  'shop/fetchSiteConfig',
+export const fetchstorefront = createAsyncThunk(
+  'shop/fetchstorefront',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await shopApi.fetchSiteConfig();
+      const response = await shopApi.fetchstorefront();
       return response.data;
     } catch (error) {
       return rejectWithValue('Failed to fetch site config');
     }
   }
 );
+

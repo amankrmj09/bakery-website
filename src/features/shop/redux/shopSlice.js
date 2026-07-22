@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { fetchProducts, fetchCategories, fetchSiteConfig } from './shopThunk';
+import { fetchProducts, fetchCategories, fetchstorefront } from './shopThunk';
 
 const initialState = {
   products: {
@@ -11,7 +11,7 @@ const initialState = {
     data: [],
     error: null,
   },
-  siteConfig: {
+  storefront: {
     data: null,
     loading: false,
     error: null,
@@ -42,17 +42,18 @@ const shopSlice = createSlice({
         state.categories.loading = false;
         state.categories.error = action.payload;
       })
-      .addCase(fetchSiteConfig.pending, (state) => { state.siteConfig.loading = true; })
-      .addCase(fetchSiteConfig.fulfilled, (state, action) => {
-        state.siteConfig.loading = false;
-        state.siteConfig.data = action.payload;
+      .addCase(fetchstorefront.pending, (state) => { state.storefront.loading = true; })
+      .addCase(fetchstorefront.fulfilled, (state, action) => {
+        state.storefront.loading = false;
+        state.storefront.data = action.payload;
       })
-      .addCase(fetchSiteConfig.rejected, (state, action) => {
-        state.siteConfig.loading = false;
-        state.siteConfig.error = action.payload;
+      .addCase(fetchstorefront.rejected, (state, action) => {
+        state.storefront.loading = false;
+        state.storefront.error = action.payload;
       });
   },
 });
 
 export default shopSlice.reducer;
+
 
