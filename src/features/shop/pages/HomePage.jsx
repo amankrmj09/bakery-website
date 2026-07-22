@@ -194,6 +194,10 @@ export default function HomePage() {
                                     <img
                                         src={cat.mediaUrls?.[0] || '/images/placeholder_bakery.png'}
                                         alt={cat.name}
+                                        onError={(e) => {
+                                            e.target.onerror = null;
+                                            e.target.src = '/images/placeholder_bakery.png';
+                                        }}
                                         className="w-full h-full object-contain"
                                     />
                                 </div>
