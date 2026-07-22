@@ -97,34 +97,34 @@ export default function HomePage() {
 
             {/* 1. HERO SECTION (Carousel) */}
             <section className="max-w-7xl mx-auto w-full px-6 py-4 lg:py-6">
-                <div className="flex flex-col lg:grid lg:grid-cols-5 gap-4 lg:gap-6 h-[400px] lg:h-[320px] xl:h-[360px]">
+                <div className="flex flex-col lg:grid lg:grid-cols-5 gap-4 lg:gap-6 h-[720px]">
                     {/* Main Hero Image (Left, 3:2 width ratio -> 3/5 width) */}
-                    <div className="lg:col-span-3 rounded-[2rem] overflow-hidden relative shadow-md h-full w-full bg-muted/10 flex items-center justify-center">
+                    <div className="lg:col-span-3 rounded-[2rem] overflow-hidden relative shadow-md h-full w-full bg-muted/10">
                         <img 
                             key={`large-${activeIndex}`}
                             src={campaigns[activeIndex]?.largeImageUrl} 
                             alt="Campaign Main" 
-                            className="w-full h-full object-contain animate-in fade-in duration-700"
+                            className="absolute inset-0 w-full h-full object-cover animate-in fade-in duration-700"
                         />
                     </div>
 
                     {/* Side Images (Right, 2/5 width, 1:1 vertical split) */}
                     <div className="lg:col-span-2 flex flex-col gap-4 lg:gap-6 h-full w-full">
-                        <div className="flex-1 rounded-[2rem] relative overflow-hidden shadow-sm h-full w-full bg-muted/10 flex items-center justify-center">
+                        <div className="flex-1 rounded-[2rem] relative overflow-hidden shadow-sm h-full w-full bg-muted/10">
                             <img 
                                 key={`small1-${activeIndex}`}
                                 src={campaigns[(activeIndex + 1) % campaigns.length]?.smallImageUrl} 
                                 alt="Campaign Side 1" 
-                                className="w-full h-full object-contain animate-in fade-in duration-700"
+                                className="absolute inset-0 w-full h-full object-cover animate-in fade-in duration-700"
                             />
                         </div>
 
-                        <div className="flex-1 rounded-[2rem] relative overflow-hidden shadow-sm h-full w-full bg-muted/10 flex items-center justify-center">
+                        <div className="flex-1 rounded-[2rem] relative overflow-hidden shadow-sm h-full w-full bg-muted/10">
                             <img 
                                 key={`small2-${activeIndex}`}
                                 src={campaigns[(activeIndex + 2) % campaigns.length]?.smallImageUrl} 
                                 alt="Campaign Side 2" 
-                                className="w-full h-full object-contain animate-in fade-in duration-700"
+                                className="absolute inset-0 w-full h-full object-cover animate-in fade-in duration-700"
                             />
                         </div>
                     </div>
