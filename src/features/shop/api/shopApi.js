@@ -11,6 +11,7 @@ export const shopApi = {
     return api.get(url);
   },
   fetchCategories: () => api.get('/api/categories'),
-  fetchstorefront: () => api.get('/api/storefront/frontpage'),
+  fetchStorefront: () => api.get('/api/storefront/frontpage'),
 };
+
 

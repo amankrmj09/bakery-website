@@ -49,9 +49,9 @@ export default function HomePage() {
     const [activeIndex, setActiveIndex] = useState(0);
 
     const campaigns = config?.heroSection?.campaigns?.length >= 3 ? config.heroSection.campaigns : [
-      { largeImageUrl: '/images/hero_burger.png', smallImageUrl: '/images/hero_cake.png' },
-      { largeImageUrl: '/images/hero_cake.png', smallImageUrl: '/images/hero_cupcakes.png' },
-      { largeImageUrl: '/images/hero_cupcakes.png', smallImageUrl: '/images/hero_burger.png' }
+      { largeImageUrl: '/images/campaign1_large.png', smallImageUrl: '/images/campaign1_small.png' },
+      { largeImageUrl: '/images/campaign2_large.png', smallImageUrl: '/images/campaign2_small.png' },
+      { largeImageUrl: '/images/campaign3_large.png', smallImageUrl: '/images/campaign3_small.png' }
     ];
 
     useEffect(() => {
@@ -481,6 +481,7 @@ function ShoppingCartIcon(props) {
         </svg>
     );
 }
+
 
 
 
