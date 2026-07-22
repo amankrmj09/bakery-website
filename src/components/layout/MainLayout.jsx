@@ -21,17 +21,20 @@ export default function MainLayout() {
     return (
         <div className="flex flex-col min-h-screen bg-background text-foreground transition-colors duration-200">
             {/* Top Navigation - GOOD FOOD Style */}
+            {!(location.pathname === '/login' || location.pathname === '/register') && (
             <header
                 className="flex h-20 items-center justify-between bg-card border-b border-border px-8 shadow-sm flex-shrink-0 z-10 w-full">
 
                 {/* Logo Left */}
-                <Link to="/" className="flex items-center space-x-3">
-                    <img src="/images/blubug_logo.png" alt="Blubug Logo"
-                         className="h-10 w-auto object-contain mix-blend-multiply"/>
+                <div className="flex-shrink-0 flex items-center">
+                    <Link to="/" className="flex items-center space-x-3">
+                    <img src="/icon-192.png" alt="Blubug Logo"
+                         className="h-10 w-auto cursor-pointer object-contain transform transition-transform hover:scale-105"/>
                     <span className="text-xl font-extrabold text-foreground tracking-tight">
             Blu Bakery
           </span>
-                </Link>
+                    </Link>
+                </div>
 
                 {/* Center Nav Links */}
                 <nav className="hidden md:flex items-center space-x-8 font-semibold text-sm">
@@ -91,6 +94,7 @@ export default function MainLayout() {
                     )}
                 </div>
             </header>
+            )}
 
             {/* Main Content Area */}
             <main className="flex-1 w-full bg-background relative overflow-y-auto">

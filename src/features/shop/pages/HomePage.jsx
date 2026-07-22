@@ -393,7 +393,7 @@ export default function HomePage() {
                     <div className="grid grid-cols-1 md:grid-cols-5 gap-8 pb-12 border-b border-border">
                         <div className="md:col-span-2">
                             <div className="flex items-center space-x-3 mb-4">
-                                <img src="/images/blubug_logo.png" alt="Blubug Logo"
+                                <img src="/icon-192.png" alt="Blubug Logo"
                                      className="h-12 w-auto object-contain mix-blend-multiply"/>
                                 <span className="text-2xl font-extrabold text-foreground tracking-tight">
                                   Blu Bakery
