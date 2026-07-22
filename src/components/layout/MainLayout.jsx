@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react';
 import {Link, Outlet, useLocation, useNavigate} from 'react-router-dom';
 import {useDispatch, useSelector} from 'react-redux';
-import {LogOut, Search, ShoppingBag} from 'lucide-react';
+import { FiLogOut, FiSearch, FiShoppingBag } from 'react-icons/fi';
 import {logout} from '../../features/auth/redux/authThunk';
 import {fetchCart} from '../../features/cart/redux/cartThunk';
 
@@ -23,16 +23,16 @@ export default function MainLayout() {
             {/* Top Navigation - GOOD FOOD Style */}
             {!(location.pathname === '/login' || location.pathname === '/register') && (
             <header
-                className="flex h-20 items-center justify-between bg-card border-b border-border px-8 shadow-sm flex-shrink-0 z-10 w-full">
+                className="sticky top-0 z-50 flex h-20 items-center justify-between bg-card/80 backdrop-blur-md border-b border-border/50 px-8 shadow-sm w-full">
 
                 {/* Logo Left */}
                 <div className="flex-shrink-0 flex items-center">
                     <Link to="/" className="flex items-center space-x-3">
                     <img src="/icon-192.png" alt="Blubug Logo"
                          className="h-10 w-auto cursor-pointer object-contain transform transition-transform hover:scale-105"/>
-                    <span className="text-xl font-extrabold text-foreground tracking-tight">
-            Blu Bakery
-          </span>
+                    <span className="text-3xl font-['Great_Vibes'] text-primary-500 tracking-wide font-normal pt-1 drop-shadow-sm">
+                        Blu Bakery
+                    </span>
                     </Link>
                 </div>
 
@@ -57,11 +57,11 @@ export default function MainLayout() {
                 {/* Right Actions */}
                 <div className="flex items-center space-x-6">
                     <button className="text-foreground hover:text-primary-500 transition-colors">
-                        <Search className="w-5 h-5"/>
+                        <FiSearch className="w-5 h-5"/>
                     </button>
 
                     <Link to="/cart" className="relative text-foreground hover:text-primary-500 transition-colors">
-                        <ShoppingBag className="w-5 h-5"/>
+                        <FiShoppingBag className="w-5 h-5"/>
                         {cartItemCount > 0 && (
                             <span
                                 className="absolute -top-2 -right-2 h-4 w-4 bg-primary-500 text-white text-[10px] font-bold flex items-center justify-center rounded-full ring-2 ring-card">
@@ -83,7 +83,7 @@ export default function MainLayout() {
                                 className="p-2 rounded-full hover:bg-red-500/10 text-muted-foreground hover:text-red-500 transition-colors"
                                 title="Logout"
                             >
-                                <LogOut className="h-5 w-5"/>
+                                <FiLogOut className="w-5 h-5"/>
                             </button>
                         </div>
                     ) : (
