@@ -101,8 +101,10 @@ export default function CheckoutPage() {
   }
 
   const deliveryFee = formData.deliveryType === 'DELIVERY' ? 5.00 : 0;
-  const subtotal = cart.items?.reduce((sum, item) => sum + (item.unitPrice * item.quantity), 0) || 0;
-  const finalTotal = subtotal + deliveryFee;
+  const subtotal = cart.subtotal || 0;
+  const taxAmount = cart.taxAmount || 0;
+  const discountAmount = cart.discountAmount || 0;
+  const finalTotal = subtotal + taxAmount - discountAmount + deliveryFee;
 
   return (
     <div className="min-h-screen bg-zinc-50/50 dark:bg-background py-8 px-4 sm:px-6 lg:px-8">
@@ -259,12 +261,19 @@ export default function CheckoutPage() {
               
               <div className="space-y-4 mb-6 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
                 {cart.items?.map((item) => (
-                  <div key={item.id} className="flex justify-between items-start gap-4">
+                  <div key={item.id} className="flex justify-between items-start gap-4 mb-3">
                     <div className="flex-1">
                       <p className="font-semibold text-sm">{item.productName}</p>
-                      <p className="text-xs text-muted-foreground">Qty: {item.quantity}</p>
+                      <p className="text-xs text-muted-foreground flex items-center gap-2 mt-1">
+                        <span>Qty: {item.quantity}</span>
+                        {item.taxClass && item.taxRate > 0 && (
+                          <span className="px-1.5 py-0.5 bg-muted/50 border border-border rounded text-[10px] font-medium text-muted-foreground">
+                            {item.taxClass} ({(item.taxRate * 100).toFixed(0)}%)
+                          </span>
+                        )}
+                      </p>
                     </div>
-                    <p className="font-semibold text-sm">${(item.unitPrice * item.quantity).toFixed(2)}</p>
+                    <p className="font-semibold text-sm">${(item.totalPrice || (item.unitPrice * item.quantity)).toFixed(2)}</p>
                   </div>
                 ))}
               </div>
@@ -274,6 +283,18 @@ export default function CheckoutPage() {
                   <span className="text-muted-foreground font-medium">Subtotal</span>
                   <span className="font-semibold">${subtotal.toFixed(2)}</span>
                 </div>
+                {taxAmount > 0 && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground font-medium">Tax</span>
+                    <span className="font-semibold">${taxAmount.toFixed(2)}</span>
+                  </div>
+                )}
+                {discountAmount > 0 && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground font-medium">Discount</span>
+                    <span className="font-semibold text-green-500">-${discountAmount.toFixed(2)}</span>
+                  </div>
+                )}
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground font-medium">Delivery Fee</span>
                   <span className="font-semibold">{deliveryFee > 0 ? `$${deliveryFee.toFixed(2)}` : 'Free'}</span>

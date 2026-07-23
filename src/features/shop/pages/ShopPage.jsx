@@ -182,7 +182,10 @@ export default function ShopPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {sortedProducts.map((product) => (
                 <div key={product.id} className="group bg-card border border-border rounded-[2rem] shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col p-4 relative">
-                  <div className="aspect-square bg-muted/30 rounded-2xl relative overflow-hidden flex items-center justify-center">
+                  <div 
+                    className="aspect-square bg-muted/30 rounded-2xl relative overflow-hidden flex items-center justify-center cursor-pointer"
+                    onClick={() => navigate(`/product/${product.id}`)}
+                  >
                     <img 
                       src={product.primaryImageUrl || product.mediaUrls?.[0] || '/images/placeholder_bakery.png'} 
                       alt={product.name} 
@@ -207,7 +210,13 @@ export default function ShopPage() {
                   <div className="pt-4 flex flex-col flex-1">
                     <div className="flex flex-col mb-1">
                       <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">{product.categoryName || 'Treat'}</span>
-                      <h3 className="font-extrabold text-lg text-foreground leading-tight line-clamp-1" title={product.name}>{product.name}</h3>
+                      <h3 
+                        className="font-extrabold text-lg text-foreground leading-tight line-clamp-1 cursor-pointer hover:text-primary-500 transition-colors" 
+                        title={product.name}
+                        onClick={() => navigate(`/product/${product.id}`)}
+                      >
+                        {product.name}
+                      </h3>
                     </div>
                     <p className="text-sm text-muted-foreground line-clamp-2 mb-4 flex-1 mt-2">
                       {product.description || 'A delicious treat fresh from our bakery.'}

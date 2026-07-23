@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { fetchProducts, fetchCategories, fetchStorefront } from './shopThunk';
+import { fetchProducts, fetchCategories, fetchStorefront, fetchProductReviews, submitReview } from './shopThunk';
 
 const initialState = {
   products: {
@@ -13,6 +13,11 @@ const initialState = {
   },
   storefront: {
     data: null,
+    loading: false,
+    error: null,
+  },
+  reviews: {
+    data: {}, // { productId: [reviews] }
     loading: false,
     error: null,
   }
@@ -50,6 +55,34 @@ const shopSlice = createSlice({
       .addCase(fetchStorefront.rejected, (state, action) => {
         state.storefront.loading = false;
         state.storefront.error = action.payload;
+      })
+      .addCase(fetchProductReviews.pending, (state) => { state.reviews.loading = true; })
+      .addCase(fetchProductReviews.fulfilled, (state, action) => {
+        state.reviews.loading = false;
+        state.reviews.data[action.payload.productId] = action.payload.reviews;
+      })
+      .addCase(fetchProductReviews.rejected, (state, action) => {
+        state.reviews.loading = false;
+        state.reviews.error = action.payload;
+      })
+      .addCase(submitReview.pending, (state) => { state.reviews.loading = true; })
+      .addCase(submitReview.fulfilled, (state, action) => {
+        state.reviews.loading = false;
+        const { productId, review } = action.payload;
+        if (!state.reviews.data[productId]) {
+          state.reviews.data[productId] = [];
+        }
+        // Check if user already reviewed (if editing)
+        const index = state.reviews.data[productId].findIndex(r => r.id === review.id);
+        if (index >= 0) {
+          state.reviews.data[productId][index] = review;
+        } else {
+          state.reviews.data[productId].push(review);
+        }
+      })
+      .addCase(submitReview.rejected, (state, action) => {
+        state.reviews.loading = false;
+        state.reviews.error = action.payload;
       });
   },
 });

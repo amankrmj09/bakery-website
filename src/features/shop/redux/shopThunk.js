@@ -38,3 +38,27 @@ export const fetchStorefront = createAsyncThunk(
 );
 
 
+
+export const fetchProductReviews = createAsyncThunk(
+  'shop/fetchProductReviews',
+  async (productId, { rejectWithValue }) => {
+    try {
+      const response = await shopApi.fetchProductReviews(productId);
+      return { productId, reviews: response.data };
+    } catch (error) {
+      return rejectWithValue('Failed to fetch reviews');
+    }
+  }
+);
+
+export const submitReview = createAsyncThunk(
+  'shop/submitReview',
+  async ({ productId, reviewData }, { rejectWithValue }) => {
+    try {
+      const response = await shopApi.submitReview(productId, reviewData);
+      return { productId, review: response.data };
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to submit review');
+    }
+  }
+);

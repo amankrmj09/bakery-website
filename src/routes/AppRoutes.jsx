@@ -5,6 +5,7 @@ import MainLayout from '../components/layout/MainLayout';
 
 import HomePage from '../features/shop/pages/HomePage';
 import ShopPage from '../features/shop/pages/ShopPage';
+import ProductDetailsPage from '../features/shop/pages/ProductDetailsPage';
 import ContactPage from '../features/shop/pages/ContactPage';
 import LoginPage from '../features/auth/pages/LoginPage';
 import RegisterPage from '../features/auth/pages/RegisterPage';
@@ -30,6 +31,7 @@ export default function AppRoutes() {
         {/* Public Routes */}
         <Route index element={<HomePage />} />
         <Route path="shop" element={<ShopPage />} />
+        <Route path="product/:id" element={<ProductDetailsPage />} />
         <Route path="contact" element={<ContactPage />} />
         <Route path="login" element={<LoginPage />} />
         <Route path="register" element={<RegisterPage />} />

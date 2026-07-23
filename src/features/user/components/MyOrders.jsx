@@ -2,14 +2,38 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { fetchUserOrders } from '../../order/slice/orderSlice';
-import { LuPackage as Package, LuLoader as Loader2, LuClock as Clock, LuCheck as CheckCircle2, LuCreditCard as CreditCard, LuX as XCircle, LuChevronRight as ChevronRight } from 'react-icons/lu';
+import { LuPackage as Package, LuLoader as Loader2, LuClock as Clock, LuCheck as CheckCircle2, LuCreditCard as CreditCard, LuX as XCircle, LuChevronRight as ChevronRight, LuChevronDown as ChevronDown, LuMapPin as MapPin } from 'react-icons/lu';
 import { format } from 'date-fns';
+import ReviewModal from '../../shop/components/ReviewModal';
 
 export default function MyOrders() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
   const { orders, loading } = useSelector((state) => state.order);
+  const [expandedOrderId, setExpandedOrderId] = React.useState(null);
+  const [reviewModalState, setReviewModalState] = React.useState({
+    isOpen: false,
+    orderId: null,
+    productId: null,
+    productName: ''
+  });
+
+  const openReviewModal = (orderId, productId, productName) => {
+    setReviewModalState({ isOpen: true, orderId, productId, productName });
+  };
+
+  const closeReviewModal = () => {
+    setReviewModalState({ isOpen: false, orderId: null, productId: null, productName: '' });
+  };
+
+  const toggleOrderDetails = (orderId) => {
+    if (expandedOrderId === orderId) {
+      setExpandedOrderId(null);
+    } else {
+      setExpandedOrderId(orderId);
+    }
+  };
 
   useEffect(() => {
     if (user?.id) {
@@ -156,14 +180,133 @@ export default function MyOrders() {
                   </button>
                 )}
                 
-                <button className="flex-1 sm:flex-none flex items-center justify-center bg-background border-2 border-muted hover:border-primary-500 hover:text-primary-600 px-5 py-2.5 rounded-xl font-bold text-sm transition-colors group-hover:border-primary-500/30">
-                  View Details <ChevronRight className="w-4 h-4 ml-1" />
+                <button 
+                  onClick={() => toggleOrderDetails(order.id)}
+                  className="flex-1 sm:flex-none flex items-center justify-center bg-background border-2 border-muted hover:border-primary-500 hover:text-primary-600 px-5 py-2.5 rounded-xl font-bold text-sm transition-colors group-hover:border-primary-500/30"
+                >
+                  {expandedOrderId === order.id ? 'Hide Details' : 'View Details'} 
+                  {expandedOrderId === order.id ? <ChevronDown className="w-4 h-4 ml-1" /> : <ChevronRight className="w-4 h-4 ml-1" />}
                 </button>
               </div>
             </div>
+
+            {/* Expanded Order Details */}
+            {expandedOrderId === order.id && (
+              <div className="border-t border-border bg-card p-5 md:p-6 animate-in slide-in-from-top-2 fade-in duration-300">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                  <div className="lg:col-span-2 space-y-6">
+                    <h4 className="font-bold text-foreground flex items-center gap-2">
+                      <Package className="w-4 h-4 text-primary-500" /> Order Items
+                    </h4>
+                    <div className="space-y-4">
+                      {order.items?.map((item, idx) => (
+                        <div key={idx} className="flex justify-between items-center bg-muted/20 p-4 rounded-xl border border-border">
+                          <div className="flex items-center gap-4">
+                            <div className="w-16 h-16 bg-muted rounded-lg overflow-hidden flex-shrink-0">
+                               <img 
+                                 src={item.productImageUrl || '/images/placeholder_bakery.png'} 
+                                 alt={item.productName} 
+                                 className="w-full h-full object-cover mix-blend-multiply" 
+                                 onError={(e) => { e.target.onerror = null; e.target.src = '/images/placeholder_bakery.png'; }}
+                               />
+                            </div>
+                            <div>
+                              <p className="font-bold text-sm text-foreground">{item.productName}</p>
+                              <p className="text-xs text-muted-foreground mt-1">
+                                Qty: {item.quantity} × ${(item.unitPrice || 0).toFixed(2)}
+                                {item.taxClass && item.taxRate > 0 && (
+                                  <span className="ml-2 px-1.5 py-0.5 bg-muted border border-border rounded text-[10px] font-medium text-muted-foreground">
+                                    {item.taxClass} ({(item.taxRate * 100).toFixed(0)}%)
+                                  </span>
+                                )}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex flex-col items-end gap-2">
+                            <p className="font-bold text-sm text-foreground">${(item.totalPrice || ((item.unitPrice || 0) * item.quantity)).toFixed(2)}</p>
+                            {order.status === 'DELIVERED' && (
+                              <button
+                                onClick={() => openReviewModal(order.id, item.productId, item.productName)}
+                                className="text-xs font-semibold text-primary-600 hover:text-primary-700 underline underline-offset-2 transition-colors"
+                              >
+                                Write a Review
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="space-y-6">
+                    <div className="bg-muted/20 p-5 rounded-xl border border-border">
+                      <h4 className="font-bold text-sm text-foreground mb-4 uppercase tracking-wider">Order Summary</h4>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between text-muted-foreground">
+                          <span>Subtotal</span>
+                          <span className="font-semibold text-foreground">${(order.totalAmount - (order.taxAmount || 0) - (order.deliveryFee || 0) + (order.discountAmount || 0)).toFixed(2)}</span>
+                        </div>
+                        {order.taxAmount > 0 && (
+                          <div className="flex justify-between text-muted-foreground">
+                            <span>Tax</span>
+                            <span className="font-semibold text-foreground">${order.taxAmount.toFixed(2)}</span>
+                          </div>
+                        )}
+                        {order.discountAmount > 0 && (
+                          <div className="flex justify-between text-green-500">
+                            <span>Discount</span>
+                            <span className="font-semibold">-${order.discountAmount.toFixed(2)}</span>
+                          </div>
+                        )}
+                        <div className="flex justify-between text-muted-foreground">
+                          <span>Delivery Fee</span>
+                          <span className="font-semibold text-foreground">{order.deliveryFee > 0 ? `$${order.deliveryFee.toFixed(2)}` : 'Free'}</span>
+                        </div>
+                        <div className="flex justify-between border-t border-border pt-2 mt-2 font-bold text-base text-foreground">
+                          <span>Total</span>
+                          <span className="text-primary-600">${order.totalAmount.toFixed(2)}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-8 h-8 rounded-full bg-primary-500/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <MapPin className="w-4 h-4 text-primary-500" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">{order.deliveryType || 'DELIVERY'}</p>
+                          <p className="text-sm font-medium text-foreground">{order.deliveryAddress || 'N/A'}</p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-start gap-3">
+                        <div className="w-8 h-8 rounded-full bg-primary-500/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <CreditCard className="w-4 h-4 text-primary-500" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">Payment</p>
+                          <p className="text-sm font-medium text-foreground">
+                            {order.paymentMethod || 'N/A'} - <span className={`font-bold ${order.paymentStatus === 'COMPLETED' || order.paymentStatus === 'PAID' ? 'text-green-500' : 'text-yellow-500'}`}>{order.paymentStatus || 'PENDING'}</span>
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )})}
       </div>
+      
+      <ReviewModal 
+        isOpen={reviewModalState.isOpen}
+        onClose={closeReviewModal}
+        orderId={reviewModalState.orderId}
+        productId={reviewModalState.productId}
+        productName={reviewModalState.productName}
+      />
     </div>
   );
 }

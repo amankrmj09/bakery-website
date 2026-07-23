@@ -13,7 +13,10 @@ export default function CartPage() {
 
   const handleUpdateQuantity = (itemId, currentQty, delta) => {
     const newQty = currentQty + delta;
-    if (newQty < 1) return;
+    if (newQty < 1) {
+      dispatch(removeCartItem({ cartId: cart.id, itemId }));
+      return;
+    }
     dispatch(updateCartItem({ cartId: cart.id, itemId, quantity: newQty }));
   };
 
@@ -67,7 +70,14 @@ export default function CartPage() {
               <div className="flex-1 flex flex-col justify-between">
                 <div className="flex justify-between items-start">
                   <div>
-                    <h3 className="font-semibold text-foreground text-lg">{item.productName}</h3>
+                    <h3 className="font-semibold text-foreground text-lg flex items-center gap-2">
+                      {item.productName}
+                      {item.taxClass && item.taxRate > 0 && (
+                        <span className="px-1.5 py-0.5 bg-muted/50 border border-border rounded text-[10px] font-medium text-muted-foreground align-middle">
+                          {item.taxClass} ({(item.taxRate * 100).toFixed(0)}%)
+                        </span>
+                      )}
+                    </h3>
                     <p className="text-sm text-muted-foreground">${item.unitPrice.toFixed(2)} each</p>
                   </div>
                   <button 
