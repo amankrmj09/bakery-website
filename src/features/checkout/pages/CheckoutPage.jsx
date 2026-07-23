@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { checkoutCart } from '../../cart/redux/cartThunk';
+import { fetchUserAddresses } from '../../user/redux/addressSlice';
 import { LuMapPin as MapPin, LuStore as Store, LuCreditCard as CreditCard, LuBanknote as Banknote, LuLoader as Loader2, LuCircleAlert as AlertCircle, LuArrowRight as ArrowRight, LuShoppingBag as ShoppingBag, LuLock as Lock } from 'react-icons/lu';
 import { toast } from 'sonner';
 
@@ -10,16 +11,32 @@ export default function CheckoutPage() {
   const navigate = useNavigate();
   const { cart, checkoutState } = useSelector((state) => state.cart);
   const { user } = useSelector((state) => state.auth);
+  const { addresses } = useSelector((state) => state.address);
+  
+  useEffect(() => {
+    if (user?.id) {
+      dispatch(fetchUserAddresses());
+    }
+  }, [dispatch, user?.id]);
+
+  const defaultAddress = addresses?.find(a => a.isDefault)?.addressLine || user?.address || '';
 
   const [formData, setFormData] = useState({
     customerName: user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username : '',
     customerEmail: user?.email || '',
     customerPhone: user?.phone || '',
     deliveryType: 'DELIVERY',
-    deliveryAddress: user?.address || '',
+    deliveryAddress: defaultAddress,
     paymentMethod: 'CARD', 
     specialInstructions: ''
   });
+
+  // Update delivery address when default address loads
+  useEffect(() => {
+    if (defaultAddress && !formData.deliveryAddress) {
+      setFormData(prev => ({ ...prev, deliveryAddress: defaultAddress }));
+    }
+  }, [defaultAddress]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -33,7 +50,11 @@ export default function CheckoutPage() {
     if (checkoutCart.fulfilled.match(resultAction)) {
       toast.success('Order placed successfully!');
       const order = resultAction.payload.order;
-      navigate(`/payment/${order.id}`, { state: { paymentMethod: formData.paymentMethod, amount: order.totalAmount } });
+      if (formData.paymentMethod === 'CASH') {
+         navigate('/profile?tab=orders');
+      } else {
+         navigate(`/payment/${order.id}`, { state: { paymentMethod: formData.paymentMethod, amount: finalTotal } });
+      }
     } else {
       toast.error('Failed to place order. Please try again.');
     }
@@ -125,9 +146,32 @@ export default function CheckoutPage() {
               </div>
               
               {formData.deliveryType === 'DELIVERY' && (
-                <div className="space-y-2 animate-in slide-in-from-top-2 fade-in duration-300">
-                  <label className="text-sm font-semibold text-foreground">Delivery Address</label>
-                  <textarea required name="deliveryAddress" value={formData.deliveryAddress} onChange={handleChange} rows="3" className="w-full p-4 rounded-xl bg-background border-2 border-muted hover:border-border focus:border-primary-500 text-sm focus:outline-none focus:ring-4 focus:ring-primary-500/10 transition-all resize-none font-medium placeholder:text-muted-foreground/50" placeholder="Enter your full delivery address..."></textarea>
+                <div className="space-y-4 animate-in slide-in-from-top-2 fade-in duration-300">
+                  {addresses && addresses.length > 0 && (
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold text-foreground">Select Saved Address</label>
+                      <select 
+                        className="w-full h-11 px-4 rounded-xl bg-background border-2 border-muted hover:border-border focus:border-primary-500 text-sm focus:outline-none focus:ring-4 focus:ring-primary-500/10 transition-all font-medium"
+                        onChange={(e) => {
+                          if (e.target.value) {
+                            setFormData({...formData, deliveryAddress: e.target.value});
+                          }
+                        }}
+                      >
+                        <option value="">Custom Address...</option>
+                        {addresses.map(addr => (
+                          <option key={addr.id} value={addr.addressLine}>
+                            {addr.title || 'Address'} - {addr.addressLine}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold text-foreground">Delivery Address</label>
+                    <textarea required name="deliveryAddress" value={formData.deliveryAddress} onChange={handleChange} rows="3" className="w-full p-4 rounded-xl bg-background border-2 border-muted hover:border-border focus:border-primary-500 text-sm focus:outline-none focus:ring-4 focus:ring-primary-500/10 transition-all resize-none font-medium placeholder:text-muted-foreground/50" placeholder="Enter your full delivery address..."></textarea>
+                  </div>
                 </div>
               )}
             </div>

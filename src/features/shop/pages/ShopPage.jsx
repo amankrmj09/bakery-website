@@ -46,10 +46,20 @@ export default function ShopPage() {
   }, [dispatch, searchQuery, selectedCategory]);
 
   const handleAddToCart = async (product) => {
-    if (!cart?.id) return; // Wait for cart to be available
     setAddingToCart(product.id);
     try {
-      await dispatch(addItemToCart({ cartId: cart.id, productId: product.id, quantity: 1 })).unwrap();
+      let currentCartId = cart?.id;
+      if (!currentCartId) {
+        const newCart = await dispatch(fetchCart()).unwrap();
+        currentCartId = newCart?.id;
+      }
+      
+      if (!currentCartId) {
+        toast.error('Unable to initialize cart');
+        return;
+      }
+
+      await dispatch(addItemToCart({ cartId: currentCartId, productId: product.id, quantity: 1 })).unwrap();
       toast.success(`${product.name} added to cart`);
     } catch (error) {
       toast.error(`Failed to add ${product.name} to cart`);
@@ -207,7 +217,7 @@ export default function ShopPage() {
                       <span className="font-extrabold text-xl text-primary-500">${product.price?.toFixed(2) || '0.00'}</span>
                       <div className="flex space-x-2">
                         <button
-                          disabled={product.status !== 'ACTIVE' || product.inventory?.isOutOfStock || addingToCart === product.id || !cart?.id}
+                          disabled={product.status !== 'ACTIVE' || product.inventory?.isOutOfStock || addingToCart === product.id}
                           onClick={() => handleAddToCart(product)}
                           className="w-12 h-12 flex items-center justify-center bg-muted/50 text-foreground hover:bg-primary-500 hover:text-white transition-colors rounded-xl font-medium disabled:opacity-50 disabled:cursor-not-allowed group/btn"
                           title="Add to Cart"
@@ -219,7 +229,7 @@ export default function ShopPage() {
                           )}
                         </button>
                         <button
-                          disabled={product.status !== 'ACTIVE' || product.inventory?.isOutOfStock || addingToCart === product.id || !cart?.id}
+                          disabled={product.status !== 'ACTIVE' || product.inventory?.isOutOfStock || addingToCart === product.id}
                           onClick={async () => {
                             if (!user) {
                               toast.error("You must login before checking out");
