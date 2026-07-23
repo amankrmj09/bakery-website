@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { checkoutCart } from '../../cart/redux/cartThunk';
 import { fetchUserAddresses } from '../../user/redux/addressSlice';
+import { userApi } from '../../user/api/userApi';
 import { LuMapPin as MapPin, LuStore as Store, LuCreditCard as CreditCard, LuBanknote as Banknote, LuLoader as Loader2, LuCircleAlert as AlertCircle, LuArrowRight as ArrowRight, LuShoppingBag as ShoppingBag, LuLock as Lock } from 'react-icons/lu';
 import { toast } from 'sonner';
 
@@ -19,7 +20,10 @@ export default function CheckoutPage() {
     }
   }, [dispatch, user?.id]);
 
-  const defaultAddress = addresses?.find(a => a.isDefault)?.addressLine || user?.address || '';
+  const defaultAddressObj = addresses?.find(a => a.isDefault);
+  const defaultAddress = defaultAddressObj 
+    ? `${defaultAddressObj.addressLine}, ${defaultAddressObj.city}, ${defaultAddressObj.state} ${defaultAddressObj.postalCode}, ${defaultAddressObj.country}` 
+    : user?.address || '';
 
   const [formData, setFormData] = useState({
     customerName: user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username : '',
@@ -38,17 +42,26 @@ export default function CheckoutPage() {
     }
   }, [defaultAddress]);
 
-  // Update contact info if user loads late
+  // Fetch latest user profile to ensure we have the most up-to-date contact info
   useEffect(() => {
-    if (user) {
-      setFormData(prev => ({
-        ...prev,
-        customerName: prev.customerName || (`${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username || ''),
-        customerEmail: prev.customerEmail || user.email || '',
-        customerPhone: prev.customerPhone || user.phone || ''
-      }));
-    }
-  }, [user]);
+    const fetchLatestProfile = async () => {
+      if (user?.id) {
+        try {
+          const response = await userApi.getProfile();
+          const latestUser = response.data;
+          setFormData(prev => ({
+            ...prev,
+            customerName: prev.customerName || (`${latestUser.firstName || ''} ${latestUser.lastName || ''}`.trim() || latestUser.username || ''),
+            customerEmail: prev.customerEmail || latestUser.email || '',
+            customerPhone: prev.customerPhone || latestUser.phone || ''
+          }));
+        } catch (error) {
+          console.error("Failed to fetch latest profile for checkout", error);
+        }
+      }
+    };
+    fetchLatestProfile();
+  }, [user?.id]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -164,18 +177,20 @@ export default function CheckoutPage() {
                       <label className="text-sm font-semibold text-foreground">Select Saved Address</label>
                       <select 
                         className="w-full h-11 px-4 rounded-xl bg-background border-2 border-muted hover:border-border focus:border-primary-500 text-sm focus:outline-none focus:ring-4 focus:ring-primary-500/10 transition-all font-medium"
+                        value={addresses.find(a => `${a.addressLine}, ${a.city}, ${a.state} ${a.postalCode}, ${a.country}` === formData.deliveryAddress) ? formData.deliveryAddress : ""}
                         onChange={(e) => {
-                          if (e.target.value) {
-                            setFormData({...formData, deliveryAddress: e.target.value});
-                          }
+                          setFormData({...formData, deliveryAddress: e.target.value});
                         }}
                       >
                         <option value="">Custom Address...</option>
-                        {addresses.map(addr => (
-                          <option key={addr.id} value={addr.addressLine}>
-                            {addr.title || 'Address'} - {addr.addressLine}
-                          </option>
-                        ))}
+                        {addresses.map(addr => {
+                          const fullAddress = `${addr.addressLine}, ${addr.city}, ${addr.state} ${addr.postalCode}, ${addr.country}`;
+                          return (
+                            <option key={addr.id} value={fullAddress}>
+                              {addr.title || 'Address'} - {fullAddress}
+                            </option>
+                          );
+                        })}
                       </select>
                     </div>
                   )}
