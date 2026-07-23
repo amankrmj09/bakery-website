@@ -4,15 +4,15 @@ import {Link} from 'react-router-dom';
 import {fetchCategories, fetchProducts, fetchStorefront} from '../redux/shopThunk';
 import {addItemToCart} from '../../cart/redux/cartThunk';
 import {
-  ArrowRight,
-  ChevronLeft,
-  ChevronRight,
-  CookingPot,
-  HeadphonesIcon,
-  PackageCheck,
-  Star,
-  Truck
-} from 'lucide-react';
+  LuArrowRight as ArrowRight,
+  LuChevronLeft as ChevronLeft,
+  LuChevronRight as ChevronRight,
+  LuCookingPot as CookingPot,
+  LuHeadphones as HeadphonesIcon,
+  LuPackageCheck as PackageCheck,
+  LuStar as Star,
+  LuTruck as Truck
+} from 'react-icons/lu';
 
 // A mapping to dynamically render lucide icons if passed by name
 const IconMap = {
@@ -141,6 +141,20 @@ export default function HomePage() {
                                     <h3 className="text-2xl font-bold leading-tight mt-1 mb-2">{product.name}</h3>
                                 </div>
 
+                                {product.status !== 'ACTIVE' ? (
+                                    <div className="absolute top-6 right-6 z-20 bg-black/50 text-white text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wide backdrop-blur-md">
+                                        Unavailable
+                                    </div>
+                                ) : product.inventory?.isOutOfStock ? (
+                                    <div className="absolute top-6 right-6 z-20 bg-red-600 text-white text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wide shadow-md">
+                                        Out of Stock
+                                    </div>
+                                ) : product.inventory?.isLowStock ? (
+                                    <div className="absolute top-6 right-6 z-20 bg-orange-500 text-white text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wide shadow-md">
+                                        Limited Stock
+                                    </div>
+                                ) : null}
+
                                 <img
                                     src={product.primaryImageUrl || product.mediaUrls?.[0] || '/images/placeholder_bakery.png'}
                                     alt={product.name}
@@ -152,7 +166,8 @@ export default function HomePage() {
                                 />
 
                                 <button onClick={() => handleAddToCart(product.id)}
-                                        className="z-10 text-white font-medium text-sm flex items-center group/btn mt-auto self-start">
+                                        disabled={product.status !== 'ACTIVE' || product.inventory?.isOutOfStock}
+                                        className="z-10 text-white font-medium text-sm flex items-center group/btn mt-auto self-start disabled:opacity-50 disabled:cursor-not-allowed">
                                     Order Now <ArrowRight
                                     className="w-4 h-4 ml-1 group-hover/btn:translate-x-1 transition-transform"/>
                                 </button>
@@ -213,7 +228,7 @@ export default function HomePage() {
                             <div key={product.id}
                                  className="min-w-[280px] bg-background border border-border rounded-[2rem] p-4 flex flex-col hover:shadow-xl transition-all duration-300">
                                 <div
-                                    className="h-40 bg-muted/30 rounded-2xl mb-4 p-4 flex items-center justify-center overflow-hidden">
+                                    className="h-40 relative bg-muted/30 rounded-2xl mb-4 p-4 flex items-center justify-center overflow-hidden">
                                     <img
                                         src={product.primaryImageUrl || product.mediaUrls?.[0] || '/images/placeholder_bakery.png'}
                                         alt={product.name}
@@ -223,6 +238,19 @@ export default function HomePage() {
                                         }}
                                         className="w-full h-full object-cover mix-blend-multiply group-hover:scale-110 transition-transform duration-500"
                                     />
+                                    {product.status !== 'ACTIVE' ? (
+                                        <div className="absolute top-2 right-2 z-20 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wide">
+                                            Unavailable
+                                        </div>
+                                    ) : product.inventory?.isOutOfStock ? (
+                                        <div className="absolute top-2 right-2 z-20 bg-red-600 text-white text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wide shadow-md">
+                                            Out of Stock
+                                        </div>
+                                    ) : product.inventory?.isLowStock ? (
+                                        <div className="absolute top-2 right-2 z-20 bg-orange-500 text-white text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wide shadow-md">
+                                            Limited Stock
+                                        </div>
+                                    ) : null}
                                 </div>
                                 <div className="px-2 flex-1 flex flex-col">
                                     <div className="flex items-center text-[#eab308] mb-1">
@@ -237,7 +265,8 @@ export default function HomePage() {
                                             className="font-extrabold text-lg text-red-500">${product.price?.toFixed(2)}</span>
                                         <button
                                             onClick={() => handleAddToCart(product.id)}
-                                            className="bg-[#eab308] hover:bg-yellow-500 text-white font-bold text-sm px-4 py-2 rounded-xl flex items-center transition-colors"
+                                            disabled={product.status !== 'ACTIVE' || product.inventory?.isOutOfStock}
+                                            className="bg-[#eab308] hover:bg-yellow-500 text-white font-bold text-sm px-4 py-2 rounded-xl flex items-center transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                         >
                                             ADD TO CART <ShoppingCartIcon className="w-4 h-4 ml-2"/>
                                         </button>

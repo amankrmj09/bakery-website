@@ -3,12 +3,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { updateCartItem, removeCartItem } from '../redux/cartThunk';
-import { Trash2, Plus, Minus, ArrowRight, ShoppingBag } from 'lucide-react';
+import { LuTrash2 as Trash2, LuPlus as Plus, LuMinus as Minus, LuArrowRight as ArrowRight, LuShoppingBag as ShoppingBag } from 'react-icons/lu';
 
 export default function CartPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { cart, loading } = useSelector((state) => state.cart);
+  const { isAuthenticated } = useSelector((state) => state.auth);
 
   const handleUpdateQuantity = (itemId, currentQty, delta) => {
     const newQty = currentQty + delta;
@@ -128,7 +129,14 @@ export default function CartPage() {
         </div>
 
         <button 
-          onClick={() => navigate('/checkout')}
+          onClick={() => {
+            if (!isAuthenticated) {
+              toast.error("You must login before checking out");
+              navigate('/login');
+            } else {
+              navigate('/checkout');
+            }
+          }}
           className="w-full flex items-center justify-center space-x-2 bg-primary-500 text-white rounded-xl py-3.5 font-semibold hover:bg-primary-600 transition-colors shadow-sm"
         >
           <span>Proceed to Checkout</span>

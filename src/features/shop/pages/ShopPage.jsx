@@ -3,8 +3,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { fetchProducts, fetchCategories } from '../redux/shopThunk';
 import { addItemToCart } from '../../cart/redux/cartThunk';
-import { Search, Filter, ShoppingCart, Star, ChevronDown, Loader2, Check, UtensilsCrossed } from 'lucide-react';
+import { LuSearch as Search, LuFilter as Filter, LuShoppingCart as ShoppingCart, LuStar as Star, LuChevronDown as ChevronDown, LuLoader as Loader2, LuCheck as Check, LuUtensilsCrossed as UtensilsCrossed } from 'react-icons/lu';
 import { toast } from 'sonner';
+import ProductSkeleton from '../components/ProductSkeleton';
 
 export default function ShopPage() {
   const dispatch = useDispatch();
@@ -23,6 +24,7 @@ export default function ShopPage() {
   
   const { products, categories } = useSelector((state) => state.shop);
   const { cart } = useSelector((state) => state.cart);
+  const { isAuthenticated } = useSelector((state) => state.auth);
   
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [sortBy, setSortBy] = useState('name_asc');
@@ -161,26 +163,35 @@ export default function ShopPage() {
 
           <div className="flex-1">
           {products.loading ? (
-            <div className="flex justify-center items-center h-64 text-muted-foreground">
-              <Loader2 className="w-8 h-8 animate-spin text-primary-500 mr-3" />
-              Loading amazing treats...
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[...Array(6)].map((_, i) => (
+                <ProductSkeleton key={i} />
+              ))}
             </div>
           ) : sortedProducts.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {sortedProducts.map((product) => (
                 <div key={product.id} className="group bg-card border border-border rounded-[2rem] shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col p-4 relative">
-                  <div className="aspect-square bg-muted/30 rounded-2xl relative overflow-hidden flex items-center justify-center p-4">
+                  <div className="aspect-square bg-muted/30 rounded-2xl relative overflow-hidden flex items-center justify-center">
                     <img 
                       src={product.primaryImageUrl || product.mediaUrls?.[0] || '/images/placeholder_bakery.png'} 
                       alt={product.name} 
                       onError={(e) => { e.target.onerror = null; e.target.src = '/images/placeholder_bakery.png'; }}
                       className="object-cover w-full h-full mix-blend-multiply group-hover:scale-110 transition-transform duration-500" 
                     />
-                    {product.status !== 'ACTIVE' && (
+                    {product.status !== 'ACTIVE' ? (
                       <div className="absolute top-2 right-2 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wide">
                         Unavailable
                       </div>
-                    )}
+                    ) : product.inventory?.isOutOfStock ? (
+                      <div className="absolute top-2 right-2 bg-red-600 text-white text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wide shadow-md">
+                        Out of Stock
+                      </div>
+                    ) : product.inventory?.isLowStock ? (
+                      <div className="absolute top-2 right-2 bg-orange-500 text-white text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wide shadow-md">
+                        Limited Stock
+                      </div>
+                    ) : null}
                   </div>
                   
                   <div className="pt-4 flex flex-col flex-1">
@@ -196,7 +207,7 @@ export default function ShopPage() {
                       <span className="font-extrabold text-xl text-primary-500">${product.price?.toFixed(2) || '0.00'}</span>
                       <div className="flex space-x-2">
                         <button
-                          disabled={product.status !== 'ACTIVE' || addingToCart === product.id || !cart?.id}
+                          disabled={product.status !== 'ACTIVE' || product.inventory?.isOutOfStock || addingToCart === product.id || !cart?.id}
                           onClick={() => handleAddToCart(product)}
                           className="w-12 h-12 flex items-center justify-center bg-muted/50 text-foreground hover:bg-primary-500 hover:text-white transition-colors rounded-xl font-medium disabled:opacity-50 disabled:cursor-not-allowed group/btn"
                           title="Add to Cart"
@@ -208,8 +219,13 @@ export default function ShopPage() {
                           )}
                         </button>
                         <button
-                          disabled={product.status !== 'ACTIVE' || addingToCart === product.id || !cart?.id}
+                          disabled={product.status !== 'ACTIVE' || product.inventory?.isOutOfStock || addingToCart === product.id || !cart?.id}
                           onClick={async () => {
+                            if (!isAuthenticated) {
+                              toast.error("You must login before checking out");
+                              navigate('/login');
+                              return;
+                            }
                             await handleAddToCart(product);
                             navigate('/checkout');
                           }}

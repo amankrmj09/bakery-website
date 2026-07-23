@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { userApi } from '../api/userApi';
-import { Lock, AlertCircle, CheckCircle2, Loader2, Moon, Sun } from 'lucide-react';
+import { LuLock as Lock, LuCircleAlert as AlertCircle, LuCircleCheck as CheckCircle2, LuLoader as Loader2, LuMoon as Moon, LuSun as Sun } from 'react-icons/lu';
 
 export default function SettingsPage() {
   const [passwordData, setPasswordData] = useState({

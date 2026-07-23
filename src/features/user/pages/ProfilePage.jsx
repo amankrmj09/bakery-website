@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { userApi } from '../api/userApi';
-import { User, Mail, Phone, MapPin, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
+import { LuUser as User, LuMail as Mail, LuPhone as Phone, LuMapPin as MapPin, LuLoader as Loader2, LuCircleCheck as CheckCircle2, LuCircleAlert as AlertCircle } from 'react-icons/lu';
 
 export default function ProfilePage() {
   const { user } = useSelector((state) => state.auth);
