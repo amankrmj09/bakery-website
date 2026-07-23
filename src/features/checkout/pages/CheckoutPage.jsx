@@ -38,6 +38,18 @@ export default function CheckoutPage() {
     }
   }, [defaultAddress]);
 
+  // Update contact info if user loads late
+  useEffect(() => {
+    if (user) {
+      setFormData(prev => ({
+        ...prev,
+        customerName: prev.customerName || (`${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username || ''),
+        customerEmail: prev.customerEmail || user.email || '',
+        customerPhone: prev.customerPhone || user.phone || ''
+      }));
+    }
+  }, [user]);
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
