@@ -29,8 +29,8 @@ export default function LoginPage() {
     const resultAction = await dispatch(login(formData));
     if (login.fulfilled.match(resultAction)) {
       toast.success('Please check your email for the OTP');
-      // Pass the 'from' path in state so OtpPage knows where to go after verifying
-      navigate('/verify-otp', { state: { from: location.state?.from } });
+      // Pass the 'from' path and 'usernameOrEmail' in state so OtpPage knows where to go after verifying and has the required param
+      navigate('/verify-otp', { state: { from: location.state?.from, usernameOrEmail: formData.usernameOrEmail } });
     }
   };
 

@@ -35,10 +35,15 @@ export default function OtpPage() {
       return;
     }
 
-    const payload = {
-      email: pendingEmail,
-      otp: otp
-    };
+    const payload = authType === 'login'
+      ? {
+          usernameOrEmail: location.state?.usernameOrEmail || pendingEmail,
+          otp: otp
+        }
+      : {
+          email: pendingEmail,
+          otp: otp
+        };
 
     let resultAction;
     if (authType === 'login') {
