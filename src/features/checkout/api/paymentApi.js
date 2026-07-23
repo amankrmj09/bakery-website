@@ -1,5 +1,7 @@
 import api from '../../../lib/axios';
 
 export const paymentApi = {
-  createPayment: (payload) => api.post('/api/payments', payload)
+  createPayment: (payload) => api.post('/api/payments', payload),
+  sendOtp: (paymentId) => api.post(`/api/payments/${paymentId}/send-otp`),
+  verifyOtp: (paymentId, otp) => api.post(`/api/payments/${paymentId}/verify-otp`, { otp })
 };

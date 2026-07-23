@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { clearCheckoutState } from '../../cart/redux/cartSlice';
 import { paymentApi } from '../api/paymentApi';
 import { LuCircleCheck as CheckCircle2, LuCircleAlert as AlertCircle, LuLoader as Loader2, LuCreditCard as CreditCard, LuBanknote as Banknote, LuShieldCheck as ShieldCheck, LuArrowRight as ArrowRight, LuHouse as Home } from 'react-icons/lu';
+import { toast } from 'sonner';
 
 export default function PaymentPage() {
   const { orderId } = useParams();
@@ -17,6 +18,8 @@ export default function PaymentPage() {
 
   const [status, setStatus] = useState('idle');
   const [errorMessage, setErrorMessage] = useState('');
+  const [otp, setOtp] = useState('');
+  const [paymentId, setPaymentId] = useState(null);
 
   useEffect(() => {
     dispatch(clearCheckoutState());
@@ -34,15 +37,28 @@ export default function PaymentPage() {
         currencyCode: 'USD',
       };
       
-      // Artificial delay for smooth UX transition
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const response = await paymentApi.createPayment(payload);
+      const newPaymentId = response.data.id;
+      setPaymentId(newPaymentId);
       
-      await paymentApi.createPayment(payload);
-      setStatus('success');
+      await paymentApi.sendOtp(newPaymentId);
+      setStatus('otp');
     } catch (error) {
       console.error('Payment Error:', error);
       setStatus('error');
       setErrorMessage(error.response?.data?.message || 'Payment failed. Please try again.');
+    }
+  };
+
+  const handleVerifyOtp = async () => {
+    setStatus('verifying');
+    try {
+      await paymentApi.verifyOtp(paymentId, otp);
+      setStatus('success');
+    } catch (error) {
+      console.error('OTP Verification Error:', error);
+      setStatus('otp');
+      toast.error('Invalid OTP. Please try again.');
     }
   };
 
@@ -93,9 +109,42 @@ export default function PaymentPage() {
               </div>
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-foreground tracking-tight">Processing Payment</h2>
+              <h2 className="text-2xl font-bold text-foreground tracking-tight">Initiating Payment</h2>
               <p className="text-muted-foreground mt-2">Please do not close or refresh this window.</p>
             </div>
+          </div>
+        )}
+
+        {(status === 'otp' || status === 'verifying') && (
+          <div className="space-y-6 py-6 animate-in zoom-in-95 duration-500">
+            <div className="w-20 h-20 bg-primary-500/10 rounded-full flex items-center justify-center mx-auto shadow-inner">
+              <ShieldCheck className="w-10 h-10 text-primary-500" />
+            </div>
+            
+            <div>
+              <h2 className="text-2xl font-bold text-foreground tracking-tight">Enter OTP</h2>
+              <p className="text-muted-foreground mt-2 font-medium">We've sent a 6-digit code to your email.</p>
+            </div>
+
+            <div className="max-w-xs mx-auto">
+              <input
+                type="text"
+                maxLength="6"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value.replace(/[^0-9]/g, ''))}
+                placeholder="000000"
+                className="w-full text-center text-3xl font-mono tracking-[0.5em] h-16 bg-background border-2 border-muted hover:border-border focus:border-primary-500 rounded-xl focus:outline-none focus:ring-4 focus:ring-primary-500/10 transition-all"
+                disabled={status === 'verifying'}
+              />
+            </div>
+
+            <button
+              onClick={handleVerifyOtp}
+              disabled={status === 'verifying' || otp.length !== 6}
+              className="w-full h-14 bg-primary-500 text-white rounded-xl font-bold text-lg hover:bg-primary-600 focus:outline-none focus:ring-4 focus:ring-primary-500/30 transition-all transform hover:-translate-y-0.5 active:translate-y-0 shadow-lg shadow-primary-500/25 flex justify-center items-center gap-2 disabled:opacity-50 disabled:hover:translate-y-0"
+            >
+              {status === 'verifying' ? <Loader2 className="w-6 h-6 animate-spin" /> : 'Verify & Pay'}
+            </button>
           </div>
         )}
 
