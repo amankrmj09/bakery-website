@@ -8,6 +8,7 @@ import ShopPage from '../features/shop/pages/ShopPage';
 import ContactPage from '../features/shop/pages/ContactPage';
 import LoginPage from '../features/auth/pages/LoginPage';
 import RegisterPage from '../features/auth/pages/RegisterPage';
+import OtpPage from '../features/auth/pages/OtpPage';
 import CartPage from '../features/cart/pages/CartPage';
 import CheckoutPage from '../features/checkout/pages/CheckoutPage';
 import PaymentPage from '../features/checkout/pages/PaymentPage';
@@ -32,6 +33,7 @@ export default function AppRoutes() {
         <Route path="contact" element={<ContactPage />} />
         <Route path="login" element={<LoginPage />} />
         <Route path="register" element={<RegisterPage />} />
+        <Route path="verify-otp" element={<OtpPage />} />
         <Route path="cart" element={<CartPage />} />
         <Route path="checkout" element={<CheckoutPage />} />
         <Route path="payment/:orderId" element={<PaymentPage />} />

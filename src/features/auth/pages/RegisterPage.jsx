@@ -29,8 +29,8 @@ export default function RegisterPage() {
     e.preventDefault();
     const resultAction = await dispatch(register(formData));
     if (register.fulfilled.match(resultAction)) {
-      toast.success('Registration successful. Welcome!');
-      navigate('/');
+      toast.success('Please check your email for the OTP');
+      navigate('/verify-otp');
     }
   };
 
@@ -128,6 +128,7 @@ export default function RegisterPage() {
                       onChange={handleChange}
                       className="w-full h-14 pl-12 pr-4 rounded-xl bg-zinc-50 border border-zinc-200 hover:border-zinc-300 focus:border-primary-500 text-zinc-900 text-sm focus:outline-none focus:ring-4 focus:ring-primary-500/10 transition-all placeholder:text-zinc-400 font-medium"
                       placeholder="johndoe123"
+                      autoComplete="username"
                     />
                   </div>
                 </div>
@@ -144,6 +145,7 @@ export default function RegisterPage() {
                       onChange={handleChange}
                       className="w-full h-14 pl-12 pr-4 rounded-xl bg-zinc-50 border border-zinc-200 hover:border-zinc-300 focus:border-primary-500 text-zinc-900 text-sm focus:outline-none focus:ring-4 focus:ring-primary-500/10 transition-all placeholder:text-zinc-400 font-medium"
                       placeholder="you@example.com"
+                      autoComplete="email"
                     />
                   </div>
                 </div>
@@ -175,6 +177,7 @@ export default function RegisterPage() {
                       onChange={handleChange}
                       className="w-full h-14 pl-12 pr-4 rounded-xl bg-zinc-50 border border-zinc-200 hover:border-zinc-300 focus:border-primary-500 text-zinc-900 text-sm focus:outline-none focus:ring-4 focus:ring-primary-500/10 transition-all placeholder:text-zinc-400 font-medium"
                       placeholder="••••••••"
+                      autoComplete="new-password"
                     />
                   </div>
                 </div>

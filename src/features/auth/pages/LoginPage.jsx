@@ -28,8 +28,9 @@ export default function LoginPage() {
     e.preventDefault();
     const resultAction = await dispatch(login(formData));
     if (login.fulfilled.match(resultAction)) {
-      toast.success('Successfully logged in');
-      navigate(from, { replace: true });
+      toast.success('Please check your email for the OTP');
+      // Pass the 'from' path in state so OtpPage knows where to go after verifying
+      navigate('/verify-otp', { state: { from: location.state?.from } });
     }
   };
 
@@ -96,6 +97,7 @@ export default function LoginPage() {
                   onChange={handleChange}
                   className="w-full h-14 pl-12 pr-4 rounded-xl bg-zinc-50 border border-zinc-200 hover:border-zinc-300 focus:border-primary-500 text-zinc-900 text-sm focus:outline-none focus:ring-4 focus:ring-primary-500/10 transition-all placeholder:text-zinc-400 font-medium"
                   placeholder="you@example.com"
+                  autoComplete="username"
                 />
               </div>
             </div>
@@ -112,6 +114,7 @@ export default function LoginPage() {
                   onChange={handleChange}
                   className="w-full h-14 pl-12 pr-4 rounded-xl bg-zinc-50 border border-zinc-200 hover:border-zinc-300 focus:border-primary-500 text-zinc-900 text-sm focus:outline-none focus:ring-4 focus:ring-primary-500/10 transition-all placeholder:text-zinc-400 font-medium"
                   placeholder="••••••••"
+                  autoComplete="current-password"
                 />
               </div>
             </div>
