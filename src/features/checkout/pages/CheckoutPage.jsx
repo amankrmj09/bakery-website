@@ -72,7 +72,7 @@ export default function CheckoutPage() {
 
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Main Form */}
-          <form onSubmit={handleSubmit} className="flex-1 space-y-8">
+          <form id="checkout-form" onSubmit={handleSubmit} className="flex-1 space-y-8">
             {/* Contact Info */}
             <div className="bg-card border border-border rounded-2xl p-6 md:p-8 shadow-sm">
               <h2 className="text-xl font-bold text-foreground mb-6 flex items-center gap-2">
@@ -215,7 +215,8 @@ export default function CheckoutPage() {
 
               <div className="mt-8 hidden lg:block">
                 <button
-                  onClick={handleSubmit}
+                  type="submit"
+                  form="checkout-form"
                   disabled={checkoutState.loading}
                   className="w-full bg-primary-500 text-white p-4 rounded-xl font-bold text-lg hover:bg-primary-600 focus:ring-4 focus:ring-primary-500/30 transition-all disabled:opacity-50 flex items-center justify-center shadow-lg shadow-primary-500/25 transform hover:-translate-y-0.5 active:translate-y-0"
                 >
