@@ -9,7 +9,7 @@ export default function CartPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { cart, loading } = useSelector((state) => state.cart);
-  const { isAuthenticated } = useSelector((state) => state.auth);
+  const { user } = useSelector((state) => state.auth);
 
   const handleUpdateQuantity = (itemId, currentQty, delta) => {
     const newQty = currentQty + delta;
@@ -130,7 +130,7 @@ export default function CartPage() {
 
         <button 
           onClick={() => {
-            if (!isAuthenticated) {
+            if (!user) {
               toast.error("You must login before checking out");
               navigate('/login');
             } else {
