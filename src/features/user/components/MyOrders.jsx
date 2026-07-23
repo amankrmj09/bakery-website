@@ -69,19 +69,33 @@ export default function MyOrders() {
     }
   };
 
+  const parseDate = (dateVal) => {
+    if (!dateVal) return new Date();
+    if (Array.isArray(dateVal)) {
+      const [year, month, day, hour = 0, minute = 0, second = 0] = dateVal;
+      return new Date(year, month - 1, day, hour, minute, second);
+    }
+    return new Date(dateVal);
+  };
+
   return (
     <div className="space-y-6">
       <h2 className="text-xl font-bold text-foreground mb-4">Order History</h2>
       
       <div className="space-y-4">
-        {orders.map((order) => (
+        {orders.map((order) => {
+          let dateObj = parseDate(order.orderDate);
+          
+          return (
           <div key={order.id} className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm hover:border-primary-500/50 transition-colors group">
             {/* Header */}
             <div className="p-5 md:p-6 border-b border-border bg-muted/30 flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-6">
                 <div>
                   <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wider mb-1">Order Placed</p>
-                  <p className="font-bold text-sm">{format(new Date(order.orderDate), 'MMM d, yyyy h:mm a')}</p>
+                  <p className="font-bold text-sm">
+                    {dateObj && !isNaN(dateObj.getTime()) ? format(dateObj, 'MMM d, yyyy h:mm a') : 'N/A'}
+                  </p>
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wider mb-1">Total Amount</p>
@@ -148,7 +162,7 @@ export default function MyOrders() {
               </div>
             </div>
           </div>
-        ))}
+        )})}
       </div>
     </div>
   );

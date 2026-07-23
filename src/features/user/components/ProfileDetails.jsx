@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { userApi } from '../api/userApi';
+import { useDispatch } from 'react-redux';
+import { updateUser } from '../../auth/redux/authSlice';
 import { LuUser as User, LuMail as Mail, LuPhone as Phone, LuLoader as Loader2, LuCircleCheck as CheckCircle2, LuCircleAlert as AlertCircle } from 'react-icons/lu';
 
 export default function ProfileDetails({ user }) {
+  const dispatch = useDispatch();
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -32,6 +35,7 @@ export default function ProfileDetails({ user }) {
     setMessage(null);
     try {
       await userApi.updateProfile(profileData);
+      dispatch(updateUser(profileData));
       setMessage({ type: 'success', text: 'Profile updated successfully!' });
     } catch (error) {
       setMessage({ type: 'error', text: error.response?.data?.message || 'Failed to update profile.' });

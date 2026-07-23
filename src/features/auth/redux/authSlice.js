@@ -22,6 +22,10 @@ const authSlice = createSlice({
       state.isOtpPending = false;
       state.pendingEmail = null;
       state.authType = null;
+    },
+    updateUser: (state, action) => {
+      state.user = { ...state.user, ...action.payload };
+      localStorage.setItem('user', JSON.stringify(state.user));
     }
   },
   extraReducers: (builder) => {
@@ -82,5 +86,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { clearError, clearOtpState } = authSlice.actions;
+export const { clearError, clearOtpState, updateUser } = authSlice.actions;
 export default authSlice.reducer;
