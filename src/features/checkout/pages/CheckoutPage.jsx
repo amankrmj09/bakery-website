@@ -55,7 +55,7 @@ export default function CheckoutPage() {
   }
 
   const deliveryFee = formData.deliveryType === 'DELIVERY' ? 5.00 : 0;
-  const subtotal = cart.totalAmount || 0;
+  const subtotal = cart.items?.reduce((sum, item) => sum + (item.unitPrice * item.quantity), 0) || 0;
   const finalTotal = subtotal + deliveryFee;
 
   return (
@@ -193,7 +193,7 @@ export default function CheckoutPage() {
                       <p className="font-semibold text-sm">{item.productName}</p>
                       <p className="text-xs text-muted-foreground">Qty: {item.quantity}</p>
                     </div>
-                    <p className="font-semibold text-sm">${(item.price * item.quantity).toFixed(2)}</p>
+                    <p className="font-semibold text-sm">${(item.unitPrice * item.quantity).toFixed(2)}</p>
                   </div>
                 ))}
               </div>
