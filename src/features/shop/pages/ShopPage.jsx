@@ -24,7 +24,7 @@ export default function ShopPage() {
   
   const { products, categories } = useSelector((state) => state.shop);
   const { cart } = useSelector((state) => state.cart);
-  const { isAuthenticated } = useSelector((state) => state.auth);
+  const { user } = useSelector((state) => state.auth);
   
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [sortBy, setSortBy] = useState('name_asc');
@@ -221,7 +221,7 @@ export default function ShopPage() {
                         <button
                           disabled={product.status !== 'ACTIVE' || product.inventory?.isOutOfStock || addingToCart === product.id || !cart?.id}
                           onClick={async () => {
-                            if (!isAuthenticated) {
+                            if (!user) {
                               toast.error("You must login before checking out");
                               navigate('/login');
                               return;
