@@ -94,6 +94,8 @@ export default function HomePage() {
     const [featuredTestimonials, setFeaturedTestimonials] = useState([]);
     const [currentTestimonialIndex, setCurrentTestimonialIndex] = useState(0);
 
+    const [topCategoriesWithProducts, setTopCategoriesWithProducts] = useState([]);
+
     useEffect(() => {
         const fetchTestimonials = async () => {
             try {
@@ -104,6 +106,16 @@ export default function HomePage() {
             }
         };
         fetchTestimonials();
+
+        const fetchTopCats = async () => {
+            try {
+                const res = await api.get('/api/categories/top-with-products');
+                setTopCategoriesWithProducts(res.data || []);
+            } catch (err) {
+                console.error('Failed to load top categories', err);
+            }
+        };
+        fetchTopCats();
     }, []);
 
     useEffect(() => {
@@ -148,15 +160,15 @@ export default function HomePage() {
     const [activeIndex, setActiveIndex] = useState(0);
     const [activeTopCategoryIndex, setActiveTopCategoryIndex] = useState(0);
 
-    const topCategories = categories.data?.slice(0, 3) || [];
+    const topCategories = topCategoriesWithProducts.map(t => t.category) || [];
     const activeCategory = topCategories[activeTopCategoryIndex];
 
-    const categoryProducts = activeCategory 
-        ? productList.filter(p => p.categoryId === activeCategory.id || p.categoryName === activeCategory.name)
+    const categoryProducts = activeCategory && topCategoriesWithProducts[activeTopCategoryIndex]
+        ? topCategoriesWithProducts[activeTopCategoryIndex].topProducts || []
         : [];
         
     const topRatedProduct = categoryProducts.length > 0 
-        ? [...categoryProducts].sort((a, b) => (b.rating || 0) - (a.rating || 0))[0] 
+        ? categoryProducts[0] 
         : null;
 
     const handlePrevCategory = () => {

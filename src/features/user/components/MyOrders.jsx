@@ -128,9 +128,10 @@ export default function MyOrders() {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'DELIVERED':
-      case 'COMPLETED': return 'bg-green-500/10 text-green-600 border-green-500/20';
-      case 'PROCESSING':
+      case 'DELIVERED': return 'bg-green-500/10 text-green-600 border-green-500/20';
+      case 'OUT_FOR_DELIVERY': return 'bg-teal-500/10 text-teal-600 border-teal-500/20';
+      case 'PREPARING':
+      case 'READY':
       case 'CONFIRMED': return 'bg-blue-500/10 text-blue-600 border-blue-500/20';
       case 'PENDING': return 'bg-yellow-500/10 text-yellow-600 border-yellow-500/20';
       case 'CANCELLED': return 'bg-red-500/10 text-red-600 border-red-500/20';
@@ -140,8 +141,7 @@ export default function MyOrders() {
 
   const getStatusIcon = (status) => {
     switch (status) {
-      case 'DELIVERED':
-      case 'COMPLETED': return <CheckCircle2 className="w-4 h-4 mr-1.5" />;
+      case 'DELIVERED': return <CheckCircle2 className="w-4 h-4 mr-1.5" />;
       case 'CANCELLED': return <XCircle className="w-4 h-4 mr-1.5" />;
       default: return <Clock className="w-4 h-4 mr-1.5" />;
     }
@@ -151,8 +151,9 @@ export default function MyOrders() {
     switch(status) {
       case 'PENDING': return 25;
       case 'CONFIRMED': return 50;
-      case 'PROCESSING': return 75;
-      case 'COMPLETED':
+      case 'PREPARING': return 65;
+      case 'READY': return 75;
+      case 'OUT_FOR_DELIVERY': return 85;
       case 'DELIVERED': return 100;
       case 'CANCELLED': return 0;
       default: return 0;
@@ -385,7 +386,8 @@ export default function MyOrders() {
                  <div className="flex justify-between text-[10px] sm:text-xs font-bold text-muted-foreground mt-2 uppercase tracking-wider">
                     <span className={getTimelineProgress(order.status) >= 25 ? 'text-primary-600' : ''}>Pending</span>
                     <span className={getTimelineProgress(order.status) >= 50 ? 'text-primary-600' : ''}>Confirmed</span>
-                    <span className={getTimelineProgress(order.status) >= 75 ? 'text-primary-600' : ''}>Processing</span>
+                    <span className={getTimelineProgress(order.status) >= 65 ? 'text-primary-600' : ''}>Preparing</span>
+                    <span className={getTimelineProgress(order.status) >= 85 ? 'text-primary-600' : ''}>Out for Delivery</span>
                     <span className={getTimelineProgress(order.status) >= 100 ? 'text-primary-600' : ''}>Delivered</span>
                  </div>
               </div>
@@ -405,7 +407,7 @@ export default function MyOrders() {
               
               <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
                 {/* Pay Now button for COD or Unpaid orders */}
-                {(order.paymentStatus === 'PENDING' || order.paymentMethod === 'CASH') && order.status !== 'CANCELLED' && order.status !== 'DELIVERED' && order.status !== 'COMPLETED' && (
+                {(order.paymentStatus === 'PENDING' || order.paymentMethod === 'CASH') && order.status !== 'CANCELLED' && order.status !== 'DELIVERED' && (
                   <button 
                     onClick={() => navigate(`/payment/${order.id}`, { state: { amount: order.totalAmount, paymentMethod: 'CARD' } })}
                     className="flex-1 sm:flex-none flex items-center justify-center bg-primary-50 text-primary-600 border border-primary-200 hover:bg-primary-100 px-5 py-2.5 rounded-xl font-bold text-sm transition-colors"
