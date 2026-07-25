@@ -1,15 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { submitReview } from '../redux/shopThunk';
+import { submitReview, deleteReview } from '../redux/shopThunk';
+import { fetchUserOrders } from '../../order/slice/orderSlice';
 import { LuStar as Star, LuX as X } from 'react-icons/lu';
+import { toast } from 'sonner';
 
-const ReviewModal = ({ isOpen, onClose, orderId, productId, productName }) => {
-  const [rating, setRating] = useState(5);
+const ReviewModal = ({ isOpen, onClose, orderId, productId, productName, existingReview }) => {
+  const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
   const { loading } = useSelector((state) => state.shop.reviews);
   const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (isOpen && existingReview) {
+      setRating(existingReview.rating || 0);
+      setComment(existingReview.comment || '');
+    } else if (isOpen) {
+      setRating(0);
+      setComment('');
+    }
+  }, [isOpen, existingReview]);
 
   if (!isOpen) return null;
 
@@ -17,9 +29,15 @@ const ReviewModal = ({ isOpen, onClose, orderId, productId, productName }) => {
     e.preventDefault();
     if (!user) return;
     
+    if (rating === 0) {
+      setError('Please provide a rating.');
+      return;
+    }
+
     try {
       const reviewData = {
-        orderId,
+        orderId: existingReview?.orderId || orderId,
+        reviewId: existingReview?.id,
         userId: user.id,
         userName: `${user.firstName} ${user.lastName}`,
         rating,
@@ -27,8 +45,9 @@ const ReviewModal = ({ isOpen, onClose, orderId, productId, productName }) => {
       };
       
       const result = await dispatch(submitReview({ productId, reviewData })).unwrap();
+      toast.success('Review submitted successfully!');
       onClose(); // Close modal on success
-      setRating(5);
+      setRating(0);
       setComment('');
       setError(null);
     } catch (err) {
@@ -36,11 +55,23 @@ const ReviewModal = ({ isOpen, onClose, orderId, productId, productName }) => {
     }
   };
 
+  const handleDelete = async () => {
+    if (window.confirm('Are you sure you want to delete your review?')) {
+      try {
+        await dispatch(deleteReview({ productId, reviewId: existingReview.id })).unwrap();
+        toast.success('Review deleted successfully!');
+        onClose();
+      } catch (err) {
+        toast.error('Failed to delete review');
+      }
+    }
+  };
+
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-xl max-w-md w-full overflow-hidden">
         <div className="flex items-center justify-between p-4 border-b border-gray-100">
-          <h3 className="text-lg font-bold text-gray-800">Write a Review</h3>
+          <h3 className="text-lg font-bold text-gray-800">Rate Product</h3>
           <button 
             onClick={onClose}
             className="p-1 hover:bg-gray-100 rounded-full transition-colors"
@@ -95,6 +126,15 @@ const ReviewModal = ({ isOpen, onClose, orderId, productId, productName }) => {
           )}
           
           <div className="flex gap-3 pt-2">
+            {existingReview && (
+              <button
+                type="button"
+                onClick={handleDelete}
+                className="px-4 py-2 text-red-500 hover:bg-red-50 rounded-xl font-medium transition-colors border border-transparent"
+              >
+                Delete
+              </button>
+            )}
             <button
               type="button"
               onClick={onClose}

@@ -3,10 +3,18 @@ import { orderApi } from '../api/orderApi';
 
 export const fetchUserOrders = createAsyncThunk(
   'order/fetchUserOrders',
-  async (userId, { rejectWithValue }) => {
+  async (arg, { rejectWithValue }) => {
     try {
-      const response = await orderApi.getUserOrders(userId);
-      return response;
+      const params = typeof arg === 'string' ? { userId: arg, page: 0, size: 5, isFiltered: false } : arg;
+      const { userId, isFiltered = false, page = 0, size = 5 } = params;
+
+      if (isFiltered) {
+        const response = await orderApi.getUserOrders(userId);
+        return { isFiltered: true, data: response };
+      } else {
+        const response = await orderApi.getUserOrdersPaginated({ userId, page, size });
+        return { isFiltered: false, data: response };
+      }
     } catch (error) {
       return rejectWithValue(
         error.response?.data?.message || 'Failed to fetch user orders'
@@ -17,6 +25,13 @@ export const fetchUserOrders = createAsyncThunk(
 
 const initialState = {
   orders: [],
+  isFiltered: false,
+  pagination: {
+    number: 0,
+    size: 5,
+    totalElements: 0,
+    totalPages: 0,
+  },
   loading: false,
   error: null,
 };
@@ -37,7 +52,19 @@ const orderSlice = createSlice({
       })
       .addCase(fetchUserOrders.fulfilled, (state, action) => {
         state.loading = false;
-        state.orders = action.payload;
+        const payload = action.payload?.data !== undefined ? action.payload.data : action.payload;
+        state.isFiltered = action.payload?.isFiltered || false;
+        state.orders = payload?.content || payload || [];
+        if (payload?.page) {
+          state.pagination = payload.page;
+        } else if (Array.isArray(payload)) {
+          state.pagination = {
+            number: 0,
+            size: payload.length,
+            totalElements: payload.length,
+            totalPages: 1,
+          };
+        }
       })
       .addCase(fetchUserOrders.rejected, (state, action) => {
         state.loading = false;

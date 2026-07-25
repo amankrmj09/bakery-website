@@ -8,6 +8,22 @@ export const orderApi = {
     return response.data;
   },
 
+  getUserOrdersPaginated: async ({ userId, page = 0, size = 5 }) => {
+    const response = await axiosInstance.get(`${BASE_URL}/user/${userId}/paginated`, {
+      params: { page, size }
+    });
+    return response.data;
+  },
+
+  filterUserOrders: async ({ userId, status, startDate, endDate }) => {
+    const params = { userId };
+    if (status && status !== 'ALL') params.status = status;
+    if (startDate) params.startDate = startDate;
+    if (endDate) params.endDate = endDate;
+    const response = await axiosInstance.get(`${BASE_URL}/filter`, { params });
+    return response.data;
+  },
+
   getOrderById: async (orderId) => {
     const response = await axiosInstance.get(`${BASE_URL}/${orderId}`);
     return response.data;

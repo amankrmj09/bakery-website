@@ -62,3 +62,27 @@ export const submitReview = createAsyncThunk(
     }
   }
 );
+
+export const deleteReview = createAsyncThunk(
+  'shop/deleteReview',
+  async ({ productId, reviewId }, { rejectWithValue }) => {
+    try {
+      await shopApi.deleteReview(productId, reviewId);
+      return { productId, reviewId };
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to delete review');
+    }
+  }
+);
+
+export const reportReview = createAsyncThunk(
+  'shop/reportReview',
+  async ({ productId, reviewId, reason }, { rejectWithValue }) => {
+    try {
+      await shopApi.reportReview(productId, reviewId, reason);
+      return { productId, reviewId };
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to report review');
+    }
+  }
+);

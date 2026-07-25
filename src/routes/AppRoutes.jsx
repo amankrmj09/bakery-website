@@ -15,6 +15,8 @@ import CheckoutPage from '../features/checkout/pages/CheckoutPage';
 import PaymentPage from '../features/checkout/pages/PaymentPage';
 import ProfilePage from '../features/user/pages/ProfilePage';
 import SettingsPage from '../features/user/pages/SettingsPage';
+import TermsPage from '../features/shop/pages/TermsPage';
+import PrivacyPage from '../features/shop/pages/PrivacyPage';
 
 const ProtectedRoute = ({ children }) => {
   const { user } = useSelector((state) => state.auth);
@@ -39,6 +41,8 @@ export default function AppRoutes() {
         <Route path="cart" element={<CartPage />} />
         <Route path="checkout" element={<CheckoutPage />} />
         <Route path="payment/:orderId" element={<PaymentPage />} />
+        <Route path="terms" element={<TermsPage />} />
+        <Route path="privacy" element={<PrivacyPage />} />
 
         {/* Protected Routes */}
         <Route path="profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />

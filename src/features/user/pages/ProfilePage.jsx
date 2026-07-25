@@ -17,7 +17,7 @@ export default function ProfilePage() {
 
   useEffect(() => {
     if (user?.id) {
-       dispatch(fetchUserOrders(user.id));
+       dispatch(fetchUserOrders({ userId: user.id, page: 0, size: 5 }));
     }
   }, [dispatch, user?.id]);
 
@@ -34,8 +34,6 @@ export default function ProfilePage() {
   return (
     <div className="flex-1 flex flex-col bg-zinc-50/50 dark:bg-background py-8 px-4 sm:px-6 lg:px-8 overflow-y-auto">
       <div className="max-w-5xl mx-auto w-full">
-        <h1 className="text-3xl font-bold tracking-tight text-foreground mb-8">My Account</h1>
-
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Sidebar / Tabs */}
           <div className="w-full lg:w-64 flex-shrink-0">

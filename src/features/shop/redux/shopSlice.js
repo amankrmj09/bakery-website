@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { fetchProducts, fetchCategories, fetchStorefront, fetchProductReviews, submitReview } from './shopThunk';
+import { fetchProducts, fetchCategories, fetchStorefront, fetchProductReviews, submitReview, deleteReview } from './shopThunk';
 
 const initialState = {
   products: {
@@ -83,6 +83,12 @@ const shopSlice = createSlice({
       .addCase(submitReview.rejected, (state, action) => {
         state.reviews.loading = false;
         state.reviews.error = action.payload;
+      })
+      .addCase(deleteReview.fulfilled, (state, action) => {
+        const { productId, reviewId } = action.payload;
+        if (state.reviews.data[productId]) {
+          state.reviews.data[productId] = state.reviews.data[productId].filter(r => r.id !== reviewId);
+        }
       });
   },
 });

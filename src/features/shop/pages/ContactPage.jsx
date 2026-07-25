@@ -1,15 +1,41 @@
 import React, { useState } from 'react';
-import { LuMail as Mail, LuPhone as Phone, LuMapPin as MapPin, LuSend as Send } from 'react-icons/lu';
+import { LuMail as Mail, LuPhone as Phone, LuMapPin as MapPin, LuSend as Send, LuStar as Star, LuMessageSquare as MessageSquare, LuMessageCircle as MessageCircle } from 'react-icons/lu';
+import api from '../../../lib/axios';
 
 export default function ContactPage() {
-  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+  const [formType, setFormType] = useState('contact'); // 'contact', 'feedback', 'testimonial'
+  const [formData, setFormData] = useState({ name: '', email: '', message: '', type: 'GENERAL', rating: 5 });
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmitted(true);
-    setTimeout(() => setSubmitted(false), 3000);
-    setFormData({ name: '', email: '', message: '' });
+    setLoading(true);
+    try {
+      if (formType === 'testimonial') {
+        await api.post('/api/v1/engagement/testimonials', {
+          name: formData.name,
+          email: formData.email,
+          message: formData.message,
+          rating: formData.rating,
+          profileImageUrl: ''
+        });
+      } else {
+        await api.post('/api/v1/engagement/feedback', {
+          name: formData.name,
+          email: formData.email,
+          message: formData.message,
+          type: formType === 'feedback' ? formData.type : 'CONTACT_US'
+        });
+      }
+      setSubmitted(true);
+      setTimeout(() => setSubmitted(false), 3000);
+      setFormData({ name: '', email: '', message: '', type: 'GENERAL', rating: 5 });
+    } catch (err) {
+      console.error('Failed to submit form', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -78,6 +104,30 @@ export default function ContactPage() {
               </div>
             )}
 
+            <div className="flex bg-muted/50 p-1 rounded-xl mb-8">
+              <button
+                type="button"
+                onClick={() => setFormType('contact')}
+                className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-semibold rounded-lg transition-all ${formType === 'contact' ? 'bg-white shadow text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+              >
+                <Mail className="w-4 h-4" /> Message
+              </button>
+              <button
+                type="button"
+                onClick={() => setFormType('feedback')}
+                className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-semibold rounded-lg transition-all ${formType === 'feedback' ? 'bg-white shadow text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+              >
+                <MessageCircle className="w-4 h-4" /> Feedback
+              </button>
+              <button
+                type="button"
+                onClick={() => setFormType('testimonial')}
+                className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-semibold rounded-lg transition-all ${formType === 'testimonial' ? 'bg-white shadow text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+              >
+                <Star className="w-4 h-4" /> Testimonial
+              </button>
+            </div>
+
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div className="space-y-2">
@@ -104,8 +154,42 @@ export default function ContactPage() {
                 </div>
               </div>
 
+              {formType === 'feedback' && (
+                <div className="space-y-2">
+                  <label className="text-sm font-bold text-foreground">Feedback Type</label>
+                  <select 
+                    value={formData.type}
+                    onChange={(e) => setFormData({...formData, type: e.target.value})}
+                    className="w-full bg-muted/50 border border-border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                  >
+                    <option value="GENERAL">General</option>
+                    <option value="DELIVERY">Delivery</option>
+                    <option value="PRODUCT">Product Quality</option>
+                    <option value="APP">App Experience</option>
+                  </select>
+                </div>
+              )}
+
+              {formType === 'testimonial' && (
+                <div className="space-y-2">
+                  <label className="text-sm font-bold text-foreground">Rating</label>
+                  <div className="flex items-center space-x-2">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        type="button"
+                        onClick={() => setFormData({...formData, rating: star})}
+                        className="focus:outline-none"
+                      >
+                        <Star className={`w-8 h-8 ${formData.rating >= star ? 'fill-[#eab308] text-[#eab308]' : 'text-gray-300'}`} />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               <div className="space-y-2">
-                <label className="text-sm font-bold text-foreground">Your Message</label>
+                <label className="text-sm font-bold text-foreground">{formType === 'testimonial' ? 'Your Testimonial' : 'Your Message'}</label>
                 <textarea 
                   required
                   rows="5"
@@ -116,11 +200,36 @@ export default function ContactPage() {
                 ></textarea>
               </div>
 
-              <button type="submit" className="bg-primary-500 hover:bg-primary-600 text-white font-bold py-4 px-8 rounded-xl w-full sm:w-auto transition-colors flex items-center justify-center">
-                <Send className="w-5 h-5 mr-2" />
-                Send Message
+              <button type="submit" disabled={loading} className="bg-primary-500 hover:bg-primary-600 text-white font-bold py-4 px-8 rounded-xl w-full sm:w-auto transition-colors flex items-center justify-center">
+                {loading ? <span className="animate-spin mr-2 border-b-2 border-white w-4 h-4 rounded-full"></span> : <Send className="w-5 h-5 mr-2" />}
+                Submit {formType === 'testimonial' ? 'Testimonial' : formType === 'feedback' ? 'Feedback' : 'Message'}
               </button>
             </form>
+          </div>
+        </div>
+      </section>
+
+      {/* About Us Section */}
+      <section className="max-w-7xl mx-auto w-full px-6 mt-24 mb-24">
+        <div className="bg-card border border-border rounded-[2.5rem] p-10 lg:p-16 shadow-xl flex flex-col md:flex-row items-center gap-12 relative overflow-hidden">
+          <div className="md:w-1/2 z-10">
+            <span className="text-[#eab308] font-bold uppercase tracking-widest text-sm mb-4 block">Our Story</span>
+            <h2 className="text-4xl lg:text-5xl font-extrabold text-foreground mb-6">About Blu Bakery</h2>
+            <div className="space-y-4 text-muted-foreground leading-relaxed">
+              <p>
+                Founded with a passion for bringing the finest, freshest baked goods to your table, Blu Bakery started as a small dream and has grown into a beloved destination for pastry lovers.
+              </p>
+              <p>
+                We believe in using only the highest quality ingredients, traditional baking methods, and a lot of love. From our artisanal sourdough breads to our decadent custom cakes, every item is crafted to perfection to ensure you get the best experience in every bite.
+              </p>
+              <p className="font-semibold text-foreground pt-2">
+                "Baking the world a better place, one treat at a time."
+              </p>
+            </div>
+          </div>
+          <div className="md:w-1/2 w-full h-64 md:h-[400px] rounded-3xl overflow-hidden shadow-lg relative">
+            <img src="/images/bakery_chef.png" alt="Our Baker" className="absolute inset-0 w-full h-full object-cover object-center" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
           </div>
         </div>
       </section>

@@ -4,6 +4,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import { FiLogOut, FiSearch, FiShoppingBag } from 'react-icons/fi';
 import {logout} from '../../features/auth/redux/authThunk';
 import {fetchCart} from '../../features/cart/redux/cartThunk';
+import Footer from './Footer';
 
 export default function MainLayout() {
     const dispatch = useDispatch();
@@ -97,8 +98,13 @@ export default function MainLayout() {
             )}
 
             {/* Main Content Area */}
-            <main className="flex-1 w-full bg-background relative overflow-y-auto">
-                <Outlet/>
+            <main className="flex-1 w-full bg-background relative overflow-y-auto flex flex-col">
+                <div className="flex-1">
+                    <Outlet/>
+                </div>
+                {!(location.pathname === '/login' || location.pathname === '/register') && (
+                    <Footer />
+                )}
             </main>
         </div>
     );

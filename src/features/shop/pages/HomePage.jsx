@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import {Link} from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
+import {toast} from 'sonner';
 import {fetchCategories, fetchProducts, fetchStorefront} from '../redux/shopThunk';
-import {addItemToCart} from '../../cart/redux/cartThunk';
+import ProductCard from '../components/ProductCard';
+import {addItemToCart, fetchCart} from '../../cart/redux/cartThunk';
+import api from '../../../lib/axios';
 import {
   LuArrowRight as ArrowRight,
   LuChevronLeft as ChevronLeft,
@@ -11,7 +14,8 @@ import {
   LuHeadphones as HeadphonesIcon,
   LuPackageCheck as PackageCheck,
   LuStar as Star,
-  LuTruck as Truck
+  LuTruck as Truck,
+  LuShoppingCart as ShoppingCart
 } from 'react-icons/lu';
 
 // A mapping to dynamically render lucide icons if passed by name
@@ -22,10 +26,64 @@ const IconMap = {
   'Delivery': Truck // Fallback
 };
 
+const CachedImage = ({ src, alt, className, fallbackSrc = '/images/placeholder_bakery.png', ...props }) => {
+    const [loaded, setLoaded] = useState(false);
+    const [imgSrc, setImgSrc] = useState(null);
+
+    useEffect(() => {
+        let isMounted = true;
+        if (!src) {
+            if (isMounted) {
+                setImgSrc(fallbackSrc);
+                setLoaded(true);
+            }
+            return;
+        }
+
+        const img = new Image();
+        img.src = src;
+        img.onload = () => {
+            if (isMounted) {
+                setLoaded(true);
+                setImgSrc(src);
+            }
+        };
+        img.onerror = () => {
+            if (isMounted) {
+                setImgSrc(fallbackSrc);
+                setLoaded(true);
+            }
+        };
+
+        return () => {
+            isMounted = false;
+        };
+    }, [src, fallbackSrc]);
+
+    const finalSrc = imgSrc || src || fallbackSrc;
+    const safeSrc = finalSrc === "" ? null : finalSrc;
+
+    return (
+        <>
+            {!loaded && (
+                <div className={`animate-pulse bg-muted/30 ${className || ''}`} />
+            )}
+            <img 
+                src={safeSrc} 
+                alt={alt} 
+                className={`${className || ''} ${!loaded ? 'hidden' : ''}`} 
+                {...props} 
+            />
+        </>
+    );
+};
+
 export default function HomePage() {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const {products, categories, storefront} = useSelector((state) => state.shop);
     const {cart} = useSelector((state) => state.cart);
+    const {user} = useSelector((state) => state.auth);
 
     useEffect(() => {
         dispatch(fetchCategories());
@@ -33,10 +91,51 @@ export default function HomePage() {
         dispatch(fetchStorefront());
     }, [dispatch]);
 
-    const handleAddToCart = (productId) => {
-        if (!cart?.id) return;
-        dispatch(addItemToCart({cartId: cart.id, productId, quantity: 1}));
+    const [featuredTestimonials, setFeaturedTestimonials] = useState([]);
+    const [currentTestimonialIndex, setCurrentTestimonialIndex] = useState(0);
+
+    useEffect(() => {
+        const fetchTestimonials = async () => {
+            try {
+                const res = await api.get('/api/v1/engagement/testimonials/featured');
+                setFeaturedTestimonials(res.data || []);
+            } catch (err) {
+                console.error('Failed to load featured testimonials', err);
+            }
+        };
+        fetchTestimonials();
+    }, []);
+
+    useEffect(() => {
+        const timer = setInterval(() => {
+            if (featuredTestimonials.length > 1) {
+                setCurrentTestimonialIndex(i => (i + 1) % featuredTestimonials.length);
+            }
+        }, 5000);
+        return () => clearInterval(timer);
+    }, [featuredTestimonials.length]);
+
+    const activeTestimonial = featuredTestimonials[currentTestimonialIndex] || null;
+
+    const handleAddToCart = async (product) => {
+        try {
+            let currentCartId = cart?.id;
+            if (!currentCartId) {
+                const newCart = await dispatch(fetchCart()).unwrap();
+                currentCartId = newCart?.id;
+            }
+            if (!currentCartId) {
+                toast.error('Unable to initialize cart');
+                return;
+            }
+            await dispatch(addItemToCart({ cartId: currentCartId, productId: product.id, quantity: 1 })).unwrap();
+            toast.success(`${product.name} added to cart`);
+        } catch (error) {
+            toast.error(`Failed to add ${product.name} to cart`);
+        }
     };
+
+
 
     const getCategoryColor = (index) => {
         const colors = ['bg-red-50', 'bg-blue-50', 'bg-green-50', 'bg-purple-50', 'bg-yellow-50', 'bg-pink-50'];
@@ -47,6 +146,28 @@ export default function HomePage() {
     const config = storefront.data;
 
     const [activeIndex, setActiveIndex] = useState(0);
+    const [activeTopCategoryIndex, setActiveTopCategoryIndex] = useState(0);
+
+    const topCategories = categories.data?.slice(0, 3) || [];
+    const activeCategory = topCategories[activeTopCategoryIndex];
+
+    const categoryProducts = activeCategory 
+        ? productList.filter(p => p.categoryId === activeCategory.id || p.categoryName === activeCategory.name)
+        : [];
+        
+    const topRatedProduct = categoryProducts.length > 0 
+        ? [...categoryProducts].sort((a, b) => (b.rating || 0) - (a.rating || 0))[0] 
+        : null;
+
+    const handlePrevCategory = () => {
+        if (topCategories.length === 0) return;
+        setActiveTopCategoryIndex(prev => (prev === 0 ? topCategories.length - 1 : prev - 1));
+    };
+
+    const handleNextCategory = () => {
+        if (topCategories.length === 0) return;
+        setActiveTopCategoryIndex(prev => (prev === topCategories.length - 1 ? 0 : prev + 1));
+    };
 
     const campaigns = config?.heroSection?.campaigns?.length >= 3 ? config.heroSection.campaigns : [
       { largeImageUrl: '/images/campaign1_large.png', smallImageUrl: '/images/campaign1_small.png' },
@@ -71,21 +192,7 @@ export default function HomePage() {
       image3Url: '/images/hero_cupcakes.png'
     };
 
-    const howWeWork = config?.howWeWorkSection?.length > 0 ? config.howWeWorkSection : [
-      { title: 'Gathering', description: 'Making Fresh and Tastiest Food all over the world.', iconName: 'CookingPot' },
-      { title: 'Transportation', description: 'Select the best and transport it to our bases.', iconName: 'Truck' },
-      { title: 'Packaging', description: 'Carefully pack your order in ecological packaging.', iconName: 'PackageCheck' },
-      { title: 'Delivery', description: 'We can drive any products within 2 hours in your hand.', iconName: 'Delivery' }
-    ];
-
     const offerImages = config?.specialOfferSection?.images || [];
-
-    const testimonial = config?.testimonialSection || {
-      quote: "This site has transformed the way I enjoy my meals. The convenience and quality are outstanding. Highly impressed!",
-      author: "Rohit Sharma",
-      rating: 5,
-      authorImageUrl: "https://ui-avatars.com/api/?name=Rohit+Sharma"
-    };
 
     return (
         <div className="flex flex-col bg-background min-h-screen">
@@ -95,7 +202,7 @@ export default function HomePage() {
                 <div className="flex flex-col lg:grid lg:grid-cols-5 gap-4 lg:gap-6 h-[calc(100vh-140px)] min-h-[400px] max-h-[700px]">
                     {/* Main Hero Image (Left, 3:2 width ratio -> 3/5 width) */}
                     <div className="lg:col-span-3 rounded-[2rem] overflow-hidden relative shadow-md h-full w-full bg-muted/10">
-                        <img 
+                        <CachedImage 
                             key={`large-${activeIndex}`}
                             src={campaigns[activeIndex]?.largeImageUrl} 
                             alt="Campaign Main" 
@@ -106,7 +213,7 @@ export default function HomePage() {
                     {/* Side Images (Right, 2/5 width, 1:1 vertical split) */}
                     <div className="lg:col-span-2 flex flex-col gap-4 lg:gap-6 h-full w-full">
                         <div className="flex-1 rounded-[2rem] relative overflow-hidden shadow-sm h-full w-full bg-muted/10">
-                            <img 
+                            <CachedImage 
                                 key={`small1-${activeIndex}`}
                                 src={campaigns[(activeIndex + 1) % campaigns.length]?.smallImageUrl} 
                                 alt="Campaign Side 1" 
@@ -115,7 +222,7 @@ export default function HomePage() {
                         </div>
 
                         <div className="flex-1 rounded-[2rem] relative overflow-hidden shadow-sm h-full w-full bg-muted/10">
-                            <img 
+                            <CachedImage 
                                 key={`small2-${activeIndex}`}
                                 src={campaigns[(activeIndex + 2) % campaigns.length]?.smallImageUrl} 
                                 alt="Campaign Side 2" 
@@ -128,6 +235,10 @@ export default function HomePage() {
 
             {/* 3. NEW PRODUCTS SHOWCASE (Colored Cards) */}
             <section className="max-w-7xl mx-auto w-full px-6 py-16">
+                <div className="text-center mb-10">
+                    <span className="text-muted-foreground font-semibold uppercase tracking-wider text-sm">New Menu</span>
+                    <h2 className="text-4xl font-extrabold text-[#eab308] mt-2">Our Fresh Arrivals</h2>
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     {productList.slice(0, 4).map((product, idx) => {
                         const cardColors = ['bg-primary-500', 'bg-[#eab308]', 'bg-red-500', 'bg-green-500'];
@@ -136,8 +247,7 @@ export default function HomePage() {
                             <div key={product.id}
                                  className={`${colorClass} rounded-[2rem] p-6 relative overflow-hidden shadow-lg aspect-square flex flex-col justify-between group`}>
                                 <div className="z-10 text-white w-2/3">
-                                    <span
-                                        className="text-white/80 font-semibold text-sm uppercase">{product.categoryName || 'New Menu'}</span>
+                                    {product.categoryName && <span className="text-white/80 font-semibold text-sm uppercase">{product.categoryName}</span>}
                                     <h3 className="text-2xl font-bold leading-tight mt-1 mb-2">{product.name}</h3>
                                 </div>
 
@@ -155,19 +265,23 @@ export default function HomePage() {
                                     </div>
                                 ) : null}
 
-                                <img
-                                    src={product.primaryImageUrl || product.mediaUrls?.[0] || '/images/placeholder_bakery.png'}
+                                <CachedImage
+                                    src={product.primaryImageUrl || product.mediaUrls?.[0]}
                                     alt={product.name}
-                                    onError={(e) => {
-                                        e.target.onerror = null;
-                                        e.target.src = '/images/placeholder_bakery.png';
-                                    }}
-                                    className="absolute -bottom-8 -right-8 h-[75%] object-contain drop-shadow-xl group-hover:scale-110 transition-transform duration-500"
+                                    className="absolute -bottom-4 -right-4 h-[70%] w-[70%] object-cover rounded-full shadow-2xl group-hover:scale-110 transition-transform duration-500 border-4 border-white/20"
                                 />
 
-                                <button onClick={() => handleAddToCart(product.id)}
+                                <button onClick={async () => {
+                                            if (!user) {
+                                                toast.error("You must login before checking out");
+                                                navigate('/login');
+                                                return;
+                                            }
+                                            await handleAddToCart(product);
+                                            navigate('/checkout');
+                                        }}
                                         disabled={product.status !== 'ACTIVE' || product.inventory?.isOutOfStock}
-                                        className="z-10 text-white font-medium text-sm flex items-center group/btn mt-auto self-start disabled:opacity-50 disabled:cursor-not-allowed">
+                                        className="z-10 text-white font-medium text-sm flex items-center justify-center bg-white/20 hover:bg-white/30 backdrop-blur-md rounded-full px-5 py-2 group/btn mt-auto self-start disabled:opacity-50 disabled:cursor-not-allowed border border-white/20">
                                     Order Now <ArrowRight
                                     className="w-4 h-4 ml-1 group-hover/btn:translate-x-1 transition-transform"/>
                                 </button>
@@ -187,92 +301,61 @@ export default function HomePage() {
                         </div>
                         <div className="flex space-x-2">
                             <button
-                                className="w-10 h-10 rounded-full border border-border flex items-center justify-center hover:bg-muted">
+                                onClick={handlePrevCategory}
+                                className="w-10 h-10 rounded-full border border-border flex items-center justify-center hover:bg-muted transition-colors">
                                 <ChevronLeft className="w-5 h-5"/></button>
                             <button
-                                className="w-10 h-10 rounded-full border border-border flex items-center justify-center hover:bg-muted">
+                                onClick={handleNextCategory}
+                                className="w-10 h-10 rounded-full border border-border flex items-center justify-center hover:bg-muted transition-colors">
                                 <ChevronRight className="w-5 h-5"/></button>
                         </div>
                     </div>
 
-                    <div className="flex space-x-4 overflow-x-auto pb-6 no-scrollbar">
-                        {categories.data?.map((cat, idx) => (
-                            <div key={cat.id}
-                                 className="flex flex-col items-center min-w-[100px] p-4 rounded-2xl bg-background border border-border hover:shadow-md transition-shadow cursor-pointer">
+                    {activeCategory ? (
+                        <div className="flex flex-col md:flex-row items-center gap-8 bg-background border border-border rounded-[2rem] p-8 shadow-sm">
+                            <div className="flex flex-col items-center md:items-start flex-1">
                                 <div
-                                    className={`w-16 h-16 rounded-full ${getCategoryColor(idx)} flex items-center justify-center mb-3 overflow-hidden p-2`}>
-                                    <img
-                                        src={cat.mediaUrls?.[0] || '/images/placeholder_bakery.png'}
-                                        alt={cat.name}
-                                        onError={(e) => {
-                                            e.target.onerror = null;
-                                            e.target.src = '/images/placeholder_bakery.png';
-                                        }}
-                                        className="w-full h-full object-cover"
+                                    className={`w-32 h-32 rounded-full ${getCategoryColor(activeTopCategoryIndex)} flex items-center justify-center mb-6 overflow-hidden p-4 shadow-inner`}>
+                                    <CachedImage
+                                        src={activeCategory.mediaUrls?.[0]}
+                                        alt={activeCategory.name}
+                                        className="w-full h-full object-cover rounded-full"
                                     />
                                 </div>
-                                <h4 className="font-bold text-foreground text-center mb-1">{cat.name}</h4>
-                                <span className="text-xs text-muted-foreground mt-1">Products</span>
+                                <h3 className="text-3xl font-extrabold text-foreground mb-2">{activeCategory.name}</h3>
+                                <p className="text-muted-foreground mb-6 text-center md:text-left max-w-sm">
+                                    Explore our delicious selection of {activeCategory.name}. Crafted with the finest ingredients and baked to perfection.
+                                </p>
                             </div>
-                        ))}
-                    </div>
+                            
+                            <div className="flex-1 w-full max-w-md">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h4 className="text-[#eab308] font-bold text-sm tracking-wider uppercase text-center md:text-left">Top Rated in {activeCategory.name}</h4>
+                                </div>
+                                {topRatedProduct ? (
+                                    <ProductCard product={topRatedProduct} />
+                                ) : (
+                                    <div className="p-8 border border-dashed border-border rounded-2xl flex items-center justify-center text-muted-foreground text-sm bg-muted/20">
+                                        No products available in this category.
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="p-8 border border-dashed border-border rounded-2xl flex items-center justify-center text-muted-foreground text-sm bg-background">
+                            No top categories available.
+                        </div>
+                    )}
 
                     <div className="mt-16 text-center mb-10">
                         <span
-                            className="text-muted-foreground font-semibold uppercase tracking-wider text-sm">Collection</span>
-                        <h2 className="text-4xl font-extrabold text-[#eab308] mt-2">New Products</h2>
+                            className="text-muted-foreground font-semibold uppercase tracking-wider text-sm">Customer Favorites</span>
+                        <h2 className="text-4xl font-extrabold text-[#eab308] mt-2">Our Most Loved Sweets</h2>
                     </div>
 
                     <div className="flex space-x-6 overflow-x-auto pb-8 no-scrollbar">
-                        {productList.map(product => (
-                            <div key={product.id}
-                                 className="min-w-[280px] bg-background border border-border rounded-[2rem] p-4 flex flex-col hover:shadow-xl transition-all duration-300">
-                                <div
-                                    className="h-40 relative bg-muted/30 rounded-2xl mb-4 p-4 flex items-center justify-center overflow-hidden">
-                                    <img
-                                        src={product.primaryImageUrl || product.mediaUrls?.[0] || '/images/placeholder_bakery.png'}
-                                        alt={product.name}
-                                        onError={(e) => {
-                                            e.target.onerror = null;
-                                            e.target.src = '/images/placeholder_bakery.png';
-                                        }}
-                                        className="w-full h-full object-cover mix-blend-multiply group-hover:scale-110 transition-transform duration-500"
-                                    />
-                                    {product.status !== 'ACTIVE' ? (
-                                        <div className="absolute top-2 right-2 z-20 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wide">
-                                            Unavailable
-                                        </div>
-                                    ) : product.inventory?.isOutOfStock ? (
-                                        <div className="absolute top-2 right-2 z-20 bg-red-600 text-white text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wide shadow-md">
-                                            Out of Stock
-                                        </div>
-                                    ) : product.inventory?.isLowStock ? (
-                                        <div className="absolute top-2 right-2 z-20 bg-orange-500 text-white text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wide shadow-md">
-                                            Limited Stock
-                                        </div>
-                                    ) : null}
-                                </div>
-                                <div className="px-2 flex-1 flex flex-col">
-                                    <div className="flex items-center text-[#eab308] mb-1">
-                                        {[1, 2, 3, 4, 5].map(i => <Star key={i} className="w-3 h-3 fill-current"/>)}
-                                    </div>
-                                    <h3 className="font-bold text-foreground text-lg leading-tight mb-2 line-clamp-1">{product.name}</h3>
-                                    <p className="text-xs text-muted-foreground line-clamp-2 mb-4 flex-1">
-                                        {product.description || 'Delicious ingredients, fresh taste.'}
-                                    </p>
-                                    <div className="flex items-center justify-between mt-auto">
-                                        <span
-                                            className="font-extrabold text-lg text-red-500">${product.price?.toFixed(2)}</span>
-                                        <button
-                                            onClick={() => handleAddToCart(product.id)}
-                                            disabled={product.status !== 'ACTIVE' || product.inventory?.isOutOfStock}
-                                            className="bg-[#eab308] hover:bg-yellow-500 text-white font-bold text-sm px-4 py-2 rounded-xl flex items-center transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                        >
-                                            ADD TO CART <ShoppingCartIcon className="w-4 h-4 ml-2"/>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
+                        {productList.slice(0, 5).map(product => (
+                            <ProductCard key={product.id} product={product} className="min-w-[280px] w-[280px] max-w-[280px] flex-shrink-0" />
                         ))}
                     </div>
                 </div>
@@ -300,34 +383,16 @@ export default function HomePage() {
                             </Link>
                         </div>
                         <div className="md:w-1/2 h-full flex justify-end mt-8 md:mt-0 relative">
-                            <img src={about.image1Url} alt="About main"
+                            <CachedImage src={about.image1Url} alt="About main"
                                  className="h-[400px] object-contain drop-shadow-2xl z-10"/>
-                            <img src={about.image2Url} alt="About floating 1"
+                            <CachedImage src={about.image2Url} alt="About floating 1"
                                  className="absolute left-0 bottom-10 h-24 object-contain animate-bounce drop-shadow-xl"/>
-                            <img src={about.image3Url} alt="About floating 2"
+                            <CachedImage src={about.image3Url} alt="About floating 2"
                                  className="absolute right-0 top-10 h-24 object-contain animate-pulse drop-shadow-xl"/>
                         </div>
                     </div>
 
-                    <div className="flex items-center space-x-2 mb-12">
-                        <span className="bg-muted p-2 rounded-lg"><Star className="w-5 h-5 text-foreground"/></span>
-                        <h2 className="text-2xl font-bold text-foreground">How We Work</h2>
-                    </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 text-center px-8 relative">
-                        {howWeWork.map((step, idx) => {
-                            const IconComponent = IconMap[step.iconName] || PackageCheck;
-                            return (
-                                <div key={idx} className="flex flex-col items-center">
-                                    <div className="w-24 h-24 bg-card border-2 border-dashed border-border rounded-full flex items-center justify-center mb-6">
-                                        <IconComponent className="w-10 h-10 text-foreground"/>
-                                    </div>
-                                    <h4 className="font-bold text-foreground text-lg mb-2">{step.title}</h4>
-                                    <p className="text-sm text-muted-foreground">{step.description}</p>
-                                </div>
-                            );
-                        })}
-                    </div>
                 </div>
             </section>
 
@@ -337,7 +402,7 @@ export default function HomePage() {
                     <div className="max-w-7xl mx-auto w-full px-6 flex flex-col gap-6">
                         {offerImages.map((imgUrl, idx) => (
                             <div key={idx} className="w-full overflow-hidden rounded-2xl shadow-lg border border-border/40 hover:shadow-xl transition-shadow aspect-[4/1]">
-                                <img src={imgUrl} alt={`Special Offer ${idx + 1}`} className="w-full h-full object-cover" />
+                                <CachedImage src={imgUrl} alt={`Special Offer ${idx + 1}`} className="w-full h-full object-cover" />
                             </div>
                         ))}
                     </div>
@@ -345,6 +410,7 @@ export default function HomePage() {
             )}
 
             {/* 7. TESTIMONIALS */}
+            {activeTestimonial && (
             <section className="bg-card py-16">
                 <div className="max-w-7xl mx-auto w-full px-6">
                     <div className="text-center mb-10">
@@ -352,130 +418,50 @@ export default function HomePage() {
                         <h2 className="text-3xl font-extrabold text-foreground mt-2">What Our Customers Says</h2>
                     </div>
 
-                    <div className="flex flex-col md:flex-row rounded-[2rem] overflow-hidden shadow-lg">
+                    <div className="flex flex-col md:flex-row rounded-[2rem] overflow-hidden shadow-lg transition-opacity duration-500">
                         <div className="md:w-1/2 bg-red-600 p-12 flex items-center justify-center">
-                            <div className="bg-white rounded-3xl p-8 relative max-w-sm w-full">
+                            <div className="bg-white rounded-3xl p-8 relative max-w-sm w-full shadow-xl">
                                 <div
                                     className="absolute -top-6 left-8 text-6xl text-red-600 font-serif leading-none">"
                                 </div>
                                 <h4 className="font-bold text-red-600 text-lg mb-4 mt-2">Fantastic Experience!</h4>
-                                <p className="text-sm text-foreground/80 mb-6 italic leading-relaxed">
-                                    "{testimonial.quote}"
+                                <p className="text-sm text-foreground/80 mb-6 italic leading-relaxed min-h-[80px]">
+                                    "{activeTestimonial.message}"
                                 </p>
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center space-x-3">
-                                        <div className="w-10 h-10 rounded-full bg-muted overflow-hidden">
-                                            <img src={testimonial.authorImageUrl} alt="User"/>
+                                        <div className="w-10 h-10 rounded-full bg-muted overflow-hidden flex items-center justify-center text-primary font-bold shadow-inner">
+                                            {activeTestimonial.profileImageUrl ? (
+                                                <CachedImage src={activeTestimonial.profileImageUrl} alt={activeTestimonial.name} className="w-full h-full object-cover" />
+                                            ) : (
+                                                <span>{activeTestimonial.name ? activeTestimonial.name.substring(0,2).toUpperCase() : 'U'}</span>
+                                            )}
                                         </div>
-                                        <span className="font-bold text-sm">{testimonial.author}</span>
+                                        <span className="font-bold text-sm">{activeTestimonial.name || 'Anonymous User'}</span>
                                     </div>
                                     <div className="flex text-[#eab308]">
-                                        {[...Array(testimonial.rating || 5)].map((_, i) => <Star key={i} className="w-4 h-4 fill-current"/>)}
+                                        {[...Array(activeTestimonial.rating || 5)].map((_, i) => <Star key={i} className="w-4 h-4 fill-current"/>)}
                                     </div>
                                 </div>
+                                {featuredTestimonials.length > 1 && (
+                                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-1.5 opacity-60">
+                                        {featuredTestimonials.map((_, i) => (
+                                            <div key={i} className={`w-1.5 h-1.5 rounded-full transition-all ${i === currentTestimonialIndex ? 'bg-red-600 w-3' : 'bg-gray-300'}`} />
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         </div>
-                        <div className="md:w-1/2">
-                            <img src="/images/bakery_customers.png" alt="Happy Customers"
+                        <div className="md:w-1/2 relative">
+                            <CachedImage src="/images/bakery_customers.png" alt="Happy Customers"
                                  className="w-full h-full object-cover"/>
                         </div>
                     </div>
                 </div>
             </section>
+            )}
 
-            {/* 8. FOOTER */}
-            <footer className="bg-[#fcfaf7] border-t border-border pt-12">
-                <div className="max-w-7xl mx-auto w-full px-6">
 
-                    <div
-                        className="grid grid-cols-1 md:grid-cols-4 gap-8 bg-[#fdf0d5] rounded-2xl p-8 mb-12 border border-[#f5e1b8]">
-                        <div className="flex items-center space-x-4">
-                            <div
-                                className="w-12 h-12 flex items-center justify-center bg-white rounded-full text-[#eab308] shadow-sm">
-                                <PackageCheck className="w-6 h-6"/></div>
-                            <div><h4 className="font-bold text-foreground">Free Shipping</h4><p
-                                className="text-xs text-muted-foreground">Free Shipping On All IND</p></div>
-                        </div>
-                        <div className="flex items-center space-x-4">
-                            <div
-                                className="w-12 h-12 flex items-center justify-center bg-white rounded-full text-[#eab308] shadow-sm">
-                                <HeadphonesIcon className="w-6 h-6"/></div>
-                            <div><h4 className="font-bold text-foreground">Money Returns</h4><p
-                                className="text-xs text-muted-foreground">Return it Within 30 Days</p></div>
-                        </div>
-                        <div className="flex items-center space-x-4">
-                            <div
-                                className="w-12 h-12 flex items-center justify-center bg-white rounded-full text-[#eab308] shadow-sm">
-                                <Star className="w-6 h-6"/></div>
-                            <div><h4 className="font-bold text-foreground">Secure Payments</h4><p
-                                className="text-xs text-muted-foreground">We Ensure Secure Payment</p></div>
-                        </div>
-                        <div className="flex items-center space-x-4">
-                            <div
-                                className="w-12 h-12 flex items-center justify-center bg-white rounded-full text-[#eab308] shadow-sm">
-                                <HeadphonesIcon className="w-6 h-6"/></div>
-                            <div><h4 className="font-bold text-foreground">Support 24/7</h4><p
-                                className="text-xs text-muted-foreground">Contact Us 24 Hours A Day</p></div>
-                        </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-5 gap-8 pb-12 border-b border-border">
-                        <div className="md:col-span-2">
-                            <div className="flex items-center space-x-3 mb-4">
-                                <img src="/icon-192.png" alt="Blubug Logo"
-                                     className="h-12 w-auto object-contain mix-blend-multiply"/>
-                                <span className="text-2xl font-extrabold text-foreground tracking-tight">
-                                  Blu Bakery
-                                </span>
-                            </div>
-                            <p className="text-sm text-muted-foreground max-w-xs mb-6 leading-relaxed">
-                                Your favorite freshly baked goods delivered to your door! From artisanal breads to
-                                custom cakes, we have it all. Order easily and enjoy hassle-free!
-                            </p>
-                            <div className="text-xs text-muted-foreground">
-                                <p>Blu Food Court</p>
-                                <p>Blu Bakery LLC</p>
-                            </div>
-                        </div>
-
-                        <div>
-                            <h4 className="font-bold text-foreground mb-4">Company</h4>
-                            <ul className="space-y-2 text-sm text-muted-foreground">
-                                <li><a href="#" className="hover:text-primary-500">About Us</a></li>
-                                <li><a href="#" className="hover:text-primary-500">Store</a></li>
-                                <li><a href="#" className="hover:text-primary-500">FAQ</a></li>
-                            </ul>
-                        </div>
-
-                        <div>
-                            <h4 className="font-bold text-foreground mb-4">Services</h4>
-                            <ul className="space-y-2 text-sm text-muted-foreground">
-                                <li><a href="#" className="hover:text-primary-500">Delivery</a></li>
-                                <li><a href="#" className="hover:text-primary-500">Payments</a></li>
-                                <li><a href="#" className="hover:text-primary-500">Contact</a></li>
-                            </ul>
-                        </div>
-
-                        <div>
-                            <h4 className="font-bold text-foreground mb-4">Follow Us</h4>
-                            <ul className="space-y-2 text-sm text-muted-foreground">
-                                <li><a href="#" className="hover:text-primary-500 flex items-center">Instagram</a></li>
-                                <li><a href="#" className="hover:text-primary-500 flex items-center">Facebook</a></li>
-                                <li><a href="#" className="hover:text-primary-500 flex items-center">Twitter</a></li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div
-                        className="flex flex-col md:flex-row items-center justify-between py-6 text-sm text-muted-foreground">
-                        <p>© 2026 Blubug Tech. All rights reserved.</p>
-                        <div className="flex space-x-4 mt-4 md:mt-0">
-                            <a href="#" className="hover:text-primary-500">Terms & Conditions</a>
-                            <a href="#" className="hover:text-primary-500">Privacy Policy</a>
-                        </div>
-                    </div>
-                </div>
-            </footer>
         </div>
     );
 }

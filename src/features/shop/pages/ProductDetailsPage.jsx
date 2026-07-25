@@ -3,8 +3,9 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'sonner';
 import { addItemToCart } from '../../cart/redux/cartThunk';
-import { fetchProductReviews } from '../redux/shopThunk';
+import { fetchProductReviews, reportReview } from '../redux/shopThunk';
 import { LuArrowLeft as ArrowLeft, LuShoppingCart as ShoppingCart, LuMinus as Minus, LuPlus as Plus, LuLoader as Loader2, LuPackage as Package, LuInfo as Info, LuStar as Star } from 'react-icons/lu';
+import ReviewModal from '../components/ReviewModal';
 
 export default function ProductDetailsPage() {
   const { id } = useParams();
@@ -19,6 +20,10 @@ export default function ProductDetailsPage() {
   const [quantity, setQuantity] = useState(1);
   const [addingToCart, setAddingToCart] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [reviewModalState, setReviewModalState] = useState({
+    isOpen: false,
+    existingReview: null
+  });
 
   // We find the product from redux store since we already fetched it on the shop page,
   // or we might need to fetch it if we navigate directly to the URL.
@@ -97,6 +102,12 @@ export default function ProductDetailsPage() {
   const isUnavailable = product.status !== 'ACTIVE';
   const isOutOfStock = product.inventory?.isOutOfStock;
   const canPurchase = !isUnavailable && !isOutOfStock;
+
+  const productReviews = reviews?.data?.[product.id] || [];
+  const displayCount = productReviews.length > 0 ? productReviews.length : (product.totalReviews || 0);
+  const displayRating = productReviews.length > 0 
+    ? (productReviews.reduce((acc, r) => acc + r.rating, 0) / productReviews.length).toFixed(1) 
+    : (product.averageRating > 0 ? product.averageRating.toFixed(1) : '0.0');
 
   return (
     <div className="min-h-screen bg-background pb-12">
@@ -256,8 +267,8 @@ export default function ProductDetailsPage() {
             <h2 className="text-2xl font-bold text-foreground">Customer Reviews</h2>
             <div className="flex items-center gap-2 bg-yellow-500/10 px-3 py-1.5 rounded-xl border border-yellow-500/20">
               <Star className="w-5 h-5 text-yellow-500 fill-yellow-500" />
-              <span className="font-bold text-yellow-700">{product.averageRating || 'New'}</span>
-              <span className="text-sm font-medium text-yellow-700/70">({product.totalReviews || 0})</span>
+              <span className="font-bold text-yellow-700">{displayRating}</span>
+              <span className="text-sm font-medium text-yellow-700/70">({displayCount})</span>
             </div>
           </div>
 
@@ -289,8 +300,33 @@ export default function ProductDetailsPage() {
                       </div>
                     </div>
                     {review.comment && (
-                      <p className="text-muted-foreground text-sm italic">"{review.comment}"</p>
+                      <p className="text-muted-foreground text-sm italic mb-4">"{review.comment}"</p>
                     )}
+                    <div className="flex gap-4 mt-2 border-t border-border pt-3">
+                      {user?.id === review.userId ? (
+                        <button 
+                          onClick={() => setReviewModalState({ isOpen: true, existingReview: review })}
+                          className="text-xs text-primary-600 hover:text-primary-700 font-medium"
+                        >
+                          Edit
+                        </button>
+                      ) : (
+                        <button 
+                          onClick={() => {
+                            const reason = window.prompt('Why are you reporting this review?');
+                            if (reason) {
+                              dispatch(reportReview({ productId: product.id, reviewId: review.id, reason }))
+                                .unwrap()
+                                .then(() => toast.success('Review reported for moderation'))
+                                .catch(() => toast.error('Failed to report review'));
+                            }
+                          }}
+                          className="text-xs text-muted-foreground hover:text-primary-500 font-medium"
+                        >
+                          Report
+                        </button>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -298,6 +334,13 @@ export default function ProductDetailsPage() {
           </div>
         </div>
 
+        <ReviewModal
+          isOpen={reviewModalState.isOpen}
+          onClose={() => setReviewModalState({ isOpen: false, existingReview: null })}
+          productId={product.id}
+          productName={product.name}
+          existingReview={reviewModalState.existingReview}
+        />
       </div>
     </div>
   );
