@@ -407,7 +407,7 @@ export default function MyOrders() {
               
               <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
                 {/* Pay Now button for COD or Unpaid orders */}
-                {(order.paymentStatus === 'PENDING' || order.paymentMethod === 'CASH') && order.status !== 'CANCELLED' && order.status !== 'DELIVERED' && (
+                {(order.paymentStatus === 'PENDING' || order.paymentStatus === 'FAILED' || order.paymentMethod === 'CASH') && order.status !== 'CANCELLED' && order.status !== 'DELIVERED' && (
                   <button 
                     onClick={() => navigate(`/payment/${order.id}`, { state: { amount: order.totalAmount, paymentMethod: 'CARD' } })}
                     className="flex-1 sm:flex-none flex items-center justify-center bg-primary-50 text-primary-600 border border-primary-200 hover:bg-primary-100 px-5 py-2.5 rounded-xl font-bold text-sm transition-colors"
@@ -527,7 +527,7 @@ export default function MyOrders() {
                         <div>
                           <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">Payment</p>
                           <p className="text-sm font-medium text-foreground">
-                            {order.paymentMethod || 'N/A'} - <span className={`font-bold ${order.paymentStatus === 'COMPLETED' || order.paymentStatus === 'PAID' ? 'text-green-500' : 'text-yellow-500'}`}>{order.paymentStatus || 'PENDING'}</span>
+                            {order.paymentMethod || 'N/A'} - <span className={`font-bold ${order.paymentStatus === 'COMPLETED' || order.paymentStatus === 'PAID' ? 'text-green-500' : 'text-yellow-500'}`}>{order.paymentStatus === 'FAILED' ? 'PENDING' : (order.paymentStatus || 'PENDING')}</span>
                           </p>
                         </div>
                       </div>
