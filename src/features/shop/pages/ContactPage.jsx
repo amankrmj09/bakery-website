@@ -25,6 +25,23 @@ export default function ContactPage() {
       }));
     }
   }, [user]);
+
+  const [contactInfo, setContactInfo] = useState(null);
+  const [fetchingInfo, setFetchingInfo] = useState(true);
+
+  useEffect(() => {
+    const fetchContactInfo = async () => {
+      try {
+        const res = await api.get('/api/v1/engagement/contact-details');
+        setContactInfo(res.data);
+      } catch (err) {
+        console.error('Failed to fetch contact info', err);
+      } finally {
+        setFetchingInfo(false);
+      }
+    };
+    fetchContactInfo();
+  }, []);
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -93,7 +110,9 @@ export default function ContactPage() {
               </div>
               <div>
                 <h3 className="font-bold text-lg mb-1 text-foreground">Our Location</h3>
-                <p className="text-muted-foreground text-sm">123 Bakery Street, Sweet Town<br/>NY 10001, USA</p>
+                <p className="text-muted-foreground text-sm whitespace-pre-line">
+                  {fetchingInfo ? 'Loading...' : contactInfo?.address || '123 Bakery Street, Sweet Town\nNY 10001, USA'}
+                </p>
               </div>
             </div>
 
@@ -103,7 +122,9 @@ export default function ContactPage() {
               </div>
               <div>
                 <h3 className="font-bold text-lg mb-1 text-foreground">Call Us</h3>
-                <p className="text-muted-foreground text-sm">+1 (555) 123-4567<br/>+1 (555) 987-6543</p>
+                <p className="text-muted-foreground text-sm">
+                  {fetchingInfo ? 'Loading...' : (contactInfo?.phoneNumbers?.length > 0 ? contactInfo.phoneNumbers.map((p, i) => <React.Fragment key={i}>{p}<br/></React.Fragment>) : <React.Fragment>+1 (555) 123-4567<br/>+1 (555) 987-6543</React.Fragment>)}
+                </p>
               </div>
             </div>
 
@@ -113,7 +134,9 @@ export default function ContactPage() {
               </div>
               <div>
                 <h3 className="font-bold text-lg mb-1 text-foreground">Email Us</h3>
-                <p className="text-muted-foreground text-sm">hello@blubugbakery.com<br/>support@blubugbakery.com</p>
+                <p className="text-muted-foreground text-sm">
+                  {fetchingInfo ? 'Loading...' : (contactInfo?.emails?.length > 0 ? contactInfo.emails.map((e, i) => <React.Fragment key={i}>{e}<br/></React.Fragment>) : <React.Fragment>hello@blubugbakery.com<br/>support@blubugbakery.com</React.Fragment>)}
+                </p>
               </div>
             </div>
           </div>
