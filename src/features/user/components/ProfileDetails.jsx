@@ -3,6 +3,10 @@ import { userApi } from '../api/userApi';
 import { useDispatch } from 'react-redux';
 import { updateUser } from '../../auth/redux/authSlice';
 import { LuUser as User, LuMail as Mail, LuPhone as Phone, LuLoader as Loader2, LuCircleCheck as CheckCircle2, LuCircleAlert as AlertCircle } from 'react-icons/lu';
+import PhoneInputDefault from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
+
+const PhoneInput = PhoneInputDefault.default || PhoneInputDefault;
 
 export default function ProfileDetails({ user }) {
   const dispatch = useDispatch();
@@ -105,13 +109,16 @@ export default function ProfileDetails({ user }) {
           <div className="space-y-2">
             <label className="text-sm font-semibold text-foreground">Phone Number</label>
             <div className="relative">
-              <Phone className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-              <input
-                name="phone"
-                type="tel"
+              <PhoneInput
+                country={'us'}
+                enableSearch={true}
                 value={profileData?.phone || ''}
-                onChange={handleChange}
-                className="w-full h-12 pl-12 pr-4 rounded-xl bg-background border-2 border-muted hover:border-border focus:border-primary-500 text-sm focus:outline-none focus:ring-4 focus:ring-primary-500/10 transition-all font-medium"
+                onChange={(phone) => setProfileData({ ...profileData, phone: phone ? '+' + phone : '' })}
+                containerClass="w-full relative"
+                inputClass="!w-full !h-12 !pl-14 !pr-4 !rounded-xl !bg-background !border-2 !border-muted hover:!border-border focus:!border-primary-500 !text-sm focus:!outline-none focus:!ring-4 focus:!ring-primary-500/10 !transition-all !font-medium"
+                buttonClass="!border-none !bg-transparent !pl-3 !hover:bg-transparent"
+                dropdownClass="!bg-card !border-border !shadow-xl !rounded-xl text-foreground"
+                searchClass="!bg-background !border-muted !rounded-lg !p-2 !text-foreground"
               />
             </div>
           </div>
