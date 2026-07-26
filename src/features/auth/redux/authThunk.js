@@ -53,6 +53,30 @@ export const verifyRegister = createAsyncThunk(
   }
 );
 
+export const resendLoginOtp = createAsyncThunk(
+  'auth/resendLoginOtp',
+  async (email, { rejectWithValue }) => {
+    try {
+      const response = await authApi.resendLoginOtp(email);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to resend login OTP');
+    }
+  }
+);
+
+export const resendRegisterOtp = createAsyncThunk(
+  'auth/resendRegisterOtp',
+  async (email, { rejectWithValue }) => {
+    try {
+      const response = await authApi.resendRegisterOtp(email);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to resend registration OTP');
+    }
+  }
+);
+
 export const logout = createAsyncThunk(
   'auth/logout',
   async (_, { rejectWithValue }) => {

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { verifyLogin, verifyRegister } from '../redux/authThunk';
+import { verifyLogin, verifyRegister, resendLoginOtp, resendRegisterOtp } from '../redux/authThunk';
 import { clearError, clearOtpState } from '../redux/authSlice';
 import { LuKey as Key, LuCircleAlert as AlertCircle, LuLoader as Loader2, LuArrowLeft as ArrowLeft } from 'react-icons/lu';
 import { toast } from 'sonner';
@@ -13,6 +13,33 @@ export default function OtpPage() {
   const { loading, error, isOtpPending, pendingEmail, authType } = useSelector((state) => state.auth);
 
   const [otp, setOtp] = useState('');
+  const [cooldown, setCooldown] = useState(30);
+  const [resending, setResending] = useState(false);
+
+  useEffect(() => {
+    if (cooldown > 0) {
+      const timer = setTimeout(() => setCooldown(cooldown - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [cooldown]);
+
+  const handleResend = async () => {
+    if (cooldown > 0 || resending) return;
+    setResending(true);
+    try {
+      if (authType === 'login') {
+        await dispatch(resendLoginOtp(pendingEmail)).unwrap();
+      } else {
+        await dispatch(resendRegisterOtp(pendingEmail)).unwrap();
+      }
+      toast.success('A new OTP has been sent to your email!');
+      setCooldown(30);
+    } catch (err) {
+      toast.error(err || 'Failed to resend OTP');
+    } finally {
+      setResending(false);
+    }
+  };
 
   // Redirect to home if accessed without pending OTP
   useEffect(() => {
@@ -145,6 +172,20 @@ export default function OtpPage() {
                 >
                   {loading ? <Loader2 className="h-6 w-6 animate-spin" /> : 'Verify & Continue'}
                 </button>
+
+                <div className="mt-6 text-center">
+                  <p className="text-sm text-zinc-500">
+                    Didn't receive the code?{' '}
+                    <button
+                      type="button"
+                      disabled={cooldown > 0 || resending}
+                      onClick={handleResend}
+                      className="font-bold text-primary-600 hover:text-primary-500 disabled:text-zinc-400 disabled:cursor-not-allowed transition-colors"
+                    >
+                      {resending ? 'Resending...' : cooldown > 0 ? `Resend in ${cooldown}s` : 'Resend OTP'}
+                    </button>
+                  </p>
+                </div>
               </form>
             </div>
           </div>

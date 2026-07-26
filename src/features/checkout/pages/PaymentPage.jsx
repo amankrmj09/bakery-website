@@ -20,6 +20,29 @@ export default function PaymentPage() {
   const [errorMessage, setErrorMessage] = useState('');
   const [otp, setOtp] = useState('');
   const [paymentId, setPaymentId] = useState(null);
+  const [cooldown, setCooldown] = useState(30);
+  const [resending, setResending] = useState(false);
+
+  useEffect(() => {
+    if (cooldown > 0 && (status === 'otp' || status === 'verifying')) {
+      const timer = setTimeout(() => setCooldown(cooldown - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [cooldown, status]);
+
+  const handleResendOtp = async () => {
+    if (cooldown > 0 || resending || !paymentId) return;
+    setResending(true);
+    try {
+      await paymentApi.resendOtp(paymentId);
+      toast.success('A new OTP has been sent!');
+      setCooldown(30);
+    } catch (error) {
+      toast.error(error.response?.data?.error || 'Failed to resend OTP');
+    } finally {
+      setResending(false);
+    }
+  };
 
   useEffect(() => {
     dispatch(clearCheckoutState());
@@ -145,6 +168,20 @@ export default function PaymentPage() {
             >
               {status === 'verifying' ? <Loader2 className="w-6 h-6 animate-spin" /> : 'Verify & Pay'}
             </button>
+
+            <div className="mt-4 text-center">
+              <p className="text-sm text-muted-foreground">
+                Didn't receive the code?{' '}
+                <button
+                  type="button"
+                  disabled={cooldown > 0 || resending}
+                  onClick={handleResendOtp}
+                  className="font-bold text-primary-600 hover:text-primary-500 disabled:text-muted-foreground disabled:cursor-not-allowed transition-colors"
+                >
+                  {resending ? 'Resending...' : cooldown > 0 ? `Resend in ${cooldown}s` : 'Resend OTP'}
+                </button>
+              </p>
+            </div>
           </div>
         )}
 

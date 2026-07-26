@@ -23,6 +23,20 @@ export const fetchUserOrders = createAsyncThunk(
   }
 );
 
+export const cancelUserOrder = createAsyncThunk(
+  'order/cancelUserOrder',
+  async ({ orderId, reason }, { rejectWithValue }) => {
+    try {
+      const response = await orderApi.cancelOrder(orderId, reason);
+      return response;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || error.response?.data || 'Failed to cancel order'
+      );
+    }
+  }
+);
+
 const initialState = {
   orders: [],
   isFiltered: false,
@@ -69,6 +83,15 @@ const orderSlice = createSlice({
       .addCase(fetchUserOrders.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      .addCase(cancelUserOrder.fulfilled, (state, action) => {
+        const cancelledOrder = action.payload;
+        if (cancelledOrder && cancelledOrder.id) {
+          const idx = state.orders.findIndex(o => o.id === cancelledOrder.id);
+          if (idx !== -1) {
+            state.orders[idx] = cancelledOrder;
+          }
+        }
       });
   },
 });

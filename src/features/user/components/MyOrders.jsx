@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { fetchUserOrders } from '../../order/slice/orderSlice';
+import { fetchUserOrders, cancelUserOrder } from '../../order/slice/orderSlice';
 import { LuPackage as Package, LuLoader as Loader2, LuClock as Clock, LuCheck as CheckCircle2, LuCreditCard as CreditCard, LuX as XCircle, LuChevronRight as ChevronRight, LuChevronLeft as ChevronLeft, LuChevronDown as ChevronDown, LuMapPin as MapPin } from 'react-icons/lu';
 import { format } from 'date-fns';
 import ReviewModal from '../../shop/components/ReviewModal';
@@ -56,6 +56,16 @@ export default function MyOrders() {
       }));
     }
   }, [dispatch, user?.id, currentPage, pageSize, isFilterActive]);
+
+  const handleCancelOrder = async (orderId) => {
+    if (window.confirm("Are you sure you want to cancel this order?")) {
+      try {
+        await dispatch(cancelUserOrder({ orderId, reason: "Cancelled by user" })).unwrap();
+      } catch (err) {
+        alert(err || "Failed to cancel order");
+      }
+    }
+  };
 
   const parseDate = (dateVal) => {
     if (!dateVal) return new Date();
@@ -412,7 +422,17 @@ export default function MyOrders() {
                     onClick={() => navigate(`/payment/${order.id}`, { state: { amount: order.totalAmount, paymentMethod: 'CARD' } })}
                     className="flex-1 sm:flex-none flex items-center justify-center bg-primary-50 text-primary-600 border border-primary-200 hover:bg-primary-100 px-5 py-2.5 rounded-xl font-bold text-sm transition-colors"
                   >
-                    <CreditCard className="w-4 h-4 mr-2" /> Pay Now
+                    <CreditCard className="w-4 h-4 mr-2" /> {order.paymentStatus === 'FAILED' ? 'Retry Payment' : 'Pay Now'}
+                  </button>
+                )}
+                
+                {/* Cancel Order button: only if payment is NOT made */}
+                {order.paymentStatus !== 'COMPLETED' && order.paymentStatus !== 'PAID' && order.status !== 'CANCELLED' && order.status !== 'DELIVERED' && (
+                  <button 
+                    onClick={() => handleCancelOrder(order.id)}
+                    className="flex-1 sm:flex-none flex items-center justify-center bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 px-5 py-2.5 rounded-xl font-bold text-sm transition-colors"
+                  >
+                    <XCircle className="w-4 h-4 mr-2" /> Cancel Order
                   </button>
                 )}
                 
