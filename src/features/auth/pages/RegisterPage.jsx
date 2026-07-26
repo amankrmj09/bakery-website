@@ -3,8 +3,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
 import { register } from '../redux/authThunk';
 import { clearError } from '../redux/authSlice';
-import { LuLock as Lock, LuMail as Mail, LuUser as User, LuCircleAlert as AlertCircle, LuLoader as Loader2, LuPhone as Phone, LuArrowLeft as ArrowLeft } from 'react-icons/lu';
+import { LuLock as Lock, LuMail as Mail, LuUser as User, LuCircleAlert as AlertCircle, LuLoader as Loader2, LuArrowLeft as ArrowLeft } from 'react-icons/lu';
 import { toast } from 'sonner';
+import PhoneInputDefault from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
+
+const PhoneInput = PhoneInputDefault.default || PhoneInputDefault;
 
 export default function RegisterPage() {
   const dispatch = useDispatch();
@@ -153,14 +157,16 @@ export default function RegisterPage() {
                 <div className="space-y-2 group">
                   <label className="text-xs font-bold tracking-wider text-zinc-600 uppercase">Phone (Optional)</label>
                   <div className="relative">
-                    <Phone className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-400 group-focus-within:text-primary-500 transition-colors" />
-                    <input
-                      name="phone"
-                      type="tel"
+                    <PhoneInput
+                      country={'us'}
+                      enableSearch={true}
                       value={formData.phone}
-                      onChange={handleChange}
-                      className="w-full h-14 pl-12 pr-4 rounded-xl bg-zinc-50 border border-zinc-200 hover:border-zinc-300 focus:border-primary-500 text-zinc-900 text-sm focus:outline-none focus:ring-4 focus:ring-primary-500/10 transition-all placeholder:text-zinc-400 font-medium"
-                      placeholder="+1 234 567 8900"
+                      onChange={(phone) => setFormData({ ...formData, phone: phone ? '+' + phone : '' })}
+                      containerClass="w-full relative"
+                      inputClass="!w-full !h-14 !pl-14 !pr-4 !rounded-xl !bg-zinc-50 !border !border-zinc-200 hover:!border-zinc-300 focus:!border-primary-500 !text-zinc-900 !text-sm focus:!outline-none focus:!ring-4 focus:!ring-primary-500/10 !transition-all !font-medium"
+                      buttonClass="!border-none !bg-transparent !pl-3 !hover:bg-transparent"
+                      dropdownClass="!bg-white !border-zinc-200 !shadow-xl !rounded-xl"
+                      searchClass="!bg-zinc-50 !border-zinc-200 !rounded-lg !p-2"
                     />
                   </div>
                 </div>
