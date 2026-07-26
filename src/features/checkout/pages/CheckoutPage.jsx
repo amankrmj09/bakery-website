@@ -6,6 +6,10 @@ import { fetchUserAddresses } from '../../user/redux/addressSlice';
 import { userApi } from '../../user/api/userApi';
 import { LuMapPin as MapPin, LuStore as Store, LuCreditCard as CreditCard, LuBanknote as Banknote, LuLoader as Loader2, LuCircleAlert as AlertCircle, LuArrowRight as ArrowRight, LuShoppingBag as ShoppingBag, LuLock as Lock } from 'react-icons/lu';
 import { toast } from 'sonner';
+import PhoneInputDefault from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
+
+const PhoneInput = PhoneInputDefault.default || PhoneInputDefault;
 
 export default function CheckoutPage() {
   const dispatch = useDispatch();
@@ -20,9 +24,14 @@ export default function CheckoutPage() {
     }
   }, [dispatch, user?.id]);
 
+  const formatAddress = (addr) => {
+    if (!addr) return '';
+    return `${addr.addressLine}\n${addr.city}, ${addr.state} ${addr.postalCode}\n${addr.country}`;
+  };
+
   const defaultAddressObj = addresses?.find(a => a.isDefault);
   const defaultAddress = defaultAddressObj 
-    ? `${defaultAddressObj.addressLine}, ${defaultAddressObj.city}, ${defaultAddressObj.state} ${defaultAddressObj.postalCode}, ${defaultAddressObj.country}` 
+    ? formatAddress(defaultAddressObj)
     : user?.address || '';
 
   const [formData, setFormData] = useState({
@@ -138,7 +147,19 @@ export default function CheckoutPage() {
                 </div>
                 <div className="space-y-2 md:col-span-2">
                   <label className="text-sm font-semibold text-foreground">Phone Number</label>
-                  <input required type="tel" name="customerPhone" value={formData.customerPhone} onChange={handleChange} className="w-full h-11 px-4 rounded-xl bg-background border-2 border-muted hover:border-border focus:border-primary-500 text-sm focus:outline-none focus:ring-4 focus:ring-primary-500/10 transition-all font-medium" />
+                  <div className="relative">
+                    <PhoneInput
+                      country={'us'}
+                      enableSearch={true}
+                      value={formData.customerPhone}
+                      onChange={(phone) => setFormData({ ...formData, customerPhone: phone ? '+' + phone : '' })}
+                      containerClass="w-full relative"
+                      inputClass="!w-full !h-11 !pl-14 !pr-4 !rounded-xl !bg-background !border-2 !border-muted hover:!border-border focus:!border-primary-500 !text-sm focus:!outline-none focus:!ring-4 focus:!ring-primary-500/10 !transition-all !font-medium"
+                      buttonClass="!border-none !bg-transparent !pl-3 !hover:bg-transparent"
+                      dropdownClass="!bg-card !border-border !shadow-xl !rounded-xl text-foreground"
+                      searchClass="!bg-background !border-muted !rounded-lg !p-2 !text-foreground"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
@@ -179,17 +200,17 @@ export default function CheckoutPage() {
                       <label className="text-sm font-semibold text-foreground">Select Saved Address</label>
                       <select 
                         className="w-full h-11 px-4 rounded-xl bg-background border-2 border-muted hover:border-border focus:border-primary-500 text-sm focus:outline-none focus:ring-4 focus:ring-primary-500/10 transition-all font-medium"
-                        value={addresses.find(a => `${a.addressLine}, ${a.city}, ${a.state} ${a.postalCode}, ${a.country}` === formData.deliveryAddress) ? formData.deliveryAddress : ""}
+                        value={addresses.find(a => formatAddress(a) === formData.deliveryAddress) ? formData.deliveryAddress : ""}
                         onChange={(e) => {
                           setFormData({...formData, deliveryAddress: e.target.value});
                         }}
                       >
                         <option value="">Custom Address...</option>
                         {addresses.map(addr => {
-                          const fullAddress = `${addr.addressLine}, ${addr.city}, ${addr.state} ${addr.postalCode}, ${addr.country}`;
+                          const fullAddress = formatAddress(addr);
                           return (
                             <option key={addr.id} value={fullAddress}>
-                              {addr.title || 'Address'} - {fullAddress}
+                              {addr.title || 'Address'}
                             </option>
                           );
                         })}
@@ -199,7 +220,16 @@ export default function CheckoutPage() {
                   
                   <div className="space-y-2">
                     <label className="text-sm font-semibold text-foreground">Delivery Address</label>
-                    <textarea required name="deliveryAddress" value={formData.deliveryAddress} onChange={handleChange} rows="3" className="w-full p-4 rounded-xl bg-background border-2 border-muted hover:border-border focus:border-primary-500 text-sm focus:outline-none focus:ring-4 focus:ring-primary-500/10 transition-all resize-none font-medium placeholder:text-muted-foreground/50" placeholder="Enter your full delivery address..."></textarea>
+                    <textarea 
+                      required 
+                      name="deliveryAddress" 
+                      value={formData.deliveryAddress} 
+                      onChange={handleChange} 
+                      readOnly={!!(addresses && addresses.find(a => formatAddress(a) === formData.deliveryAddress))}
+                      rows="4" 
+                      className={`w-full p-4 rounded-xl bg-background border-2 border-muted text-sm focus:outline-none transition-all resize-none font-medium placeholder:text-muted-foreground/50 ${addresses && addresses.find(a => formatAddress(a) === formData.deliveryAddress) ? 'bg-muted/50 cursor-not-allowed opacity-80' : 'hover:border-border focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10'}`} 
+                      placeholder="Enter your full delivery address...">
+                    </textarea>
                   </div>
                 </div>
               )}
