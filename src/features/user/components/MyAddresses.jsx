@@ -63,6 +63,13 @@ export default function MyAddresses() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    const { title, addressLine, city, state, postalCode, country } = formData;
+    if (!title.trim() || !addressLine.trim() || !city.trim() || !state.trim() || !postalCode.trim() || !country.trim()) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+
     if (editingId) {
       const result = await dispatch(updateAddress({ addressId: editingId, addressData: formData }));
       if (updateAddress.fulfilled.match(result)) {
