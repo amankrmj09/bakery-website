@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
 import { LuUser as User, LuShoppingBag as ShoppingBag, LuMapPin as MapPin } from 'react-icons/lu';
 import { fetchUserOrders } from '../../order/slice/orderSlice';
+import { fetchUserAddresses } from '../redux/addressSlice';
 
 import ProfileDetails from '../components/ProfileDetails';
 import MyOrders from '../components/MyOrders';
@@ -18,6 +19,7 @@ export default function ProfilePage() {
   useEffect(() => {
     if (user?.id) {
        dispatch(fetchUserOrders({ userId: user.id, page: 0, size: 5 }));
+       dispatch(fetchUserAddresses());
     }
   }, [dispatch, user?.id]);
 
