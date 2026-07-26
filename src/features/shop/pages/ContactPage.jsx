@@ -1,10 +1,30 @@
-import React, { useState } from 'react';
-import { LuMail as Mail, LuPhone as Phone, LuMapPin as MapPin, LuSend as Send, LuStar as Star, LuMessageSquare as MessageSquare, LuMessageCircle as MessageCircle } from 'react-icons/lu';
+import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { LuMail as Mail, LuPhone as Phone, LuMapPin as MapPin, LuSend as Send, LuStar as Star, LuMessageSquare as MessageSquare, LuMessageCircle as MessageCircle, LuTag as Tag } from 'react-icons/lu';
 import api from '../../../lib/axios';
+import SleekDropdown from '../../../components/ui/SleekDropdown';
 
 export default function ContactPage() {
+  const { user } = useSelector((state) => state.auth);
+
   const [formType, setFormType] = useState('contact'); // 'contact', 'feedback', 'testimonial'
-  const [formData, setFormData] = useState({ name: '', email: '', message: '', type: 'GENERAL', rating: 5 });
+  const [formData, setFormData] = useState({ 
+    name: user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username || '' : '', 
+    email: user?.email || '', 
+    message: '', 
+    type: 'GENERAL', 
+    rating: 5 
+  });
+
+  useEffect(() => {
+    if (user) {
+      setFormData(prev => ({
+        ...prev,
+        name: prev.name || `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username || '',
+        email: prev.email || user.email || ''
+      }));
+    }
+  }, [user]);
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -30,7 +50,13 @@ export default function ContactPage() {
       }
       setSubmitted(true);
       setTimeout(() => setSubmitted(false), 3000);
-      setFormData({ name: '', email: '', message: '', type: 'GENERAL', rating: 5 });
+      setFormData({ 
+        name: user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username || '' : '', 
+        email: user?.email || '', 
+        message: '', 
+        type: 'GENERAL', 
+        rating: 5 
+      });
     } catch (err) {
       console.error('Failed to submit form', err);
     } finally {
@@ -138,7 +164,8 @@ export default function ContactPage() {
                     value={formData.name}
                     onChange={(e) => setFormData({...formData, name: e.target.value})}
                     placeholder="John Doe"
-                    className="w-full bg-muted/50 border border-border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                    disabled={!!user}
+                    className="w-full bg-muted/50 border border-border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all disabled:opacity-75 disabled:cursor-not-allowed disabled:bg-muted/70"
                   />
                 </div>
                 <div className="space-y-2">
@@ -149,7 +176,8 @@ export default function ContactPage() {
                     value={formData.email}
                     onChange={(e) => setFormData({...formData, email: e.target.value})}
                     placeholder="john@example.com"
-                    className="w-full bg-muted/50 border border-border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                    disabled={!!user}
+                    className="w-full bg-muted/50 border border-border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all disabled:opacity-75 disabled:cursor-not-allowed disabled:bg-muted/70"
                   />
                 </div>
               </div>
@@ -157,16 +185,20 @@ export default function ContactPage() {
               {formType === 'feedback' && (
                 <div className="space-y-2">
                   <label className="text-sm font-bold text-foreground">Feedback Type</label>
-                  <select 
+                  <SleekDropdown
+                    icon={Tag}
+                    iconColor="text-primary-500"
+                    headerTitle="Select Feedback Type"
+                    fullWidth
+                    options={[
+                      { value: 'GENERAL',  label: 'General' },
+                      { value: 'DELIVERY', label: 'Delivery' },
+                      { value: 'PRODUCT',  label: 'Product Quality' },
+                      { value: 'APP',      label: 'App Experience' },
+                    ]}
                     value={formData.type}
-                    onChange={(e) => setFormData({...formData, type: e.target.value})}
-                    className="w-full bg-muted/50 border border-border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
-                  >
-                    <option value="GENERAL">General</option>
-                    <option value="DELIVERY">Delivery</option>
-                    <option value="PRODUCT">Product Quality</option>
-                    <option value="APP">App Experience</option>
-                  </select>
+                    onChange={(val) => setFormData({ ...formData, type: val })}
+                  />
                 </div>
               )}
 

@@ -40,20 +40,25 @@ export default function MainLayout() {
                 {/* Center Nav Links */}
                 <nav className="hidden md:flex items-center space-x-8 font-semibold text-sm">
                     <Link to="/"
-                          className={`relative pb-1 ${location.pathname === '/' ? 'text-primary-500' : 'text-foreground hover:text-primary-500 transition-colors'}`}>
+                          className={`relative pb-1 transition-colors ${location.pathname === '/' ? 'text-primary-500' : 'text-foreground hover:text-primary-500'}`}>
                         Home
                         {location.pathname === '/' &&
                             <span className="absolute bottom-0 left-0 w-full h-0.5 bg-primary-500 rounded-full"/>}
                     </Link>
                     <Link to="/shop"
-                          className={`flex items-center space-x-1 ${location.pathname.startsWith('/shop') ? 'text-primary-500' : 'text-foreground hover:text-primary-500 transition-colors'}`}>
-                        <span>Menu</span>
+                          className={`relative pb-1 transition-colors ${location.pathname.startsWith('/shop') ? 'text-primary-500' : 'text-foreground hover:text-primary-500'}`}>
+                        Menu
+                        {location.pathname.startsWith('/shop') &&
+                            <span className="absolute bottom-0 left-0 w-full h-0.5 bg-primary-500 rounded-full"/>}
                     </Link>
                     <Link to="/contact"
-                          className={`text-foreground hover:text-primary-500 transition-colors ${location.pathname === '/contact' ? 'text-primary-500 font-bold' : ''}`}>
+                          className={`relative pb-1 transition-colors ${location.pathname === '/contact' ? 'text-primary-500' : 'text-foreground hover:text-primary-500'}`}>
                         Contact
+                        {location.pathname === '/contact' &&
+                            <span className="absolute bottom-0 left-0 w-full h-0.5 bg-primary-500 rounded-full"/>}
                     </Link>
                 </nav>
+
 
                 {/* Right Actions */}
                 <div className="flex items-center space-x-6">

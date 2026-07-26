@@ -3,7 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { fetchProducts, fetchCategories } from '../redux/shopThunk';
 import { addItemToCart } from '../../cart/redux/cartThunk';
-import { LuSearch as Search, LuFilter as Filter, LuShoppingCart as ShoppingCart, LuStar as Star, LuChevronDown as ChevronDown, LuLoader as Loader2, LuCheck as Check, LuUtensilsCrossed as UtensilsCrossed } from 'react-icons/lu';
+import { LuSearch as Search, LuFilter as Filter, LuShoppingCart as ShoppingCart, LuStar as Star, LuLoader as Loader2, LuCheck as Check, LuUtensilsCrossed as UtensilsCrossed, LuArrowUpDown as ArrowUpDown } from 'react-icons/lu';
+import SleekDropdown from '../../../components/ui/SleekDropdown';
 import { toast } from 'sonner';
 import ProductSkeleton from '../components/ProductSkeleton';
 import ProductCard from '../components/ProductCard';
@@ -130,22 +131,20 @@ export default function ShopPage() {
             <span className="text-muted-foreground ml-2 text-sm">({sortedProducts.length})</span>
           </h2>
 
-            <div className="flex items-center space-x-3 bg-card px-4 py-2 rounded-xl border border-border shadow-sm w-fit">
-              <span className="text-sm font-bold text-muted-foreground">Sort by:</span>
-              <div className="relative">
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="appearance-none bg-transparent border-none text-foreground font-bold text-sm focus:outline-none cursor-pointer pr-6"
-                >
-                  <option value="name_asc">Name (A-Z)</option>
-                  <option value="name_desc">Name (Z-A)</option>
-                  <option value="price_asc">Price (Low to High)</option>
-                  <option value="price_desc">Price (High to Low)</option>
-                </select>
-                <ChevronDown className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 text-primary-500 pointer-events-none" />
-              </div>
-            </div>
+            <SleekDropdown
+              icon={ArrowUpDown}
+              iconColor="text-primary-500"
+              headerTitle="Sort By"
+              options={[
+                { value: 'name_asc',    label: 'Name (A–Z)' },
+                { value: 'name_desc',   label: 'Name (Z–A)' },
+                { value: 'price_asc',   label: 'Price: Low to High' },
+                { value: 'price_desc',  label: 'Price: High to Low' },
+              ]}
+              value={sortBy}
+              onChange={setSortBy}
+              widthClass="w-52"
+            />
           </div>
 
           <div className="flex-1">
