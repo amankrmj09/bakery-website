@@ -1,10 +1,11 @@
-import React, {useEffect} from 'react';
+import React, {useState, useEffect} from 'react';
 import {Link, Outlet, useLocation, useNavigate} from 'react-router-dom';
 import {useDispatch, useSelector} from 'react-redux';
-import { FiLogOut, FiSearch, FiShoppingBag } from 'react-icons/fi';
+import { FiLogOut, FiSearch, FiShoppingBag, FiX } from 'react-icons/fi';
 import {logout} from '../../features/auth/redux/authThunk';
 import {fetchCart} from '../../features/cart/redux/cartThunk';
 import Footer from './Footer';
+import SearchAutocomplete from '../ui/SearchAutocomplete';
 
 export default function MainLayout() {
     const dispatch = useDispatch();
@@ -12,10 +13,23 @@ export default function MainLayout() {
     const location = useLocation();
     const {user} = useSelector(state => state.auth);
     const {cart} = useSelector(state => state.cart);
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
 
     useEffect(() => {
         dispatch(fetchCart());
     }, [dispatch]);
+
+    // Keyboard shortcut for search
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                e.preventDefault();
+                setIsSearchOpen(true);
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, []);
 
     const cartItemCount = cart?.totalQuantity || 0;
 
@@ -62,8 +76,16 @@ export default function MainLayout() {
 
                 {/* Right Actions */}
                 <div className="flex items-center space-x-6">
-                    <button className="text-foreground hover:text-primary-500 transition-colors">
-                        <FiSearch className="w-5 h-5"/>
+                    <button 
+                        onClick={() => setIsSearchOpen(true)}
+                        className="flex items-center gap-2 bg-muted/30 hover:bg-muted border border-transparent hover:border-border/50 text-muted-foreground hover:text-foreground px-3 py-1.5 rounded-full transition-all duration-300"
+                        title="Search (Ctrl+K)"
+                    >
+                        <FiSearch className="w-4 h-4"/>
+                        <span className="text-xs font-medium hidden sm:inline-block mr-1">Search...</span>
+                        <kbd className="hidden md:inline-flex items-center gap-1 bg-background/50 border border-border/50 rounded px-1.5 py-0.5 text-[10px] font-semibold text-muted-foreground">
+                            <span className="text-[9px]">⌘</span>K
+                        </kbd>
                     </button>
 
                     <Link to="/cart" className="relative text-foreground hover:text-primary-500 transition-colors">
@@ -111,6 +133,30 @@ export default function MainLayout() {
                     <Footer />
                 )}
             </main>
+            {/* Global Search Modal */}
+            {isSearchOpen && (
+                <div className="fixed inset-0 z-[100] flex flex-col items-center pt-24 px-4 bg-background/80 backdrop-blur-sm animate-in fade-in duration-200">
+                    <div className="w-full max-w-2xl relative">
+                        <button 
+                            onClick={() => setIsSearchOpen(false)}
+                            className="absolute -top-12 right-0 p-2 text-muted-foreground hover:text-foreground transition-colors"
+                        >
+                            <FiX className="w-6 h-6" />
+                        </button>
+                        <SearchAutocomplete 
+                            placeholder="Search anywhere..." 
+                            autoFocus={true}
+                            onSearchSubmit={(query) => {
+                                setIsSearchOpen(false);
+                                if (query.trim()) {
+                                    navigate(`/shop?search=${encodeURIComponent(query)}`);
+                                }
+                            }}
+                        />
+                    </div>
+                    <div className="flex-1 w-full" onClick={() => setIsSearchOpen(false)}></div>
+                </div>
+            )}
         </div>
     );
 }

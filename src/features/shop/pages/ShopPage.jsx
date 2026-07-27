@@ -8,6 +8,7 @@ import SleekDropdown from '../../../components/ui/SleekDropdown';
 import { toast } from 'sonner';
 import ProductSkeleton from '../components/ProductSkeleton';
 import ProductCard from '../components/ProductCard';
+import SearchAutocomplete from '../../../components/ui/SearchAutocomplete';
 
 export default function ShopPage() {
   const dispatch = useDispatch();
@@ -66,14 +67,17 @@ export default function ShopPage() {
           <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-6">
             Delicious Treats,<br/>Baked Fresh Daily
           </h1>
-          <div className="bg-white rounded-full p-2 flex items-center shadow-lg max-w-md w-full">
-            <Search className="w-5 h-5 text-muted-foreground ml-3 mr-2" />
-            <input 
-              type="text" 
+          <div className="max-w-md w-full">
+            <SearchAutocomplete 
               placeholder="Search our menu..." 
-              value={searchQuery || ''}
-              onChange={handleSearchChange}
-              className="flex-1 bg-transparent border-none focus:outline-none text-foreground text-sm"
+              initialValue={searchQuery || ''}
+              onSearchSubmit={(value) => {
+                if (value) {
+                  setSearchParams({ search: value });
+                } else {
+                  setSearchParams({});
+                }
+              }}
             />
           </div>
         </div>

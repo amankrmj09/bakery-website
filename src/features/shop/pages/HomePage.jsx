@@ -216,9 +216,9 @@ export default function HomePage() {
 
             {/* 1. HERO SECTION (Carousel) */}
             <section className="max-w-7xl mx-auto w-full px-6 py-4 lg:py-6">
-                <div className="flex flex-col lg:grid lg:grid-cols-5 gap-4 lg:gap-6 h-[calc(100vh-140px)] min-h-[400px] max-h-[700px]">
+                <div className="flex flex-col lg:grid lg:grid-cols-5 gap-4 lg:gap-6">
                     {/* Main Hero Image (Left, 3:2 width ratio -> 3/5 width) */}
-                    <div className="lg:col-span-3 rounded-[2rem] overflow-hidden relative shadow-md h-full w-full bg-muted/10">
+                    <div className="lg:col-span-3 rounded-[2rem] overflow-hidden relative shadow-md aspect-square lg:aspect-auto lg:h-full w-full bg-muted/10">
                         <AnimatePresence mode="popLayout">
                             <motion.div
                                 key={`large-${activeIndex}`}
@@ -238,8 +238,8 @@ export default function HomePage() {
                     </div>
 
                     {/* Side Images (Right, 2/5 width, 1:1 vertical split) */}
-                    <div className="lg:col-span-2 flex flex-col gap-4 lg:gap-6 h-full w-full">
-                        <div className="flex-1 rounded-[2rem] relative overflow-hidden shadow-sm h-full w-full bg-muted/10">
+                    <div className="lg:col-span-2 flex flex-col sm:flex-row lg:flex-col gap-4 lg:gap-6 w-full">
+                        <div className="flex-1 lg:flex-none rounded-[2rem] relative overflow-hidden shadow-sm w-full aspect-[3/2] bg-muted/10">
                             <AnimatePresence mode="popLayout">
                                 <motion.div
                                     key={`small1-${activeIndex}`}
@@ -258,7 +258,7 @@ export default function HomePage() {
                             </AnimatePresence>
                         </div>
 
-                        <div className="flex-1 rounded-[2rem] relative overflow-hidden shadow-sm h-full w-full bg-muted/10">
+                        <div className="flex-1 lg:flex-none rounded-[2rem] relative overflow-hidden shadow-sm w-full aspect-[3/2] bg-muted/10">
                             <AnimatePresence mode="popLayout">
                                 <motion.div
                                     key={`small2-${activeIndex}`}
