@@ -207,11 +207,11 @@ export default function ProductDetailsPage() {
             <div className="text-3xl font-black text-foreground mb-6 flex flex-wrap items-end gap-2">
               {product.discountPrice && product.discountPrice < product.price ? (
                 <>
-                   <span className="text-primary-500">${product.discountPrice.toFixed(2)}</span>
-                   <span className="text-xl text-muted-foreground line-through">${product.price?.toFixed(2)}</span>
+                   <span className="text-primary-500">₹{product.discountPrice.toFixed(2)}</span>
+                   <span className="text-xl text-muted-foreground line-through">₹{product.price?.toFixed(2)}</span>
                 </>
               ) : (
-                <span className="text-primary-500">${product.price?.toFixed(2)}</span>
+                <span className="text-primary-500">₹{product.price?.toFixed(2)}</span>
               )}
               {product.unit && (
                 <span className="text-sm font-medium text-muted-foreground mb-1">/ {product.unit}</span>

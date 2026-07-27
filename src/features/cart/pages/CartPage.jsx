@@ -78,7 +78,7 @@ export default function CartPage() {
                         </span>
                       )}
                     </h3>
-                    <p className="text-sm text-muted-foreground">${item.unitPrice.toFixed(2)} each</p>
+                    <p className="text-sm text-muted-foreground">₹{item.unitPrice.toFixed(2)} each</p>
                   </div>
                   <button 
                     onClick={() => handleRemove(item.id)}
@@ -104,7 +104,7 @@ export default function CartPage() {
                       <Plus className="w-4 h-4" />
                     </button>
                   </div>
-                  <span className="font-bold text-lg text-foreground">${item.totalPrice.toFixed(2)}</span>
+                  <span className="font-bold text-lg text-foreground">₹{item.totalPrice.toFixed(2)}</span>
                 </div>
               </div>
             </div>
@@ -118,23 +118,23 @@ export default function CartPage() {
         <div className="space-y-4 text-sm mb-6 flex-1 min-h-[min-content]">
           <div className="flex justify-between text-muted-foreground">
             <span>Subtotal</span>
-            <span>${cart.subtotal?.toFixed(2) || '0.00'}</span>
+            <span>₹{cart.subtotal?.toFixed(2) || '0.00'}</span>
           </div>
           {cart.taxAmount > 0 && (
             <div className="flex justify-between text-muted-foreground">
               <span>Tax</span>
-              <span>${cart.taxAmount.toFixed(2)}</span>
+              <span>₹{cart.taxAmount.toFixed(2)}</span>
             </div>
           )}
           {cart.discountAmount > 0 && (
             <div className="flex justify-between text-green-500">
               <span>Discount</span>
-              <span>-${cart.discountAmount.toFixed(2)}</span>
+              <span>-₹{cart.discountAmount.toFixed(2)}</span>
             </div>
           )}
           <div className="flex justify-between border-t border-border pt-4 text-base font-bold text-foreground mt-4">
             <span>Total</span>
-            <span>${cart.totalAmount?.toFixed(2) || '0.00'}</span>
+            <span>₹{cart.totalAmount?.toFixed(2) || '0.00'}</span>
           </div>
         </div>
 

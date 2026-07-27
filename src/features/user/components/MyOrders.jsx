@@ -387,7 +387,7 @@ export default function MyOrders() {
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wider mb-1">Total Amount</p>
-                  <p className="font-bold text-sm">${order.totalAmount.toFixed(2)}</p>
+                  <p className="font-bold text-sm">₹{order.totalAmount.toFixed(2)}</p>
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wider mb-1">Order #</p>
@@ -488,7 +488,7 @@ export default function MyOrders() {
                             <div>
                               <p className="font-bold text-sm text-foreground">{item.productName}</p>
                               <p className="text-xs text-muted-foreground mt-1">
-                                Qty: {item.quantity} × ${(item.unitPrice || 0).toFixed(2)}
+                                Qty: {item.quantity} × ₹{(item.unitPrice || 0).toFixed(2)}
                                 {item.taxClass && item.taxRate > 0 && (
                                   <span className="ml-2 px-1.5 py-0.5 bg-muted border border-border rounded text-[10px] font-medium text-muted-foreground">
                                     {item.taxClass} ({(item.taxRate * 100).toFixed(0)}%)
@@ -498,7 +498,7 @@ export default function MyOrders() {
                             </div>
                           </div>
                           <div className="flex flex-col items-end gap-2">
-                            <p className="font-bold text-sm text-foreground">${(item.totalPrice || ((item.unitPrice || 0) * item.quantity)).toFixed(2)}</p>
+                            <p className="font-bold text-sm text-foreground">₹{(item.totalPrice || ((item.unitPrice || 0) * item.quantity)).toFixed(2)}</p>
                             {order.status === 'DELIVERED' && (() => {
                               const localReview = reviews.data[item.productId]?.find(r => r.userId === user.id);
                               const isReviewed = localReview || item.hasReviewed;
@@ -523,27 +523,27 @@ export default function MyOrders() {
                       <div className="space-y-2 text-sm">
                         <div className="flex justify-between text-muted-foreground">
                           <span>Subtotal</span>
-                          <span className="font-semibold text-foreground">${(order.totalAmount - (order.taxAmount || 0) - (order.deliveryFee || 0) + (order.discountAmount || 0)).toFixed(2)}</span>
+                          <span className="font-semibold text-foreground">₹{(order.totalAmount - (order.taxAmount || 0) - (order.deliveryFee || 0) + (order.discountAmount || 0)).toFixed(2)}</span>
                         </div>
                         {order.taxAmount > 0 && (
                           <div className="flex justify-between text-muted-foreground">
                             <span>Tax</span>
-                            <span className="font-semibold text-foreground">${order.taxAmount.toFixed(2)}</span>
+                            <span className="font-semibold text-foreground">₹{order.taxAmount.toFixed(2)}</span>
                           </div>
                         )}
                         {order.discountAmount > 0 && (
                           <div className="flex justify-between text-green-500">
                             <span>Discount</span>
-                            <span className="font-semibold">-${order.discountAmount.toFixed(2)}</span>
+                            <span className="font-semibold">-₹{order.discountAmount.toFixed(2)}</span>
                           </div>
                         )}
                         <div className="flex justify-between text-muted-foreground">
                           <span>Delivery Fee</span>
-                          <span className="font-semibold text-foreground">{order.deliveryFee > 0 ? `$${order.deliveryFee.toFixed(2)}` : 'Free'}</span>
+                          <span className="font-semibold text-foreground">{order.deliveryFee > 0 ? `₹${order.deliveryFee.toFixed(2)}` : 'Free'}</span>
                         </div>
                         <div className="flex justify-between border-t border-border pt-2 mt-2 font-bold text-base text-foreground">
                           <span>Total</span>
-                          <span className="text-primary-600">${order.totalAmount.toFixed(2)}</span>
+                          <span className="text-primary-600">₹{order.totalAmount.toFixed(2)}</span>
                         </div>
                       </div>
                     </div>

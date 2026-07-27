@@ -160,7 +160,7 @@ const SearchAutocomplete = ({
                                             <p className="text-xs text-muted-foreground uppercase tracking-wider mt-0.5">{product.categoryName || 'Treat'}</p>
                                         </div>
                                         <div className="font-extrabold text-primary-500 text-sm flex-shrink-0">
-                                            ${product.price?.toFixed(2) || '0.00'}
+                                            ₹{product.price?.toFixed(2) || '0.00'}
                                         </div>
                                     </button>
                                 </li>

@@ -179,7 +179,7 @@ export default function CheckoutPage() {
                   {formData.deliveryType === 'DELIVERY' && <div className="absolute top-3 right-3 w-3 h-3 bg-primary-500 rounded-full animate-pulse" />}
                   <MapPin className={`w-8 h-8 mb-3 ${formData.deliveryType === 'DELIVERY' ? 'text-primary-500' : 'text-muted-foreground'}`} />
                   <span className={`text-sm font-bold ${formData.deliveryType === 'DELIVERY' ? 'text-primary-600' : 'text-foreground'}`}>Delivery</span>
-                  <span className="text-xs text-muted-foreground mt-1">$5.00 fee</span>
+                  <span className="text-xs text-muted-foreground mt-1">₹5.00 fee</span>
                 </button>
                 <button
                   type="button"
@@ -278,7 +278,7 @@ export default function CheckoutPage() {
                 className="w-full bg-primary-500 text-white p-4 rounded-xl font-bold text-lg hover:bg-primary-600 focus:ring-4 focus:ring-primary-500/30 transition-all disabled:opacity-50 flex items-center justify-center shadow-lg shadow-primary-500/25 transform hover:-translate-y-0.5"
               >
                 {checkoutState.loading ? <Loader2 className="w-6 h-6 animate-spin mr-2" /> : null}
-                <span>Pay ${finalTotal.toFixed(2)}</span>
+                <span>Pay ₹{finalTotal.toFixed(2)}</span>
                 {!checkoutState.loading && <ArrowRight className="w-5 h-5 ml-2" />}
               </button>
             </div>
@@ -303,7 +303,7 @@ export default function CheckoutPage() {
                         )}
                       </p>
                     </div>
-                    <p className="font-semibold text-sm">${(item.totalPrice || (item.unitPrice * item.quantity)).toFixed(2)}</p>
+                    <p className="font-semibold text-sm">₹{(item.totalPrice || (item.unitPrice * item.quantity)).toFixed(2)}</p>
                   </div>
                 ))}
               </div>
@@ -311,27 +311,27 @@ export default function CheckoutPage() {
               <div className="border-t border-border pt-4 space-y-3">
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground font-medium">Subtotal</span>
-                  <span className="font-semibold">${subtotal.toFixed(2)}</span>
+                  <span className="font-semibold">₹{subtotal.toFixed(2)}</span>
                 </div>
                 {taxAmount > 0 && (
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground font-medium">Tax</span>
-                    <span className="font-semibold">${taxAmount.toFixed(2)}</span>
+                    <span className="font-semibold">₹{taxAmount.toFixed(2)}</span>
                   </div>
                 )}
                 {discountAmount > 0 && (
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground font-medium">Discount</span>
-                    <span className="font-semibold text-green-500">-${discountAmount.toFixed(2)}</span>
+                    <span className="font-semibold text-green-500">-₹{discountAmount.toFixed(2)}</span>
                   </div>
                 )}
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground font-medium">Delivery Fee</span>
-                  <span className="font-semibold">{deliveryFee > 0 ? `$${deliveryFee.toFixed(2)}` : 'Free'}</span>
+                  <span className="font-semibold">{deliveryFee > 0 ? `₹${deliveryFee.toFixed(2)}` : 'Free'}</span>
                 </div>
                 <div className="pt-4 border-t border-border flex justify-between">
                   <span className="text-lg font-bold text-foreground">Total</span>
-                  <span className="text-xl font-black text-primary-600">${finalTotal.toFixed(2)}</span>
+                  <span className="text-xl font-black text-primary-600">₹{finalTotal.toFixed(2)}</span>
                 </div>
               </div>
 

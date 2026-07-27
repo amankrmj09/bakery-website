@@ -103,11 +103,11 @@ export default function ProductCard({ product, className = "" }) {
                     <div className="flex flex-col justify-center">
                         {product.discountPrice && product.discountPrice < product.price ? (
                             <>
-                                <span className="font-extrabold text-xl text-primary-500 leading-none">${product.discountPrice.toFixed(2)}</span>
-                                <span className="text-xs text-muted-foreground line-through leading-none mt-1">${product.price?.toFixed(2)}</span>
+                                <span className="font-extrabold text-xl text-primary-500 leading-none">₹{product.discountPrice.toFixed(2)}</span>
+                                <span className="text-xs text-muted-foreground line-through leading-none mt-1">₹{product.price?.toFixed(2)}</span>
                             </>
                         ) : (
-                            <span className="font-extrabold text-xl text-primary-500">${product.price?.toFixed(2) || '0.00'}</span>
+                            <span className="font-extrabold text-xl text-primary-500">₹{product.price?.toFixed(2) || '0.00'}</span>
                         )}
                     </div>
                     <div className="flex space-x-2">
