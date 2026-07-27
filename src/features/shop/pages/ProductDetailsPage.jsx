@@ -26,6 +26,8 @@ export default function ProductDetailsPage() {
   });
   const [reviewsCurrentPage, setReviewsCurrentPage] = useState(0);
   const [reviewsPageSize, setReviewsPageSize] = useState(6);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [activeTab, setActiveTab] = useState('about');
 
   // We find the product from redux store since we already fetched it on the shop page,
   // or we might need to fetch it if we navigate directly to the URL.
@@ -116,15 +118,21 @@ export default function ProductDetailsPage() {
     ? (productReviews.reduce((acc, r) => acc + r.rating, 0) / productReviews.length).toFixed(1) 
     : (product.averageRating > 0 ? product.averageRating.toFixed(1) : '0.0');
 
+  const allImages = product ? Array.from(new Set([
+    ...(product.primaryImageUrl ? [product.primaryImageUrl] : []),
+    ...(product.mediaUrls || [])
+  ])) : [];
+  const displayImage = selectedImage || allImages[0] || '/images/placeholder_bakery.png';
+
   return (
     <div className="min-h-screen bg-background pb-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
         <button 
           onClick={() => navigate(-1)} 
-          className="flex items-center text-muted-foreground hover:text-foreground font-medium transition-colors mb-8 bg-card px-4 py-2 rounded-xl shadow-sm border border-border w-fit"
+          className="group flex items-center text-sm font-bold text-muted-foreground hover:text-primary-500 transition-colors mb-6 w-fit"
         >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back
+          <ArrowLeft className="w-4 h-4 mr-1.5 group-hover:-translate-x-1 transition-transform" />
+          Back to Menu
         </button>
 
         <div className="bg-card rounded-[2.5rem] p-6 md:p-10 shadow-lg border border-border flex flex-col md:flex-row gap-10 md:gap-16">
@@ -133,7 +141,7 @@ export default function ProductDetailsPage() {
           <div className="w-full md:w-1/2">
             <div className="aspect-square bg-muted/30 rounded-3xl relative overflow-hidden flex items-center justify-center border border-border/50">
               <img 
-                src={product.primaryImageUrl || product.mediaUrls?.[0] || '/images/placeholder_bakery.png'} 
+                src={displayImage} 
                 alt={product.name} 
                 onError={(e) => { e.target.onerror = null; e.target.src = '/images/placeholder_bakery.png'; }}
                 className="object-cover w-full h-full mix-blend-multiply transition-transform duration-500 hover:scale-105" 
@@ -154,12 +162,16 @@ export default function ProductDetailsPage() {
             </div>
             
             {/* Thumbnails if multiple images */}
-            {product.mediaUrls && product.mediaUrls.length > 1 && (
-              <div className="flex gap-4 mt-4 overflow-x-auto pb-2 custom-scrollbar">
-                {product.mediaUrls.map((url, idx) => (
-                  <div key={idx} className="w-20 h-20 flex-shrink-0 bg-muted/30 rounded-xl overflow-hidden border border-border">
+            {allImages.length > 1 && (
+              <div className="flex gap-4 mt-4 overflow-x-auto pb-2 custom-scrollbar w-full max-w-full min-w-0">
+                {allImages.map((url, idx) => (
+                  <button 
+                    key={idx} 
+                    onClick={() => setSelectedImage(url)}
+                    className={`w-20 h-20 flex-shrink-0 bg-muted/30 rounded-xl overflow-hidden border transition-all ${displayImage === url ? 'border-primary-500 ring-2 ring-primary-500/50' : 'border-border hover:border-primary-500/50'}`}
+                  >
                      <img src={url} alt={`${product.name} view ${idx + 1}`} className="w-full h-full object-cover mix-blend-multiply" />
-                  </div>
+                  </button>
                 ))}
               </div>
             )}
@@ -195,39 +207,83 @@ export default function ProductDetailsPage() {
               <span className="text-sm font-medium text-muted-foreground mb-1 ml-2 border-l border-border pl-2">(exclusive of tax)</span>
             </div>
             
-            <div className="bg-muted/30 p-5 rounded-2xl border border-border/50 mb-8">
-              <h3 className="font-bold flex items-center text-foreground mb-2"><Info className="w-4 h-4 mr-2 text-primary-500" /> Description</h3>
-              <p className="text-muted-foreground text-base leading-relaxed">
-                {product.description || 'A delicious treat fresh from our bakery, crafted with the finest ingredients.'}
-              </p>
-            </div>
-
-            {/* Extra Info Grid */}
-            <div className="grid grid-cols-2 gap-4 mb-8">
-              {product.caloriesPerUnit && (
-                <div className="bg-card border border-border rounded-xl p-4 shadow-sm">
-                  <span className="text-xs font-semibold text-muted-foreground uppercase">Calories</span>
-                  <p className="font-bold text-foreground text-lg">{product.caloriesPerUnit} kcal</p>
-                </div>
-              )}
-              {product.shelfLifeHours && (
-                <div className="bg-card border border-border rounded-xl p-4 shadow-sm">
-                  <span className="text-xs font-semibold text-muted-foreground uppercase">Shelf Life</span>
-                  <p className="font-bold text-foreground text-lg">{product.shelfLifeHours} hrs</p>
-                </div>
-              )}
-              {product.ingredients && product.ingredients.length > 0 && (
-                <div className="bg-card border border-border rounded-xl p-4 shadow-sm col-span-2">
-                  <span className="text-xs font-semibold text-muted-foreground uppercase">Ingredients</span>
-                  <p className="font-medium text-foreground text-sm mt-1">{product.ingredients.join(', ')}</p>
-                </div>
-              )}
-              {product.allergens && product.allergens.length > 0 && (
-                <div className="bg-orange-50 border border-orange-200 dark:bg-orange-500/10 dark:border-orange-500/20 rounded-xl p-4 shadow-sm col-span-2">
-                  <span className="text-xs font-bold text-orange-600 dark:text-orange-400 uppercase">Contains Allergens</span>
-                  <p className="font-bold text-orange-800 dark:text-orange-300 text-sm mt-1">{product.allergens.join(', ')}</p>
-                </div>
-              )}
+            {/* Tabs Section */}
+            <div className="flex flex-col min-h-[300px] bg-muted/30 rounded-2xl border border-border/50 mb-8 p-1">
+              <div className="flex overflow-x-auto custom-scrollbar border-b border-border/50 pb-2 mb-4 p-4 gap-2">
+                <button 
+                  onClick={() => setActiveTab('about')}
+                  className={`px-4 py-2 font-bold text-sm whitespace-nowrap rounded-lg transition-colors ${activeTab === 'about' ? 'bg-primary-500 text-white shadow-sm' : 'text-muted-foreground hover:bg-muted'}`}
+                >
+                  About the Product
+                </button>
+                {product.ingredients && product.ingredients.length > 0 && (
+                  <button 
+                    onClick={() => setActiveTab('ingredients')}
+                    className={`px-4 py-2 font-bold text-sm whitespace-nowrap rounded-lg transition-colors ${activeTab === 'ingredients' ? 'bg-primary-500 text-white shadow-sm' : 'text-muted-foreground hover:bg-muted'}`}
+                  >
+                    Ingredients
+                  </button>
+                )}
+                {product.allergens && product.allergens.length > 0 && (
+                  <button 
+                    onClick={() => setActiveTab('allergens')}
+                    className={`px-4 py-2 font-bold text-sm whitespace-nowrap rounded-lg transition-colors ${activeTab === 'allergens' ? 'bg-orange-500 text-white shadow-sm' : 'text-muted-foreground hover:bg-muted'}`}
+                  >
+                    Allergens
+                  </button>
+                )}
+                {(product.caloriesPerUnit || product.shelfLifeHours) && (
+                  <button 
+                    onClick={() => setActiveTab('other')}
+                    className={`px-4 py-2 font-bold text-sm whitespace-nowrap rounded-lg transition-colors ${activeTab === 'other' ? 'bg-primary-500 text-white shadow-sm' : 'text-muted-foreground hover:bg-muted'}`}
+                  >
+                    Other Details
+                  </button>
+                )}
+              </div>
+              
+              <div className="flex-1 p-4 pt-0">
+                {activeTab === 'about' && (
+                  <div>
+                    <h3 className="font-bold flex items-center text-foreground mb-2"><Info className="w-4 h-4 mr-2 text-primary-500" /> Description</h3>
+                    <p className="text-muted-foreground text-base leading-relaxed">
+                      {product.description || 'A delicious treat fresh from our bakery, crafted with the finest ingredients.'}
+                    </p>
+                  </div>
+                )}
+                {activeTab === 'ingredients' && product.ingredients && product.ingredients.length > 0 && (
+                  <div>
+                    <h3 className="font-bold flex items-center text-foreground mb-2">Ingredients</h3>
+                    <p className="font-medium text-foreground text-sm mt-1 leading-relaxed">
+                      {product.ingredients.join(', ')}
+                    </p>
+                  </div>
+                )}
+                {activeTab === 'allergens' && product.allergens && product.allergens.length > 0 && (
+                  <div>
+                    <h3 className="font-bold flex items-center text-orange-600 dark:text-orange-400 mb-2">Contains Allergens</h3>
+                    <p className="font-bold text-orange-800 dark:text-orange-300 text-sm mt-1">
+                      {product.allergens.join(', ')}
+                    </p>
+                  </div>
+                )}
+                {activeTab === 'other' && (product.caloriesPerUnit || product.shelfLifeHours) && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {product.caloriesPerUnit && (
+                      <div className="bg-card border border-border rounded-xl p-4 shadow-sm">
+                        <span className="text-xs font-semibold text-muted-foreground uppercase">Calories</span>
+                        <p className="font-bold text-foreground text-lg">{product.caloriesPerUnit} kcal</p>
+                      </div>
+                    )}
+                    {product.shelfLifeHours && (
+                      <div className="bg-card border border-border rounded-xl p-4 shadow-sm">
+                        <span className="text-xs font-semibold text-muted-foreground uppercase">Shelf Life</span>
+                        <p className="font-bold text-foreground text-lg">{product.shelfLifeHours} hrs</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Actions */}
