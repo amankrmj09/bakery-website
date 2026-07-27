@@ -218,7 +218,7 @@ export default function HomePage() {
             <section className="max-w-7xl mx-auto w-full px-6 py-4 lg:py-6">
                 <div className="flex flex-col lg:grid lg:grid-cols-5 gap-4 lg:gap-6">
                     {/* Main Hero Image (Left, 3:2 width ratio -> 3/5 width) */}
-                    <div className="lg:col-span-3 rounded-[2rem] overflow-hidden relative shadow-md aspect-square lg:aspect-auto lg:h-full w-full bg-muted/10">
+                    <div className="lg:col-span-3 rounded-[2rem] overflow-hidden relative shadow-md aspect-square w-full bg-muted/10">
                         <AnimatePresence mode="popLayout">
                             <motion.div
                                 key={`large-${activeIndex}`}
