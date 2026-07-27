@@ -219,60 +219,72 @@ export default function ProductDetailsPage() {
               <span className="text-sm font-medium text-muted-foreground mb-1 ml-2 border-l border-border pl-2">(exclusive of tax)</span>
             </div>
             
-            {/* Tabs Section */}
-            <div className="flex flex-col min-h-[350px] bg-card border border-border/50 rounded-[2.5rem] shadow-lg mb-8 overflow-hidden relative">
-              {/* Decorative background accent */}
-              <div className="absolute -top-12 -right-12 w-64 h-64 bg-primary-500/10 rounded-full blur-3xl pointer-events-none z-0"></div>
+            {/* Simple Underline Tabs */}
+            <div className="flex flex-col min-h-[350px] mb-8">
+              {/* Tab Navigation */}
+              <div className="flex overflow-x-auto gap-6 border-b border-border mb-6 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                <button 
+                  onClick={() => setActiveTab('about')}
+                  className={`pb-4 text-base font-bold transition-all whitespace-nowrap border-b-2 ${
+                    activeTab === 'about' 
+                      ? 'border-primary-500 text-primary-500' 
+                      : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
+                  }`}
+                >
+                  Description
+                </button>
 
-              {/* Attached segmented control tabs */}
-              <div className="flex overflow-x-auto custom-scrollbar p-6 md:px-10 md:pt-8 border-b border-border/50 bg-muted/10 relative z-10">
-                <div className="inline-flex bg-muted/60 p-1.5 rounded-[1.25rem] border border-border/50">
+                {product.ingredients && product.ingredients.length > 0 && (
                   <button 
-                    onClick={() => setActiveTab('about')}
-                    className={`px-5 py-2 text-[11px] uppercase tracking-wider font-bold whitespace-nowrap rounded-xl transition-all duration-300 ${activeTab === 'about' ? 'bg-background text-foreground shadow-sm ring-1 ring-border/50' : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'}`}
+                    onClick={() => setActiveTab('ingredients')}
+                    className={`pb-4 text-base font-bold transition-all whitespace-nowrap border-b-2 ${
+                      activeTab === 'ingredients' 
+                        ? 'border-primary-500 text-primary-500' 
+                        : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
+                    }`}
                   >
-                    About the Product
+                    Ingredients
                   </button>
-                  {product.ingredients && product.ingredients.length > 0 && (
-                    <button 
-                      onClick={() => setActiveTab('ingredients')}
-                      className={`px-5 py-2 text-[11px] uppercase tracking-wider font-bold whitespace-nowrap rounded-xl transition-all duration-300 ${activeTab === 'ingredients' ? 'bg-background text-foreground shadow-sm ring-1 ring-border/50' : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'}`}
-                    >
-                      Ingredients
-                    </button>
-                  )}
-                  {product.allergens && product.allergens.length > 0 && (
-                    <button 
-                      onClick={() => setActiveTab('allergens')}
-                      className={`px-5 py-2 text-[11px] uppercase tracking-wider font-bold whitespace-nowrap rounded-xl transition-all duration-300 ${activeTab === 'allergens' ? 'bg-background text-orange-600 shadow-sm ring-1 ring-orange-500/20' : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'}`}
-                    >
-                      Allergens
-                    </button>
-                  )}
-                  {(product.caloriesPerUnit || product.shelfLifeHours) && (
-                    <button 
-                      onClick={() => setActiveTab('other')}
-                      className={`px-5 py-2 text-[11px] uppercase tracking-wider font-bold whitespace-nowrap rounded-xl transition-all duration-300 ${activeTab === 'other' ? 'bg-background text-foreground shadow-sm ring-1 ring-border/50' : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'}`}
-                    >
-                      Other Details
-                    </button>
-                  )}
-                </div>
+                )}
+
+                {product.allergens && product.allergens.length > 0 && (
+                  <button 
+                    onClick={() => setActiveTab('allergens')}
+                    className={`pb-4 text-base font-bold transition-all whitespace-nowrap border-b-2 ${
+                      activeTab === 'allergens' 
+                        ? 'border-orange-500 text-orange-600 dark:text-orange-400' 
+                        : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
+                    }`}
+                  >
+                    Allergens
+                  </button>
+                )}
+
+                {(product.caloriesPerUnit || product.shelfLifeHours) && (
+                  <button 
+                    onClick={() => setActiveTab('other')}
+                    className={`pb-4 text-base font-bold transition-all whitespace-nowrap border-b-2 ${
+                      activeTab === 'other' 
+                        ? 'border-primary-500 text-primary-500' 
+                        : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
+                    }`}
+                  >
+                    Other Details
+                  </button>
+                )}
               </div>
               
               {/* Tab Content */}
-              <div className="flex-1 p-6 md:p-10 relative z-10">
+              <div className="flex-1 relative z-10">
                   {activeTab === 'about' && (
-                    <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
-                      <h3 className="font-extrabold text-2xl flex items-center text-foreground mb-4">Description</h3>
+                    <div className="animate-in fade-in duration-300">
                       <p className="text-muted-foreground text-lg leading-relaxed max-w-3xl">
                         {product.description || 'A delicious treat fresh from our bakery, crafted with the finest ingredients.'}
                       </p>
                     </div>
                   )}
                   {activeTab === 'ingredients' && product.ingredients && product.ingredients.length > 0 && (
-                    <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
-                      <h3 className="font-extrabold text-2xl flex items-center text-foreground mb-6">Ingredients</h3>
+                    <div className="animate-in fade-in duration-300">
                       <ul className="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-8 max-w-4xl">
                         {product.ingredients.map((ingredient, index) => (
                           <li key={index} className="flex items-center text-muted-foreground text-lg font-medium">
@@ -284,8 +296,7 @@ export default function ProductDetailsPage() {
                     </div>
                   )}
                   {activeTab === 'allergens' && product.allergens && product.allergens.length > 0 && (
-                    <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
-                      <h3 className="font-extrabold text-2xl flex items-center text-orange-600 dark:text-orange-400 mb-4">Contains Allergens</h3>
+                    <div className="animate-in fade-in duration-300">
                       <div className="inline-block bg-orange-50 dark:bg-orange-500/10 border border-orange-200 dark:border-orange-500/20 px-5 py-3 rounded-2xl">
                         <p className="font-bold text-orange-800 dark:text-orange-300 text-base">
                           {product.allergens.join(', ')}
@@ -294,8 +305,7 @@ export default function ProductDetailsPage() {
                     </div>
                   )}
                   {activeTab === 'other' && (product.caloriesPerUnit || product.shelfLifeHours) && (
-                    <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
-                      <h3 className="font-extrabold text-2xl flex items-center text-foreground mb-6">Other Details</h3>
+                    <div className="animate-in fade-in duration-300">
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         {product.caloriesPerUnit && (
                           <div className="bg-background border border-border/80 rounded-3xl p-6 shadow-sm flex flex-col justify-center">
@@ -312,7 +322,6 @@ export default function ProductDetailsPage() {
                       </div>
                     </div>
                   )}
-                </div>
               </div>
             </div>
 
