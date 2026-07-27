@@ -4,6 +4,7 @@ import { fetchProducts, fetchCategories, fetchStorefront, fetchProductReviews, s
 const initialState = {
   products: {
     data: [],
+    pagination: null,
     loading: false,
     error: null,
   },
@@ -33,7 +34,25 @@ const shopSlice = createSlice({
       .addCase(fetchProducts.fulfilled, (state, action) => {
         state.products.loading = false;
         const payload = action.payload;
-        state.products.data = Array.isArray(payload) ? payload : (payload?.content || []);
+        state.products.data = Array.isArray(payload) ? payload : (payload?.content || payload?._embedded?.productResponseList || payload?.data || []);
+        
+        if (payload?.page) {
+            state.products.pagination = {
+                number: payload.page.number,
+                size: payload.page.size,
+                totalElements: payload.page.totalElements,
+                totalPages: payload.page.totalPages
+            };
+        } else if (payload && typeof payload.totalPages !== 'undefined') {
+            state.products.pagination = {
+                number: payload.number,
+                size: payload.size,
+                totalElements: payload.totalElements,
+                totalPages: payload.totalPages
+            };
+        } else {
+            state.products.pagination = null;
+        }
       })
       .addCase(fetchProducts.rejected, (state, action) => {
         state.products.loading = false;
