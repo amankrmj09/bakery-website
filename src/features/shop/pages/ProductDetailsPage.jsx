@@ -169,7 +169,7 @@ export default function ProductDetailsPage() {
           <div className="w-full md:w-1/2 flex flex-col">
             <div className="mb-2 flex items-center gap-2">
               <span className="text-sm font-bold text-primary-500 uppercase tracking-widest bg-primary-500/10 px-3 py-1 rounded-full">
-                {product.categoryName || 'Treat'}
+                {product.category?.name || 'Treat'}
               </span>
               {product.taxClass && product.taxRate > 0 && (
                  <span className="text-xs font-semibold text-muted-foreground bg-muted px-2 py-1 rounded-full border border-border">
@@ -180,11 +180,19 @@ export default function ProductDetailsPage() {
             
             <h1 className="text-3xl md:text-5xl font-extrabold text-foreground mb-4 leading-tight">{product.name}</h1>
             
-            <div className="text-3xl font-black text-foreground mb-6 flex items-end gap-2">
-              ${product.price?.toFixed(2)}
+            <div className="text-3xl font-black text-foreground mb-6 flex flex-wrap items-end gap-2">
+              {product.discountPrice && product.discountPrice < product.price ? (
+                <>
+                   <span className="text-primary-500">${product.discountPrice.toFixed(2)}</span>
+                   <span className="text-xl text-muted-foreground line-through">${product.price?.toFixed(2)}</span>
+                </>
+              ) : (
+                <span className="text-primary-500">${product.price?.toFixed(2)}</span>
+              )}
               {product.weightGrams && (
                 <span className="text-sm font-medium text-muted-foreground mb-1">/ {product.weightGrams}g</span>
               )}
+              <span className="text-sm font-medium text-muted-foreground mb-1 ml-2 border-l border-border pl-2">(exclusive of tax)</span>
             </div>
             
             <div className="bg-muted/30 p-5 rounded-2xl border border-border/50 mb-8">

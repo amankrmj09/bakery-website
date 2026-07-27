@@ -63,6 +63,10 @@ export default function ProductCard({ product, className = "" }) {
                     <div className="absolute top-2 right-2 z-20 bg-red-600 text-white text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wide shadow-md">
                         Out of Stock
                     </div>
+                ) : product.discountPrice && product.discountPrice < product.price ? (
+                    <div className="absolute top-2 right-2 z-20 bg-green-500 text-white text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wide shadow-md">
+                        {Math.round(((product.price - product.discountPrice) / product.price) * 100)}% OFF
+                    </div>
                 ) : product.inventory?.isLowStock ? (
                     <div className="absolute top-2 right-2 z-20 bg-orange-500 text-white text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wide shadow-md">
                         Limited Stock
@@ -72,7 +76,7 @@ export default function ProductCard({ product, className = "" }) {
             
             <div className="pt-4 flex flex-col flex-1">
                 <div className="flex flex-col mb-1">
-                    <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">{product.categoryName || 'Treat'}</span>
+                    <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">{product.category?.name || 'Treat'}</span>
                     <h3 
                         className="font-extrabold text-lg text-foreground leading-tight line-clamp-1 cursor-pointer hover:text-primary-500 transition-colors" 
                         title={product.name}
@@ -92,11 +96,20 @@ export default function ProductCard({ product, className = "" }) {
                     </span>
                 </div>
                 <p className="text-sm text-muted-foreground line-clamp-2 mb-4 flex-1 mt-2">
-                    {product.description || 'A delicious treat fresh from our bakery.'}
+                    {product.shortDescription || product.description || 'A delicious treat fresh from our bakery.'}
                 </p>
                 
                 <div className="flex items-center justify-between mt-auto pt-4 border-t border-border">
-                    <span className="font-extrabold text-xl text-primary-500">${product.price?.toFixed(2) || '0.00'}</span>
+                    <div className="flex flex-col justify-center">
+                        {product.discountPrice && product.discountPrice < product.price ? (
+                            <>
+                                <span className="font-extrabold text-xl text-primary-500 leading-none">${product.discountPrice.toFixed(2)}</span>
+                                <span className="text-xs text-muted-foreground line-through leading-none mt-1">${product.price?.toFixed(2)}</span>
+                            </>
+                        ) : (
+                            <span className="font-extrabold text-xl text-primary-500">${product.price?.toFixed(2) || '0.00'}</span>
+                        )}
+                    </div>
                     <div className="flex space-x-2">
                         <button
                             disabled={product.status !== 'ACTIVE' || product.inventory?.isOutOfStock || addingToCart === product.id}
