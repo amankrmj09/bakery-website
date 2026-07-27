@@ -51,7 +51,7 @@ export default function Footer() {
                         <div className="flex items-center space-x-3 mb-4">
                             <img src="/icon-192.png" alt="Blubug Logo" className="h-12 w-auto object-contain mix-blend-multiply"/>
                             <span className="text-2xl font-extrabold text-foreground tracking-tight">
-                                Blu Bakery
+                                Blu's Bakery
                             </span>
                         </div>
                         <p className="text-sm text-muted-foreground max-w-xs mb-6 leading-relaxed">
@@ -60,7 +60,7 @@ export default function Footer() {
                         </p>
                         <div className="text-xs text-muted-foreground">
                             <p>Blu Food Court</p>
-                            <p>Blu Bakery LLC</p>
+                            <p>Blu's Bakery LLC</p>
                         </div>
                     </div>
 

@@ -32,7 +32,7 @@ export default function MainLayout() {
                     <img src="/icon-192.png" alt="Blubug Logo"
                          className="h-10 w-auto cursor-pointer object-contain transform transition-transform hover:scale-105"/>
                     <span className="text-3xl font-['Great_Vibes'] text-primary-500 tracking-wide font-normal pt-1 drop-shadow-sm">
-                        Blu Bakery
+                        Blu's Bakery
                     </span>
                     </Link>
                 </div>

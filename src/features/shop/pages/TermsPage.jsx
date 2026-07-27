@@ -9,17 +9,17 @@ export default function TermsPage() {
         <div className="space-y-6 text-muted-foreground text-sm leading-relaxed">
           <section>
             <h2 className="text-xl font-bold text-foreground mb-2">1. Introduction</h2>
-            <p>Welcome to Blu Bakery! These terms and conditions outline the rules and regulations for the use of our website and services. By accessing this website, we assume you accept these terms and conditions. Do not continue to use Blu Bakery if you do not agree to all of the terms and conditions stated on this page.</p>
+            <p>Welcome to Blu's Bakery! These terms and conditions outline the rules and regulations for the use of our website and services. By accessing this website, we assume you accept these terms and conditions. Do not continue to use Blu's Bakery if you do not agree to all of the terms and conditions stated on this page.</p>
           </section>
 
           <section>
             <h2 className="text-xl font-bold text-foreground mb-2">2. Intellectual Property Rights</h2>
-            <p>Unless otherwise stated, Blu Bakery and/or its licensors own the intellectual property rights for all material on Blu Bakery. All intellectual property rights are reserved. You may access this from Blu Bakery for your own personal use subjected to restrictions set in these terms and conditions.</p>
+            <p>Unless otherwise stated, Blu's Bakery and/or its licensors own the intellectual property rights for all material on Blu's Bakery. All intellectual property rights are reserved. You may access this from Blu's Bakery for your own personal use subjected to restrictions set in these terms and conditions.</p>
           </section>
 
           <section>
             <h2 className="text-xl font-bold text-foreground mb-2">3. Orders and Payments</h2>
-            <p>All orders placed through our website are subject to product availability and acceptance by Blu Bakery. We reserve the right to refuse or cancel any order for any reason. Prices for our products are subject to change without notice. We are not responsible for pricing, typographical, or other errors in any offer by us and reserve the right to cancel any orders arising from such errors.</p>
+            <p>All orders placed through our website are subject to product availability and acceptance by Blu's Bakery. We reserve the right to refuse or cancel any order for any reason. Prices for our products are subject to change without notice. We are not responsible for pricing, typographical, or other errors in any offer by us and reserve the right to cancel any orders arising from such errors.</p>
           </section>
 
           <section>

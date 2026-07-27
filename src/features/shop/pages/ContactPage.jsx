@@ -269,10 +269,10 @@ export default function ContactPage() {
         <div className="bg-card border border-border rounded-[2.5rem] p-10 lg:p-16 shadow-xl flex flex-col md:flex-row items-center gap-12 relative overflow-hidden">
           <div className="md:w-1/2 z-10">
             <span className="text-[#eab308] font-bold uppercase tracking-widest text-sm mb-4 block">Our Story</span>
-            <h2 className="text-4xl lg:text-5xl font-extrabold text-foreground mb-6">About Blu Bakery</h2>
+            <h2 className="text-4xl lg:text-5xl font-extrabold text-foreground mb-6">About Blu's Bakery</h2>
             <div className="space-y-4 text-muted-foreground leading-relaxed">
               <p>
-                Founded with a passion for bringing the finest, freshest baked goods to your table, Blu Bakery started as a small dream and has grown into a beloved destination for pastry lovers.
+                Founded with a passion for bringing the finest, freshest baked goods to your table, Blu's Bakery started as a small dream and has grown into a beloved destination for pastry lovers.
               </p>
               <p>
                 We believe in using only the highest quality ingredients, traditional baking methods, and a lot of love. From our artisanal sourdough breads to our decadent custom cakes, every item is crafted to perfection to ensure you get the best experience in every bite.
