@@ -101,7 +101,7 @@ export default function HomePage() {
         const fetchTestimonials = async () => {
             try {
                 const res = await api.get('/api/v1/engagement/testimonials/featured');
-                setFeaturedTestimonials(res.data || []);
+                setFeaturedTestimonials(Array.isArray(res.data) ? res.data : []);
             } catch (err) {
                 console.error('Failed to load featured testimonials', err);
             }
@@ -111,7 +111,7 @@ export default function HomePage() {
         const fetchTopCats = async () => {
             try {
                 const res = await api.get('/api/categories/top-with-products');
-                setTopCategoriesWithProducts(res.data || []);
+                setTopCategoriesWithProducts(Array.isArray(res.data) ? res.data : []);
             } catch (err) {
                 console.error('Failed to load top categories', err);
             }
@@ -153,7 +153,7 @@ export default function HomePage() {
         return colors[index % colors.length];
     };
 
-    const productList = products.data || [];
+    const productList = Array.isArray(products.data) ? products.data : [];
     const config = storefront.data;
 
     const [activeIndex, setActiveIndex] = useState(0);

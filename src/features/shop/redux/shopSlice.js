@@ -32,7 +32,8 @@ const shopSlice = createSlice({
       .addCase(fetchProducts.pending, (state) => { state.products.loading = true; })
       .addCase(fetchProducts.fulfilled, (state, action) => {
         state.products.loading = false;
-        state.products.data = action.payload?.content || action.payload || [];
+        const payload = action.payload;
+        state.products.data = Array.isArray(payload) ? payload : (payload?.content || []);
       })
       .addCase(fetchProducts.rejected, (state, action) => {
         state.products.loading = false;
@@ -41,7 +42,8 @@ const shopSlice = createSlice({
       .addCase(fetchCategories.pending, (state) => { state.categories.loading = true; })
       .addCase(fetchCategories.fulfilled, (state, action) => {
         state.categories.loading = false;
-        state.categories.data = action.payload?.content || action.payload || [];
+        const payload = action.payload;
+        state.categories.data = Array.isArray(payload) ? payload : (payload?.content || []);
       })
       .addCase(fetchCategories.rejected, (state, action) => {
         state.categories.loading = false;
