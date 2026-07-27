@@ -131,15 +131,102 @@ export default function ShopPage() {
 
         {/* Main Grid area */}
         <div className="flex-1 flex flex-col pt-10 md:pt-0 h-full min-w-0">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4 flex-shrink-0">
-            <h2 className="font-extrabold text-2xl text-foreground">
-            {searchQuery 
-              ? `Search results for "${searchQuery}"` 
-              : selectedCategory 
-                ? categories.data.find(c => c.id === selectedCategory)?.name || 'Products'
-                : 'All Products'}
-            <span className="text-muted-foreground ml-2 text-sm">({products.pagination?.totalElements || sortedProducts.length})</span>
-          </h2>
+          <div className="flex flex-col xl:flex-row xl:items-center justify-between mb-6 gap-4 flex-shrink-0">
+            {/* Pagination Controls moved here */}
+            {products.pagination && (products.pagination.totalPages > 1 || products.pagination.totalElements > 0) ? (
+              <div className="flex flex-col sm:flex-row items-center gap-4 bg-card px-4 py-2.5 rounded-xl border border-border shadow-sm w-full xl:w-auto overflow-x-auto">
+                <div className="flex items-center gap-2 text-xs text-muted-foreground whitespace-nowrap">
+                  <span>Page <strong className="text-foreground">{products.pagination.number + 1}</strong> of <strong className="text-foreground">{products.pagination.totalPages || 1}</strong></span>
+                  <span>({products.pagination.totalElements} items)</span>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-1.5 sm:border-x border-border sm:px-3">
+                    <label htmlFor="pageSize" className="text-xs font-semibold text-muted-foreground whitespace-nowrap">Show:</label>
+                    <select
+                      id="pageSize"
+                      value={pageSize}
+                      onChange={(e) => {
+                        setPageSize(Number(e.target.value));
+                        setCurrentPage(0);
+                      }}
+                      className="bg-background border border-border rounded-lg px-2 py-1 text-xs font-bold text-foreground focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    >
+                      <option value={6}>6</option>
+                      <option value={12}>12</option>
+                      <option value={24}>24</option>
+                    </select>
+                  </div>
+
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => setCurrentPage((prev) => Math.max(0, prev - 1))}
+                      disabled={products.pagination.number === 0 || products.loading}
+                      className="p-1.5 rounded-lg border border-border bg-background hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed transition-colors text-foreground"
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                    </button>
+
+                    {(() => {
+                      const total = products.pagination.totalPages || 1;
+                      const current = products.pagination.number || 0;
+                      let pages = [];
+                      if (total <= 5) {
+                        pages = Array.from({ length: total }, (_, i) => i);
+                      } else {
+                        if (current <= 2) pages = [0, 1, 2, 3, total - 1];
+                        else if (current >= total - 3) pages = [0, total - 4, total - 3, total - 2, total - 1];
+                        else pages = [0, current - 1, current, current + 1, total - 1];
+                      }
+                      return pages.map((pageIdx, idx) => {
+                        if (idx > 0 && pageIdx - pages[idx - 1] > 1) {
+                          return (
+                            <React.Fragment key={`ellipsis-${pageIdx}`}>
+                              <span className="px-1 text-xs text-muted-foreground">...</span>
+                              <button
+                                onClick={() => setCurrentPage(pageIdx)}
+                                disabled={products.loading}
+                                className={`w-7 h-7 rounded-lg text-xs font-bold transition-colors flex-shrink-0 ${
+                                  current === pageIdx
+                                    ? 'bg-primary-500 text-white shadow-sm shadow-primary-500/20'
+                                    : 'border border-border bg-background hover:bg-muted text-foreground'
+                                }`}
+                              >
+                                {pageIdx + 1}
+                              </button>
+                            </React.Fragment>
+                          );
+                        }
+                        return (
+                          <button
+                            key={pageIdx}
+                            onClick={() => setCurrentPage(pageIdx)}
+                            disabled={products.loading}
+                            className={`w-7 h-7 rounded-lg text-xs font-bold transition-colors flex-shrink-0 ${
+                              current === pageIdx
+                                ? 'bg-primary-500 text-white shadow-sm shadow-primary-500/20'
+                                : 'border border-border bg-background hover:bg-muted text-foreground'
+                            }`}
+                          >
+                            {pageIdx + 1}
+                          </button>
+                        );
+                      });
+                    })()}
+
+                    <button
+                      onClick={() => setCurrentPage((prev) => Math.min((products.pagination.totalPages || 1) - 1, prev + 1))}
+                      disabled={products.pagination.number >= ((products.pagination.totalPages || 1) - 1) || products.loading || products.pagination.totalPages === 0}
+                      className="p-1.5 rounded-lg border border-border bg-background hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed transition-colors text-foreground"
+                    >
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="flex-1"></div>
+            )}
 
             <SleekDropdown
               icon={ArrowUpDown}
@@ -156,100 +243,6 @@ export default function ShopPage() {
               widthClass="w-52"
             />
           </div>
-
-          {/* Pagination Controls */}
-          {products.pagination && (products.pagination.totalPages > 1 || products.pagination.totalElements > 0) && (
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-card px-4 py-2.5 rounded-xl border border-border shadow-sm mb-6">
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <span>Page <strong className="text-foreground">{products.pagination.number + 1}</strong> of <strong className="text-foreground">{products.pagination.totalPages || 1}</strong></span>
-                <span>({products.pagination.totalElements} items)</span>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <div className="flex items-center gap-1.5 sm:border-r border-border sm:pr-3">
-                  <label htmlFor="pageSize" className="text-xs font-semibold text-muted-foreground">Show:</label>
-                  <select
-                    id="pageSize"
-                    value={pageSize}
-                    onChange={(e) => {
-                      setPageSize(Number(e.target.value));
-                      setCurrentPage(0);
-                    }}
-                    className="bg-background border border-border rounded-lg px-2 py-1 text-xs font-bold text-foreground focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  >
-                    <option value={6}>6</option>
-                    <option value={12}>12</option>
-                    <option value={24}>24</option>
-                  </select>
-                </div>
-
-                <div className="flex items-center gap-1">
-                  <button
-                    onClick={() => setCurrentPage((prev) => Math.max(0, prev - 1))}
-                    disabled={products.pagination.number === 0 || products.loading}
-                    className="p-1.5 rounded-lg border border-border bg-background hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed transition-colors text-foreground"
-                  >
-                    <ChevronLeft className="w-4 h-4" />
-                  </button>
-
-                  {(() => {
-                    const total = products.pagination.totalPages || 1;
-                    const current = products.pagination.number || 0;
-                    let pages = [];
-                    if (total <= 5) {
-                      pages = Array.from({ length: total }, (_, i) => i);
-                    } else {
-                      if (current <= 2) pages = [0, 1, 2, 3, total - 1];
-                      else if (current >= total - 3) pages = [0, total - 4, total - 3, total - 2, total - 1];
-                      else pages = [0, current - 1, current, current + 1, total - 1];
-                    }
-                    return pages.map((pageIdx, idx) => {
-                      if (idx > 0 && pageIdx - pages[idx - 1] > 1) {
-                        return (
-                          <React.Fragment key={`ellipsis-${pageIdx}`}>
-                            <span className="px-1 text-xs text-muted-foreground">...</span>
-                            <button
-                              onClick={() => setCurrentPage(pageIdx)}
-                              disabled={products.loading}
-                              className={`w-7 h-7 rounded-lg text-xs font-bold transition-colors ${
-                                current === pageIdx
-                                  ? 'bg-primary-500 text-white shadow-sm shadow-primary-500/20'
-                                  : 'border border-border bg-background hover:bg-muted text-foreground'
-                              }`}
-                            >
-                              {pageIdx + 1}
-                            </button>
-                          </React.Fragment>
-                        );
-                      }
-                      return (
-                        <button
-                          key={pageIdx}
-                          onClick={() => setCurrentPage(pageIdx)}
-                          disabled={products.loading}
-                          className={`w-7 h-7 rounded-lg text-xs font-bold transition-colors ${
-                            current === pageIdx
-                              ? 'bg-primary-500 text-white shadow-sm shadow-primary-500/20'
-                              : 'border border-border bg-background hover:bg-muted text-foreground'
-                          }`}
-                        >
-                          {pageIdx + 1}
-                        </button>
-                      );
-                    });
-                  })()}
-
-                  <button
-                    onClick={() => setCurrentPage((prev) => Math.min((products.pagination.totalPages || 1) - 1, prev + 1))}
-                    disabled={products.pagination.number >= ((products.pagination.totalPages || 1) - 1) || products.loading || products.pagination.totalPages === 0}
-                    className="p-1.5 rounded-lg border border-border bg-background hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed transition-colors text-foreground"
-                  >
-                    <ChevronRight className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
 
           <div className="flex-1 overflow-y-auto pr-2 pb-20 scrollbar-thin scrollbar-thumb-muted-foreground/20 scrollbar-track-transparent">
           {products.loading ? (
