@@ -6,7 +6,11 @@ export const login = createAsyncThunk(
   async (credentials, { rejectWithValue }) => {
     try {
       const response = await authApi.login(credentials);
-      return response.data; // Just returns { message: "OTP Sent..." }
+      if (response.data.requiresOtp === false && response.data.authResponse) {
+        localStorage.setItem('token', response.data.authResponse.access_token);
+        localStorage.setItem('user', JSON.stringify(response.data.authResponse.user));
+      }
+      return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Login failed');
     }

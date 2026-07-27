@@ -28,9 +28,14 @@ export default function LoginPage() {
     e.preventDefault();
     const resultAction = await dispatch(login(formData));
     if (login.fulfilled.match(resultAction)) {
-      toast.success('Please check your email for the OTP');
-      // Pass the 'from' path and 'usernameOrEmail' in state so OtpPage knows where to go after verifying and has the required param
-      navigate('/verify-otp', { state: { from: location.state?.from, usernameOrEmail: formData.usernameOrEmail } });
+      if (resultAction.payload.requiresOtp === false) {
+        toast.success('Successfully logged in');
+        navigate(from, { replace: true });
+      } else {
+        toast.success('Please check your email for the OTP');
+        // Pass the 'from' path and 'usernameOrEmail' in state so OtpPage knows where to go after verifying and has the required param
+        navigate('/verify-otp', { state: { from: location.state?.from, usernameOrEmail: formData.usernameOrEmail } });
+      }
     }
   };
 

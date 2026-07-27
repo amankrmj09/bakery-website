@@ -33,10 +33,16 @@ const authSlice = createSlice({
       .addCase(login.pending, (state) => { state.loading = true; state.error = null; })
       .addCase(login.fulfilled, (state, action) => {
         state.loading = false;
-        state.isOtpPending = true;
-        state.authType = 'login';
-        // We get usernameOrEmail from meta.arg
-        state.pendingEmail = action.meta.arg.usernameOrEmail; 
+        if (action.payload.requiresOtp === false) {
+          state.token = action.payload.authResponse.access_token;
+          state.user = action.payload.authResponse.user;
+          state.isOtpPending = false;
+        } else {
+          state.isOtpPending = true;
+          state.authType = 'login';
+          // We get usernameOrEmail from meta.arg
+          state.pendingEmail = action.meta.arg.usernameOrEmail;
+        }
       })
       .addCase(login.rejected, (state, action) => {
         state.loading = false;

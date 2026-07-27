@@ -138,7 +138,47 @@ export default function ProfileDetails({ user }) {
           </div>
         </div>
 
-        <div className="flex justify-end pt-6 border-t border-border mt-8">
+        {/* Security Settings */}
+        <div className="mt-8 pt-8 border-t border-border">
+          <h3 className="text-lg font-bold text-foreground mb-6">Security Settings</h3>
+          <div className="space-y-4">
+            <label className="flex items-center justify-between p-5 border-2 border-border rounded-2xl cursor-pointer hover:border-primary-500/50 hover:bg-muted/30 transition-all">
+              <div>
+                <div className="font-bold text-foreground">Two-Factor Authentication (2FA)</div>
+                <div className="text-sm text-muted-foreground mt-1 font-medium">Require a one-time passcode (OTP) when logging in to your account.</div>
+              </div>
+              <div className="relative inline-flex items-center cursor-pointer ml-4">
+                <input
+                  type="checkbox"
+                  className="sr-only peer"
+                  name="twoFactorEnabled"
+                  checked={profileData?.twoFactorEnabled !== false}
+                  onChange={(e) => setProfileData({ ...profileData, twoFactorEnabled: e.target.checked })}
+                />
+                <div className="w-14 h-7 bg-muted-foreground/30 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-500/20 rounded-full peer peer-checked:after:translate-x-7 peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-primary-500"></div>
+              </div>
+            </label>
+
+            <label className="flex items-center justify-between p-5 border-2 border-border rounded-2xl cursor-pointer hover:border-primary-500/50 hover:bg-muted/30 transition-all">
+              <div>
+                <div className="font-bold text-foreground">Login Notifications</div>
+                <div className="text-sm text-muted-foreground mt-1 font-medium">Receive an email alert whenever a new sign-in is detected.</div>
+              </div>
+              <div className="relative inline-flex items-center cursor-pointer ml-4">
+                <input
+                  type="checkbox"
+                  className="sr-only peer"
+                  name="loginNotificationsEnabled"
+                  checked={profileData?.loginNotificationsEnabled !== false}
+                  onChange={(e) => setProfileData({ ...profileData, loginNotificationsEnabled: e.target.checked })}
+                />
+                <div className="w-14 h-7 bg-muted-foreground/30 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-500/20 rounded-full peer peer-checked:after:translate-x-7 peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-primary-500"></div>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div className="flex justify-end pt-8 mt-8">
           <button
             type="submit"
             disabled={saving}
