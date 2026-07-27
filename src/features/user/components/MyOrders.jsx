@@ -5,6 +5,8 @@ import { fetchUserOrders, cancelUserOrder } from '../../order/slice/orderSlice';
 import { LuPackage as Package, LuLoader as Loader2, LuClock as Clock, LuCheck as CheckCircle2, LuCreditCard as CreditCard, LuX as XCircle, LuChevronRight as ChevronRight, LuChevronLeft as ChevronLeft, LuChevronDown as ChevronDown, LuMapPin as MapPin } from 'react-icons/lu';
 import { format } from 'date-fns';
 import ReviewModal from '../../shop/components/ReviewModal';
+import CancelOrderModal from './CancelOrderModal';
+import { toast } from 'sonner';
 import { YearSelector, YearMonthSelector, StatusSelector, TimeModeSelector } from './TimeFilterControls';
 
 export default function MyOrders() {
@@ -26,6 +28,11 @@ export default function MyOrders() {
     productId: null,
     productName: '',
     existingReview: null
+  });
+  const [cancelModalState, setCancelModalState] = React.useState({
+    isOpen: false,
+    orderId: null,
+    loading: false
   });
 
   const openReviewModal = (orderId, productId, productName, existingReview) => {
@@ -57,13 +64,25 @@ export default function MyOrders() {
     }
   }, [dispatch, user?.id, currentPage, pageSize, isFilterActive]);
 
-  const handleCancelOrder = async (orderId) => {
-    if (window.confirm("Are you sure you want to cancel this order?")) {
-      try {
-        await dispatch(cancelUserOrder({ orderId, reason: "Cancelled by user" })).unwrap();
-      } catch (err) {
-        alert(err || "Failed to cancel order");
-      }
+  const openCancelModal = (orderId) => {
+    setCancelModalState({ isOpen: true, orderId, loading: false });
+  };
+
+  const closeCancelModal = () => {
+    if (cancelModalState.loading) return;
+    setCancelModalState({ isOpen: false, orderId: null, loading: false });
+  };
+
+  const confirmCancelOrder = async (reason) => {
+    if (!cancelModalState.orderId) return;
+    setCancelModalState((prev) => ({ ...prev, loading: true }));
+    try {
+      await dispatch(cancelUserOrder({ orderId: cancelModalState.orderId, reason })).unwrap();
+      toast.success("Order cancelled successfully!");
+      setCancelModalState({ isOpen: false, orderId: null, loading: false });
+    } catch (err) {
+      toast.error(err || "Failed to cancel order");
+      setCancelModalState((prev) => ({ ...prev, loading: false }));
     }
   };
 
@@ -429,7 +448,7 @@ export default function MyOrders() {
                 {/* Cancel Order button: only if payment is NOT made */}
                 {order.paymentStatus !== 'COMPLETED' && order.paymentStatus !== 'PAID' && order.status !== 'CANCELLED' && order.status !== 'DELIVERED' && (
                   <button 
-                    onClick={() => handleCancelOrder(order.id)}
+                    onClick={() => openCancelModal(order.id)}
                     className="flex-1 sm:flex-none flex items-center justify-center bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 px-5 py-2.5 rounded-xl font-bold text-sm transition-colors"
                   >
                     <XCircle className="w-4 h-4 mr-2" /> Cancel Order
@@ -568,6 +587,14 @@ export default function MyOrders() {
         productId={reviewModalState.productId}
         productName={reviewModalState.productName}
         existingReview={reviewModalState.existingReview}
+      />
+
+      <CancelOrderModal
+        isOpen={cancelModalState.isOpen}
+        onClose={closeCancelModal}
+        onConfirm={confirmCancelOrder}
+        orderId={cancelModalState.orderId}
+        loading={cancelModalState.loading}
       />
     </div>
   );

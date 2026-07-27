@@ -103,7 +103,8 @@ export default function ProductDetailsPage() {
   const isOutOfStock = product.inventory?.isOutOfStock;
   const canPurchase = !isUnavailable && !isOutOfStock;
 
-  const productReviews = reviews?.data?.[product.id] || [];
+  const rawReviews = reviews?.data?.[product.id];
+  const productReviews = rawReviews?.content || rawReviews?._embedded?.reviewResponseList || (Array.isArray(rawReviews) ? rawReviews : []);
   const displayCount = productReviews.length > 0 ? productReviews.length : (product.totalReviews || 0);
   const displayRating = productReviews.length > 0 
     ? (productReviews.reduce((acc, r) => acc + r.rating, 0) / productReviews.length).toFixed(1) 
@@ -273,7 +274,7 @@ export default function ProductDetailsPage() {
           </div>
 
           <div className="space-y-6">
-            {!reviews.data[product.id] || reviews.data[product.id].length === 0 ? (
+            {productReviews.length === 0 ? (
               <div className="text-center py-12 bg-muted/30 rounded-2xl border border-border/50">
                 <Star className="w-12 h-12 text-muted-foreground/30 mx-auto mb-3" />
                 <p className="text-lg font-medium text-muted-foreground">No reviews yet.</p>
@@ -281,7 +282,7 @@ export default function ProductDetailsPage() {
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {reviews.data[product.id].map((review) => (
+                {productReviews.map((review) => (
                   <div key={review.id} className="bg-background border border-border rounded-2xl p-6 shadow-sm">
                     <div className="flex justify-between items-start mb-4">
                       <div>
