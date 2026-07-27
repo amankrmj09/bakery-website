@@ -1,6 +1,22 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { fetchProducts, fetchCategories, fetchStorefront, fetchProductReviews, submitReview, deleteReview } from './shopThunk';
 
+const getCachedCategories = () => {
+  try {
+    const item = localStorage.getItem('bakery_menu_categories');
+    if (!item) return [];
+    const parsed = JSON.parse(item);
+    const now = Date.now();
+    if (now - parsed.timestamp > 300000) { // 5 mins TTL
+      localStorage.removeItem('bakery_menu_categories');
+      return [];
+    }
+    return parsed.data;
+  } catch (e) {
+    return [];
+  }
+};
+
 const initialState = {
   products: {
     data: [],
@@ -9,7 +25,7 @@ const initialState = {
     error: null,
   },
   categories: {
-    data: [],
+    data: getCachedCategories(),
     error: null,
   },
   storefront: {

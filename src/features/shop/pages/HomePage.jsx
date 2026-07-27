@@ -180,11 +180,7 @@ export default function HomePage() {
         setActiveTopCategoryIndex(prev => (prev === topCategories.length - 1 ? 0 : prev + 1));
     };
 
-    const campaigns = config?.heroSection?.campaigns?.length >= 3 ? config.heroSection.campaigns : [
-      { largeImageUrl: '/images/campaign1_large.png', smallImageUrl: '/images/campaign1_small.png' },
-      { largeImageUrl: '/images/campaign2_large.png', smallImageUrl: '/images/campaign2_small.png' },
-      { largeImageUrl: '/images/campaign3_large.png', smallImageUrl: '/images/campaign3_small.png' }
-    ];
+    const campaigns = config?.heroSection?.campaigns || [];
 
     useEffect(() => {
         if (!campaigns || campaigns.length === 0) return;
@@ -194,14 +190,7 @@ export default function HomePage() {
         return () => clearInterval(interval);
     }, [campaigns]);
 
-    const about = config?.aboutSection || {
-      tag: 'Savor the Flavor, Anytime, Anywhere',
-      title: 'FRESH. DELICIOUS. DELIVERED!',
-      description: "Welcome to your ultimate destination for mouthwatering meals and snacks delivered straight to your doorstep. We're passionate about bringing you the finest, freshest, and most delectable foods from around the globe.",
-      image1Url: '/images/bakery_chef.png',
-      image2Url: '/images/hero_croissant.png',
-      image3Url: '/images/hero_cupcakes.png'
-    };
+    const about = config?.aboutSection || null;
 
     const offers = config?.specialOfferSection?.offers || [];
 
@@ -210,6 +199,15 @@ export default function HomePage() {
         hidden: { opacity: 0, y: 40 },
         visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: "easeOut" } }
     };
+
+    if (storefront.loading || !config) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[60vh] bg-background">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#eab308]"></div>
+                <p className="text-muted-foreground mt-4 font-medium animate-pulse">Loading delicious bakery...</p>
+            </div>
+        );
+    }
 
     return (
         <div className="flex flex-col bg-background min-h-screen">
@@ -416,24 +414,34 @@ export default function HomePage() {
                                 animate={{ opacity: 1, x: 0 }}
                                 exit={{ opacity: 0, x: -20 }}
                                 transition={{ duration: 0.4 }}
-                                className="flex flex-col md:flex-row items-center gap-6 bg-background border border-border rounded-[2rem] p-6 shadow-sm"
+                                className="flex flex-col md:flex-row items-center gap-6 bg-background border border-border rounded-[2rem] p-8 shadow-sm relative overflow-hidden min-h-[300px]"
+                                style={{
+                                    backgroundImage: activeCategory.mediaUrls?.[0] ? `url(${activeCategory.mediaUrls[0]})` : 'none',
+                                    backgroundSize: 'cover',
+                                    backgroundPosition: 'center'
+                                }}
                             >
-                                <div className="flex flex-col items-center md:items-start flex-1">
-                                    <div
-                                        className={`w-24 h-24 rounded-full ${getCategoryColor(activeTopCategoryIndex)} flex items-center justify-center mb-4 overflow-hidden p-3 shadow-inner`}>
-                                        <CachedImage
-                                            src={activeCategory.mediaUrls?.[0]}
-                                            alt={activeCategory.name}
-                                            className="w-full h-full object-cover rounded-full"
-                                        />
-                                    </div>
-                                    <h3 className="text-2xl font-extrabold text-foreground mb-1">{activeCategory.name}</h3>
-                                    <p className="text-muted-foreground mb-4 text-sm text-center md:text-left max-w-sm">
-                                        Explore our delicious selection of {activeCategory.name}. Crafted with the finest ingredients and baked to perfection.
-                                    </p>
+                                {activeCategory.mediaUrls?.[0] && (
+                                    <div className="absolute inset-0 bg-black/50 z-0" />
+                                )}
+                                 <div className="flex flex-col items-center md:items-start flex-1 z-10 text-white">
+                                     <div
+                                         className={`w-24 h-24 rounded-full ${getCategoryColor(activeTopCategoryIndex)} flex items-center justify-center mb-4 overflow-hidden p-3 shadow-inner bg-white/20 backdrop-blur-md`}>
+                                         <CachedImage
+                                             src={activeCategory.mediaUrls?.[0]}
+                                             alt={activeCategory.name}
+                                             className="w-full h-full object-cover rounded-full"
+                                         />
+                                     </div>
+                                     <h3 className="text-3xl font-extrabold text-white mb-2">{activeCategory.name}</h3>
+                                    {activeCategory.description && (
+                                        <p className="text-white/80 mb-4 text-sm text-center md:text-left max-w-sm">
+                                            {activeCategory.description}
+                                        </p>
+                                    )}
                                 </div>
                                 
-                                <div className="flex-1 w-full max-w-[320px] mx-auto md:mx-0">
+                                <div className="flex-1 w-full max-w-[320px] mx-auto md:mx-0 z-10">
                                     <div className="flex items-center justify-between mb-3">
                                         <h4 className="text-[#eab308] font-bold text-sm tracking-wider uppercase text-center md:text-left">Top Rated in {activeCategory.name}</h4>
                                     </div>
@@ -508,84 +516,86 @@ export default function HomePage() {
             </motion.section>
 
             {/* 5. ABOUT US & HOW WE WORK */}
-            <motion.section 
-                variants={sectionVariants}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, amount: 0.1 }}
-                className="bg-background py-16"
-            >
-                <div className="max-w-7xl mx-auto w-full px-6">
-                    <div className="flex items-center space-x-2 mb-8">
-                        <span className="bg-muted p-2 rounded-lg"><Star className="w-5 h-5 text-foreground"/></span>
-                        <h2 className="text-2xl font-bold text-foreground">Little Bite About Us</h2>
-                    </div>
-
-                    <div
-                        className="bg-card border border-border rounded-[2rem] p-10 flex flex-col md:flex-row items-center justify-between shadow-sm relative overflow-hidden mb-20">
-                        <div className="md:w-1/2 z-10 pr-8">
-                            <h3 className="text-foreground font-bold mb-2">{about.tag}</h3>
-                            <h2 className="text-5xl font-black text-green-500 leading-tight mb-6">{about.title}</h2>
-                            <p className="text-muted-foreground text-sm leading-relaxed mb-8 max-w-md">
-                                {about.description}
-                            </p>
-                            <Link to="/shop"
-                                  className="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-xl transition-colors shadow-lg shadow-green-500/30">
-                                Explore More
-                            </Link>
+            {about && (about.title || about.tag || about.description) && (
+                <motion.section 
+                    variants={sectionVariants}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, amount: 0.1 }}
+                    className="bg-background py-16"
+                >
+                    <div className="max-w-7xl mx-auto w-full px-6">
+                        <div className="flex items-center space-x-2 mb-8">
+                            <span className="bg-muted p-2 rounded-lg"><Star className="w-5 h-5 text-foreground"/></span>
+                            <h2 className="text-2xl font-bold text-foreground">Little Bite About Us</h2>
                         </div>
-                        <div className="md:w-1/2 mt-12 md:mt-0 relative min-h-[400px] md:min-h-[500px] flex items-center justify-center">
-                            {/* Main Image */}
-                            <motion.div 
-                                initial={{ scale: 0.8, opacity: 0 }}
-                                whileInView={{ scale: 1, opacity: 1 }}
-                                viewport={{ once: true, amount: 0.2 }}
-                                transition={{ duration: 0.6 }}
-                                className="relative z-10 w-64 h-64 md:w-80 md:h-80 flex items-center justify-center rounded-[30%_35%_25%_40%/35%_25%_40%_30%] overflow-hidden shadow-2xl"
-                            >
-                                <CachedImage src={about.image1Url} alt="About main"
-                                     className="w-full h-full object-cover"/>
-                            </motion.div>
 
-                            {/* Floating Image 1 (Croissant) */}
-                            <motion.div 
-                                initial={{ opacity: 0, x: -30 }}
-                                whileInView={{ opacity: 1, x: 0 }}
-                                viewport={{ once: true, amount: 0.2 }}
-                                transition={{ duration: 0.6, delay: 0.2 }}
-                                className="absolute left-2 md:-left-8 bottom-8 z-20"
-                            >
+                        <div
+                            className="bg-card border border-border rounded-[2rem] p-10 flex flex-col md:flex-row items-center justify-between shadow-sm relative overflow-hidden mb-20">
+                            <div className="md:w-1/2 z-10 pr-8">
+                                <h3 className="text-foreground font-bold mb-2">{about.tag}</h3>
+                                <h2 className="text-5xl font-black text-green-500 leading-tight mb-6">{about.title}</h2>
+                                <p className="text-muted-foreground text-sm leading-relaxed mb-8 max-w-md">
+                                    {about.description}
+                                </p>
+                                <Link to="/shop"
+                                      className="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-xl transition-colors shadow-lg shadow-green-500/30">
+                                    Explore More
+                                </Link>
+                            </div>
+                            <div className="md:w-1/2 mt-12 md:mt-0 relative min-h-[400px] md:min-h-[500px] flex items-center justify-center">
+                                {/* Main Image */}
                                 <motion.div 
-                                    animate={{ y: [0, -10, 0], rotate: [-4, -8, -4] }}
-                                    transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
-                                    className="w-36 h-36 md:w-48 md:h-48 shadow-2xl rounded-[25%_35%_40%_30%/30%_40%_25%_35%] overflow-hidden"
+                                    initial={{ scale: 0.8, opacity: 0 }}
+                                    whileInView={{ scale: 1, opacity: 1 }}
+                                    viewport={{ once: true, amount: 0.2 }}
+                                    transition={{ duration: 0.6 }}
+                                    className="relative z-10 w-64 h-64 md:w-80 md:h-80 flex items-center justify-center rounded-[30%_35%_25%_40%/35%_25%_40%_30%] overflow-hidden shadow-2xl"
                                 >
-                                    <CachedImage src={about.image2Url} alt="About floating 1" className="w-full h-full object-cover hover:scale-110 transition-transform duration-500" />
+                                    <CachedImage src={about.image1Url} alt="About main"
+                                         className="w-full h-full object-cover"/>
                                 </motion.div>
-                            </motion.div>
-                            
-                            {/* Floating Image 2 (Cupcakes) */}
-                            <motion.div 
-                                initial={{ opacity: 0, x: 30 }}
-                                whileInView={{ opacity: 1, x: 0 }}
-                                viewport={{ once: true, amount: 0.2 }}
-                                transition={{ duration: 0.6, delay: 0.4 }}
-                                className="absolute right-2 md:-right-4 top-8 z-20"
-                            >
+
+                                {/* Floating Image 1 (Croissant) */}
                                 <motion.div 
-                                    animate={{ y: [0, 10, 0], rotate: [4, 8, 4] }}
-                                    transition={{ repeat: Infinity, duration: 5, ease: "easeInOut", delay: 1 }}
-                                    className="w-32 h-32 md:w-44 md:h-44 shadow-2xl rounded-[35%_25%_30%_40%/40%_30%_35%_25%] overflow-hidden"
+                                    initial={{ opacity: 0, x: -30 }}
+                                    whileInView={{ opacity: 1, x: 0 }}
+                                    viewport={{ once: true, amount: 0.2 }}
+                                    transition={{ duration: 0.6, delay: 0.2 }}
+                                    className="absolute left-2 md:-left-8 bottom-8 z-20"
                                 >
-                                    <CachedImage src={about.image3Url} alt="About floating 2" className="w-full h-full object-cover hover:scale-110 transition-transform duration-500" />
+                                    <motion.div 
+                                        animate={{ y: [0, -10, 0], rotate: [-4, -8, -4] }}
+                                        transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+                                        className="w-36 h-36 md:w-48 md:h-48 shadow-2xl rounded-[25%_35%_40%_30%/30%_40%_25%_35%] overflow-hidden"
+                                    >
+                                        <CachedImage src={about.image2Url} alt="About floating 1" className="w-full h-full object-cover hover:scale-110 transition-transform duration-500" />
+                                    </motion.div>
                                 </motion.div>
-                            </motion.div>
+                                
+                                {/* Floating Image 2 (Cupcakes) */}
+                                <motion.div 
+                                    initial={{ opacity: 0, x: 30 }}
+                                    whileInView={{ opacity: 1, x: 0 }}
+                                    viewport={{ once: true, amount: 0.2 }}
+                                    transition={{ duration: 0.6, delay: 0.4 }}
+                                    className="absolute right-2 md:-right-4 top-8 z-20"
+                                >
+                                    <motion.div 
+                                        animate={{ y: [0, 10, 0], rotate: [4, 8, 4] }}
+                                        transition={{ repeat: Infinity, duration: 5, ease: "easeInOut", delay: 1 }}
+                                        className="w-32 h-32 md:w-44 md:h-44 shadow-2xl rounded-[35%_25%_30%_40%/40%_30%_35%_25%] overflow-hidden"
+                                    >
+                                        <CachedImage src={about.image3Url} alt="About floating 2" className="w-full h-full object-cover hover:scale-110 transition-transform duration-500" />
+                                    </motion.div>
+                                </motion.div>
+                            </div>
                         </div>
+
+
                     </div>
-
-
-                </div>
-            </motion.section>
+                </motion.section>
+            )}
 
             {/* 7. TESTIMONIALS */}
             {activeTestimonial && (

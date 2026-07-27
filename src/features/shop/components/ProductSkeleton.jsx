@@ -1,9 +1,9 @@
 import React from 'react';
 import { Skeleton } from '../../../components/ui/Skeleton';
 
-export default function ProductSkeleton() {
+export default function ProductSkeleton({ className = "" }) {
   return (
-    <div className="bg-card border border-border rounded-[2rem] shadow-sm flex flex-col p-4">
+    <div className={`bg-card border border-border rounded-[2rem] shadow-sm flex flex-col p-4 ${className}`}>
       <Skeleton className="aspect-square rounded-2xl mb-4" />
       <div className="flex flex-col flex-1">
         <Skeleton className="h-3 w-1/4 mb-2 rounded" />

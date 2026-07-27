@@ -111,7 +111,7 @@ export default function ContactPage() {
               <div>
                 <h3 className="font-bold text-lg mb-1 text-foreground">Our Location</h3>
                 <p className="text-muted-foreground text-sm whitespace-pre-line">
-                  {fetchingInfo ? 'Loading...' : contactInfo?.address || '123 Bakery Street, Sweet Town\nNY 10001, USA'}
+                  {fetchingInfo ? 'Loading...' : contactInfo?.address || 'Address not configured'}
                 </p>
               </div>
             </div>
@@ -123,7 +123,7 @@ export default function ContactPage() {
               <div>
                 <h3 className="font-bold text-lg mb-1 text-foreground">Call Us</h3>
                 <p className="text-muted-foreground text-sm">
-                  {fetchingInfo ? 'Loading...' : (contactInfo?.phoneNumbers?.length > 0 ? contactInfo.phoneNumbers.map((p, i) => <React.Fragment key={i}>{p}<br/></React.Fragment>) : <React.Fragment>+1 (555) 123-4567<br/>+1 (555) 987-6543</React.Fragment>)}
+                  {fetchingInfo ? 'Loading...' : (contactInfo?.phoneNumbers?.length > 0 ? contactInfo.phoneNumbers.map((p, i) => <React.Fragment key={i}>{p}<br/></React.Fragment>) : 'Phone not configured')}
                 </p>
               </div>
             </div>
@@ -135,7 +135,7 @@ export default function ContactPage() {
               <div>
                 <h3 className="font-bold text-lg mb-1 text-foreground">Email Us</h3>
                 <p className="text-muted-foreground text-sm">
-                  {fetchingInfo ? 'Loading...' : (contactInfo?.emails?.length > 0 ? contactInfo.emails.map((e, i) => <React.Fragment key={i}>{e}<br/></React.Fragment>) : <React.Fragment>hello@blubugbakery.com<br/>support@blubugbakery.com</React.Fragment>)}
+                  {fetchingInfo ? 'Loading...' : (contactInfo?.emails?.length > 0 ? contactInfo.emails.map((e, i) => <React.Fragment key={i}>{e}<br/></React.Fragment>) : 'Email not configured')}
                 </p>
               </div>
             </div>

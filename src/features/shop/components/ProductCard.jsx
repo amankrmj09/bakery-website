@@ -5,7 +5,7 @@ import { addItemToCart, fetchCart } from '../../cart/redux/cartThunk';
 import { LuShoppingCart as ShoppingCart, LuLoader as Loader2, LuStar as Star } from 'react-icons/lu';
 import { toast } from 'sonner';
 
-export default function ProductCard({ product, className = "" }) {
+export default function ProductCard({ product, className = "", isNew = false }) {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const { cart } = useSelector((state) => state.cart);
@@ -44,7 +44,7 @@ export default function ProductCard({ product, className = "" }) {
     };
 
     return (
-        <div className={`group bg-card border border-border rounded-[2rem] shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col p-4 relative ${className}`}>
+        <div className={`group bg-card border border-border rounded-[2rem] shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col p-4 relative ${(isNew || product?.isNew) ? 'animate-card-appear' : ''} ${className}`}>
             <div 
                 className="aspect-square bg-muted/30 rounded-2xl relative overflow-hidden flex items-center justify-center cursor-pointer"
                 onClick={() => navigate(`/product/${product.id}`)}

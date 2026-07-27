@@ -176,12 +176,12 @@ export default function MyOrders() {
     }
   };
   
-  const getTimelineProgress = (status) => {
+  const getTimelineProgress = (status, deliveryType) => {
     switch(status) {
       case 'PENDING': return 25;
       case 'CONFIRMED': return 50;
       case 'PREPARING': return 65;
-      case 'READY': return 75;
+      case 'READY': return deliveryType === 'PICKUP' ? 85 : 75;
       case 'OUT_FOR_DELIVERY': return 85;
       case 'DELIVERED': return 100;
       case 'CANCELLED': return 0;
@@ -398,7 +398,7 @@ export default function MyOrders() {
               <div className="flex items-center justify-between md:justify-end gap-4 w-full md:w-auto">
                 <div className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold border ${getStatusColor(order.status)}`}>
                   {getStatusIcon(order.status)}
-                  {order.status}
+                  {order.status === 'DELIVERED' && order.deliveryType === 'PICKUP' ? 'PICKED_UP' : order.status}
                 </div>
               </div>
             </div>
@@ -409,15 +409,19 @@ export default function MyOrders() {
                  <div className="relative w-full h-2 bg-muted rounded-full overflow-hidden">
                     <div 
                       className="absolute top-0 left-0 h-full bg-primary-500 transition-all duration-1000 ease-in-out"
-                      style={{ width: `${getTimelineProgress(order.status)}%` }}
+                      style={{ width: `${getTimelineProgress(order.status, order.deliveryType)}%` }}
                     />
                  </div>
                  <div className="flex justify-between text-[10px] sm:text-xs font-bold text-muted-foreground mt-2 uppercase tracking-wider">
-                    <span className={getTimelineProgress(order.status) >= 25 ? 'text-primary-600' : ''}>Pending</span>
-                    <span className={getTimelineProgress(order.status) >= 50 ? 'text-primary-600' : ''}>Confirmed</span>
-                    <span className={getTimelineProgress(order.status) >= 65 ? 'text-primary-600' : ''}>Preparing</span>
-                    <span className={getTimelineProgress(order.status) >= 85 ? 'text-primary-600' : ''}>Out for Delivery</span>
-                    <span className={getTimelineProgress(order.status) >= 100 ? 'text-primary-600' : ''}>Delivered</span>
+                    <span className={getTimelineProgress(order.status, order.deliveryType) >= 25 ? 'text-primary-600' : ''}>Pending</span>
+                    <span className={getTimelineProgress(order.status, order.deliveryType) >= 50 ? 'text-primary-600' : ''}>Confirmed</span>
+                    <span className={getTimelineProgress(order.status, order.deliveryType) >= 65 ? 'text-primary-600' : ''}>Preparing</span>
+                    <span className={getTimelineProgress(order.status, order.deliveryType) >= 85 ? 'text-primary-600' : ''}>
+                      {order.deliveryType === 'PICKUP' ? 'Ready' : 'Out for Delivery'}
+                    </span>
+                    <span className={getTimelineProgress(order.status, order.deliveryType) >= 100 ? 'text-primary-600' : ''}>
+                      {order.deliveryType === 'PICKUP' ? 'Picked Up' : 'Delivered'}
+                    </span>
                  </div>
               </div>
             )}

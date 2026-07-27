@@ -130,8 +130,14 @@ export default function Footer() {
                             custom cakes, we have it all. Order easily and enjoy hassle-free!
                         </p>
                         <div className="text-xs text-muted-foreground">
-                            <p>Blu Food Court</p>
-                            <p>Blu's Bakery LLC</p>
+                            <a 
+                                href={socialLinks.website || "https://blubugtech.com"} 
+                                target="_blank" 
+                                rel="noopener noreferrer" 
+                                className="hover:text-primary-500 transition-colors"
+                            >
+                                BluBugTech
+                            </a>
                         </div>
                     </div>
 

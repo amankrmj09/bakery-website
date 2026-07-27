@@ -10,6 +10,35 @@ import ProductSkeleton from '../components/ProductSkeleton';
 import ProductCard from '../components/ProductCard';
 import SearchAutocomplete from '../../../components/ui/SearchAutocomplete';
 
+const CACHE_TTL = 300000; // 5 minutes TTL
+
+const getCachedData = (key) => {
+  try {
+    const item = localStorage.getItem(key);
+    if (!item) return null;
+    const parsed = JSON.parse(item);
+    const now = Date.now();
+    if (now - parsed.timestamp > CACHE_TTL) {
+      localStorage.removeItem(key);
+      return null;
+    }
+    return parsed.data;
+  } catch (e) {
+    return null;
+  }
+};
+
+const setCachedData = (key, data) => {
+  try {
+    localStorage.setItem(key, JSON.stringify({
+      data,
+      timestamp: Date.now()
+    }));
+  } catch (e) {
+    // ignore
+  }
+};
+
 export default function ShopPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -34,13 +63,37 @@ export default function ShopPage() {
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize, setPageSize] = useState(12);
 
+  const [displayedProducts, setDisplayedProducts] = useState([]);
+  const [initialCachedIds, setInitialCachedIds] = useState(new Set());
+
+  const cacheKey = `bakery_menu_products_${selectedCategory || 'all'}_${searchQuery || ''}_${currentPage}_${pageSize}_${sortBy}`;
+
   useEffect(() => {
     dispatch(fetchCategories());
   }, [dispatch]);
 
+  // Cache fresh categories when fetched
+  useEffect(() => {
+    if (categories.data && categories.data.length > 0) {
+      setCachedData('bakery_menu_categories', categories.data);
+    }
+  }, [categories.data]);
+
   useEffect(() => {
     setCurrentPage(0);
   }, [searchQuery, selectedCategory, sortBy, pageSize]);
+
+  // Load from cache synchronously when cacheKey changes
+  useEffect(() => {
+    const cached = getCachedData(cacheKey);
+    if (cached) {
+      setDisplayedProducts(cached);
+      setInitialCachedIds(new Set(cached.map(p => p.id)));
+    } else {
+      setDisplayedProducts([]);
+      setInitialCachedIds(new Set());
+    }
+  }, [cacheKey]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -57,7 +110,25 @@ export default function ShopPage() {
     return () => clearTimeout(timer);
   }, [dispatch, searchQuery, selectedCategory, currentPage, pageSize, sortBy]);
 
-  const sortedProducts = products.data;
+  // Synchronize background-fetched data
+  useEffect(() => {
+    if (!products.loading && products.data) {
+      const freshData = products.data;
+      setCachedData(cacheKey, freshData);
+      
+      // Map products, setting isNew if they weren't in the original cached list
+      const updatedProducts = freshData.map(product => {
+        const isBrandNew = initialCachedIds.size > 0 && !initialCachedIds.has(product.id);
+        return {
+          ...product,
+          isNew: isBrandNew
+        };
+      });
+      
+      setDisplayedProducts(updatedProducts);
+    }
+  }, [products.data, products.loading, cacheKey, initialCachedIds]);
+
 
   return (
     <div className="flex flex-col h-full bg-background pb-12">
@@ -245,16 +316,16 @@ export default function ShopPage() {
           </div>
 
           <div className="flex-1 overflow-y-auto pr-2 pb-20 scrollbar-thin scrollbar-thumb-muted-foreground/20 scrollbar-track-transparent">
-          {products.loading ? (
+          {displayedProducts.length === 0 && products.loading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[...Array(6)].map((_, i) => (
-                <ProductSkeleton key={i} />
-              ))}
+              <ProductSkeleton className="block" />
+              <ProductSkeleton className="hidden sm:block" />
+              <ProductSkeleton className="hidden lg:block" />
             </div>
-          ) : sortedProducts.length > 0 ? (
+          ) : displayedProducts.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {sortedProducts.map((product) => (
-                <ProductCard key={product.id} product={product} className="h-full" />
+              {displayedProducts.map((product) => (
+                <ProductCard key={product.id} product={product} isNew={product.isNew} className="h-full" />
               ))}
             </div>
           ) : (
