@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LuSearch as Search, LuLoader as Loader2 } from 'react-icons/lu';
+import { LuSearch as Search, LuLoader as Loader2, LuX } from 'react-icons/lu';
 import { shopApi } from '../../features/shop/api/shopApi';
 
 const SearchAutocomplete = ({ 
@@ -111,13 +111,28 @@ const SearchAutocomplete = ({
                     autoFocus={autoFocus}
                     className={`flex-1 bg-transparent border-none focus:outline-none text-foreground text-sm min-w-0 ${variant === 'navbar' && !isFocused && !query ? 'cursor-pointer' : ''}`}
                 />
-                {variant === 'navbar' && !isFocused && !query && (
-                    <kbd className="hidden md:inline-flex items-center gap-1 bg-background/50 border border-border/50 rounded px-1.5 py-0.5 text-[10px] font-semibold text-muted-foreground ml-2 flex-shrink-0">
-                        <span className="text-[9px]">⌘</span>K
-                    </kbd>
-                )}
                 {isLoading && (
-                    <Loader2 className="w-4 h-4 text-primary-500 animate-spin mr-3 flex-shrink-0" />
+                    <Loader2 className="w-4 h-4 text-primary-500 animate-spin mr-2 flex-shrink-0" />
+                )}
+                {query && (
+                    <button 
+                        type="button"
+                        onClick={() => {
+                            setQuery('');
+                            setIsOpen(false);
+                            const input = document.getElementById(inputId) || wrapperRef.current?.querySelector('input');
+                            if (input) input.focus();
+                            if (onSearchSubmit) {
+                                onSearchSubmit('');
+                            } else {
+                                navigate('/shop');
+                            }
+                        }}
+                        className={`p-1 rounded-full text-muted-foreground hover:text-foreground hover:bg-black/5 transition-colors flex-shrink-0 ${variant === 'navbar' ? 'mr-1' : 'mr-2'}`}
+                        aria-label="Clear search"
+                    >
+                        <LuX className="w-4 h-4" />
+                    </button>
                 )}
             </div>
 

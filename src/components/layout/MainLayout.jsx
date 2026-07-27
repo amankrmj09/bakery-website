@@ -18,19 +18,6 @@ export default function MainLayout() {
         dispatch(fetchCart());
     }, [dispatch]);
 
-    // Keyboard shortcut for search
-    useEffect(() => {
-        const handleKeyDown = (e) => {
-            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-                e.preventDefault();
-                const searchInput = document.getElementById('global-search');
-                if (searchInput) searchInput.focus();
-            }
-        };
-        window.addEventListener('keydown', handleKeyDown);
-        return () => window.removeEventListener('keydown', handleKeyDown);
-    }, []);
-
     const cartItemCount = cart?.totalQuantity || 0;
 
     return (

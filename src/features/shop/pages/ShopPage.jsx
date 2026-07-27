@@ -90,13 +90,13 @@ export default function ShopPage() {
         </div>
       </div>
 
-      <div className="flex flex-col md:flex-row max-w-7xl mx-auto w-full px-6 -mt-10 relative z-20 gap-8 flex-1">
+      <div className="flex flex-col md:flex-row max-w-7xl mx-auto w-full px-6 -mt-10 relative z-20 gap-8 flex-1 sticky top-0 h-[calc(100vh-5rem)] pb-6">
         {/* Sidebar - Categories */}
-        <div className="w-full md:w-72 flex-shrink-0 bg-card rounded-[2rem] p-6 shadow-xl h-fit border border-border">
-          <h3 className="font-extrabold text-lg text-foreground mb-6 flex items-center">
+        <div className="w-full md:w-72 flex-shrink-0 bg-card rounded-[2rem] p-6 shadow-xl h-full border border-border flex flex-col">
+          <h3 className="font-extrabold text-lg text-foreground mb-6 flex items-center flex-shrink-0">
             <UtensilsCrossed className="w-5 h-5 text-primary-500 mr-2" /> Categories
           </h3>
-          <ul className="space-y-2">
+          <ul className="space-y-2 overflow-y-auto flex-1 pr-2 scrollbar-thin scrollbar-thumb-muted-foreground/20 scrollbar-track-transparent">
           <li>
             <button
               onClick={() => setSelectedCategory(null)}
@@ -129,8 +129,8 @@ export default function ShopPage() {
       </div>
 
         {/* Main Grid area */}
-        <div className="flex-1 flex flex-col pt-10 md:pt-0">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
+        <div className="flex-1 flex flex-col pt-10 md:pt-0 h-full min-w-0">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4 flex-shrink-0">
             <h2 className="font-extrabold text-2xl text-foreground">
             {searchQuery 
               ? `Search results for "${searchQuery}"` 
@@ -156,7 +156,7 @@ export default function ShopPage() {
             />
           </div>
 
-          <div className="flex-1">
+          <div className="flex-1 overflow-y-auto pr-2 pb-20 scrollbar-thin scrollbar-thumb-muted-foreground/20 scrollbar-track-transparent">
           {products.loading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {[...Array(6)].map((_, i) => (
