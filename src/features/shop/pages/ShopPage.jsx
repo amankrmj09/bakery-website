@@ -61,8 +61,15 @@ export default function ShopPage() {
   return (
     <div className="flex flex-col h-full bg-background pb-12">
       {/* Menu Header */}
-      <div className="bg-[#eab308] pt-12 pb-20 px-8 relative overflow-hidden rounded-b-[3rem] shadow-sm flex-shrink-0">
-        <div className="max-w-7xl mx-auto w-full relative z-10 flex flex-col items-center text-center">
+      <div className="relative pt-12 pb-20 px-8 flex-shrink-0 flex flex-col items-center">
+        {/* Background layer with overflow-hidden to clip images */}
+        <div className="absolute inset-0 bg-[#eab308] rounded-b-[3rem] overflow-hidden z-0 shadow-sm">
+          <img src="/images/hero_croissant.png" className="absolute -left-10 bottom-0 h-48 opacity-20 rotate-12" alt="" />
+          <img src="/images/hero_cupcakes.png" className="absolute -right-10 top-0 h-48 opacity-20 -rotate-12" alt="" />
+        </div>
+        
+        {/* Content layer (not clipped) */}
+        <div className="max-w-7xl mx-auto w-full relative z-30 flex flex-col items-center text-center">
           <span className="text-red-500 font-bold uppercase tracking-widest text-sm mb-4 bg-white/20 px-4 py-1 rounded-full">Our Menu</span>
           <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-6">
             Delicious Treats,<br/>Baked Fresh Daily
@@ -81,8 +88,6 @@ export default function ShopPage() {
             />
           </div>
         </div>
-        <img src="/images/hero_croissant.png" className="absolute -left-10 bottom-0 h-48 opacity-20 rotate-12" alt="" />
-        <img src="/images/hero_cupcakes.png" className="absolute -right-10 top-0 h-48 opacity-20 -rotate-12" alt="" />
       </div>
 
       <div className="flex flex-col md:flex-row max-w-7xl mx-auto w-full px-6 -mt-10 relative z-20 gap-8 flex-1">

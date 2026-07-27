@@ -13,7 +13,6 @@ export default function MainLayout() {
     const location = useLocation();
     const {user} = useSelector(state => state.auth);
     const {cart} = useSelector(state => state.cart);
-    const [isSearchOpen, setIsSearchOpen] = useState(false);
 
     useEffect(() => {
         dispatch(fetchCart());
@@ -24,7 +23,8 @@ export default function MainLayout() {
         const handleKeyDown = (e) => {
             if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
                 e.preventDefault();
-                setIsSearchOpen(true);
+                const searchInput = document.getElementById('global-search');
+                if (searchInput) searchInput.focus();
             }
         };
         window.addEventListener('keydown', handleKeyDown);
@@ -38,10 +38,10 @@ export default function MainLayout() {
             {/* Top Navigation - GOOD FOOD Style */}
             {!(location.pathname === '/login' || location.pathname === '/register') && (
             <header
-                className="sticky top-0 z-50 flex h-20 items-center justify-between bg-card/80 backdrop-blur-md border-b border-border/50 px-8 shadow-sm w-full">
+                className="sticky top-0 z-50 grid grid-cols-3 h-20 items-center bg-card/80 backdrop-blur-md border-b border-border/50 px-8 shadow-sm w-full">
 
                 {/* Logo Left */}
-                <div className="flex-shrink-0 flex items-center">
+                <div className="flex items-center justify-self-start">
                     <Link to="/" className="flex items-center space-x-3">
                     <img src="/icon-192.png" alt="Blubug Logo"
                          className="h-10 w-auto cursor-pointer object-contain transform transition-transform hover:scale-105"/>
@@ -52,7 +52,7 @@ export default function MainLayout() {
                 </div>
 
                 {/* Center Nav Links */}
-                <nav className="hidden md:flex items-center space-x-8 font-semibold text-sm">
+                <nav className="hidden md:flex items-center space-x-8 font-semibold text-sm justify-self-center">
                     <Link to="/"
                           className={`relative pb-1 transition-colors ${location.pathname === '/' ? 'text-primary-500' : 'text-foreground hover:text-primary-500'}`}>
                         Home
@@ -75,18 +75,15 @@ export default function MainLayout() {
 
 
                 {/* Right Actions */}
-                <div className="flex items-center space-x-6">
-                    <button 
-                        onClick={() => setIsSearchOpen(true)}
-                        className="flex items-center gap-2 bg-muted/30 hover:bg-muted border border-transparent hover:border-border/50 text-muted-foreground hover:text-foreground px-3 py-1.5 rounded-full transition-all duration-300"
-                        title="Search (Ctrl+K)"
-                    >
-                        <FiSearch className="w-4 h-4"/>
-                        <span className="text-xs font-medium hidden sm:inline-block mr-1">Search...</span>
-                        <kbd className="hidden md:inline-flex items-center gap-1 bg-background/50 border border-border/50 rounded px-1.5 py-0.5 text-[10px] font-semibold text-muted-foreground">
-                            <span className="text-[9px]">⌘</span>K
-                        </kbd>
-                    </button>
+                <div className="flex items-center space-x-6 justify-self-end">
+                    <div className="hidden sm:block">
+                        <SearchAutocomplete 
+                            inputId="global-search"
+                            placeholder="Search..." 
+                            variant="navbar"
+                            expandable={true}
+                        />
+                    </div>
 
                     <Link to="/cart" className="relative text-foreground hover:text-primary-500 transition-colors">
                         <FiShoppingBag className="w-5 h-5"/>
@@ -133,30 +130,6 @@ export default function MainLayout() {
                     <Footer />
                 )}
             </main>
-            {/* Global Search Modal */}
-            {isSearchOpen && (
-                <div className="fixed inset-0 z-[100] flex flex-col items-center pt-24 px-4 bg-background/80 backdrop-blur-sm animate-in fade-in duration-200">
-                    <div className="w-full max-w-2xl relative">
-                        <button 
-                            onClick={() => setIsSearchOpen(false)}
-                            className="absolute -top-12 right-0 p-2 text-muted-foreground hover:text-foreground transition-colors"
-                        >
-                            <FiX className="w-6 h-6" />
-                        </button>
-                        <SearchAutocomplete 
-                            placeholder="Search anywhere..." 
-                            autoFocus={true}
-                            onSearchSubmit={(query) => {
-                                setIsSearchOpen(false);
-                                if (query.trim()) {
-                                    navigate(`/shop?search=${encodeURIComponent(query)}`);
-                                }
-                            }}
-                        />
-                    </div>
-                    <div className="flex-1 w-full" onClick={() => setIsSearchOpen(false)}></div>
-                </div>
-            )}
         </div>
     );
 }

@@ -7,12 +7,16 @@ const SearchAutocomplete = ({
     placeholder = "Search our menu...", 
     autoFocus = false, 
     onSearchSubmit,
-    initialValue = ''
+    initialValue = '',
+    variant = 'default', // 'default' | 'navbar'
+    expandable = false,
+    inputId
 }) => {
     const [query, setQuery] = useState(initialValue);
     const [results, setResults] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
+    const [isFocused, setIsFocused] = useState(autoFocus);
     const wrapperRef = useRef(null);
     const navigate = useNavigate();
 
@@ -24,6 +28,7 @@ const SearchAutocomplete = ({
         const handleClickOutside = (event) => {
             if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
                 setIsOpen(false);
+                setIsFocused(false);
             }
         };
         document.addEventListener('mousedown', handleClickOutside);
@@ -76,22 +81,41 @@ const SearchAutocomplete = ({
         navigate(`/product/${productId}`);
     };
 
+    const containerClasses = {
+        default: "bg-white rounded-full p-2 flex items-center shadow-lg relative z-10 transition-shadow focus-within:ring-2 focus-within:ring-primary-500/50",
+        navbar: "bg-muted/30 focus-within:bg-card border border-transparent focus-within:border-border/50 text-foreground px-3 py-1.5 rounded-full transition-all duration-300 relative z-10 flex items-center shadow-sm"
+    };
+
+    const widthClasses = expandable 
+        ? (isFocused || query ? "w-64 md:w-80" : "w-32 md:w-48 cursor-pointer") 
+        : "w-full";
+
     return (
-        <div className="relative w-full" ref={wrapperRef}>
-            <div className="bg-white rounded-full p-2 flex items-center shadow-lg w-full relative z-10 transition-shadow focus-within:ring-2 focus-within:ring-primary-500/50">
-                <Search className="w-5 h-5 text-muted-foreground ml-3 mr-2 flex-shrink-0" />
+        <div className={`relative transition-all duration-300 ${widthClasses}`} ref={wrapperRef}>
+            <div className={`w-full ${containerClasses[variant]}`}>
+                <Search className={`w-5 h-5 flex-shrink-0 ${variant === 'navbar' ? 'text-muted-foreground w-4 h-4 ml-1 mr-2' : 'text-muted-foreground ml-3 mr-2'}`} />
                 <input 
+                    id={inputId}
                     type="text" 
                     placeholder={placeholder}
                     value={query}
+                    onFocus={() => {
+                        setIsFocused(true);
+                        if (query) setIsOpen(true);
+                    }}
                     onChange={(e) => {
                         setQuery(e.target.value);
                         if (!isOpen && e.target.value) setIsOpen(true);
                     }}
                     onKeyDown={handleKeyDown}
                     autoFocus={autoFocus}
-                    className="flex-1 bg-transparent border-none focus:outline-none text-foreground text-sm min-w-0"
+                    className={`flex-1 bg-transparent border-none focus:outline-none text-foreground text-sm min-w-0 ${variant === 'navbar' && !isFocused && !query ? 'cursor-pointer' : ''}`}
                 />
+                {variant === 'navbar' && !isFocused && !query && (
+                    <kbd className="hidden md:inline-flex items-center gap-1 bg-background/50 border border-border/50 rounded px-1.5 py-0.5 text-[10px] font-semibold text-muted-foreground ml-2 flex-shrink-0">
+                        <span className="text-[9px]">⌘</span>K
+                    </kbd>
+                )}
                 {isLoading && (
                     <Loader2 className="w-4 h-4 text-primary-500 animate-spin mr-3 flex-shrink-0" />
                 )}
