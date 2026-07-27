@@ -6,6 +6,7 @@ import {logout} from '../../features/auth/redux/authThunk';
 import {fetchCart} from '../../features/cart/redux/cartThunk';
 import Footer from './Footer';
 import SearchAutocomplete from '../ui/SearchAutocomplete';
+import { toast } from 'sonner';
 
 export default function MainLayout() {
     const dispatch = useDispatch();
@@ -91,7 +92,10 @@ export default function MainLayout() {
                                 </div>
                             </Link>
                             <button
-                                onClick={() => dispatch(logout())}
+                                onClick={() => {
+                                    dispatch(logout());
+                                    toast.success('Logged out successfully');
+                                }}
                                 className="p-2 rounded-full hover:bg-red-500/10 text-muted-foreground hover:text-red-500 transition-colors"
                                 title="Logout"
                             >

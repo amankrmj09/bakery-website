@@ -213,8 +213,8 @@ export default function ProductDetailsPage() {
               ) : (
                 <span className="text-primary-500">${product.price?.toFixed(2)}</span>
               )}
-              {product.weightGrams && (
-                <span className="text-sm font-medium text-muted-foreground mb-1">/ {product.weightGrams}g</span>
+              {product.unit && (
+                <span className="text-sm font-medium text-muted-foreground mb-1">/ {product.unit}</span>
               )}
               <span className="text-sm font-medium text-muted-foreground mb-1 ml-2 border-l border-border pl-2">(exclusive of tax)</span>
             </div>
@@ -260,7 +260,7 @@ export default function ProductDetailsPage() {
                   </button>
                 )}
 
-                {(product.caloriesPerUnit || product.shelfLifeHours) && (
+                {(product.calories || product.shelfLifeHours) && (
                   <button 
                     onClick={() => setActiveTab('other')}
                     className={`pb-4 text-base font-bold transition-all whitespace-nowrap border-b-2 ${
@@ -304,13 +304,13 @@ export default function ProductDetailsPage() {
                       </div>
                     </div>
                   )}
-                  {activeTab === 'other' && (product.caloriesPerUnit || product.shelfLifeHours) && (
+                  {activeTab === 'other' && (product.calories || product.shelfLifeHours) && (
                     <div className="animate-in fade-in duration-300">
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {product.caloriesPerUnit && (
+                        {product.calories && (
                           <div className="bg-background border border-border/80 rounded-3xl p-6 shadow-sm flex flex-col justify-center">
                             <span className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-2">Calories</span>
-                            <p className="font-black text-foreground text-4xl">{product.caloriesPerUnit} <span className="text-lg font-medium text-muted-foreground">kcal</span></p>
+                            <p className="font-black text-foreground text-2xl">{product.calories}</p>
                           </div>
                         )}
                         {product.shelfLifeHours && (
