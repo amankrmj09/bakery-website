@@ -41,10 +41,10 @@ export const fetchStorefront = createAsyncThunk(
 
 export const fetchProductReviews = createAsyncThunk(
   'shop/fetchProductReviews',
-  async (productId, { rejectWithValue }) => {
+  async ({ productId, params }, { rejectWithValue }) => {
     try {
-      const response = await shopApi.fetchProductReviews(productId);
-      return { productId, reviews: response.data };
+      const response = await shopApi.fetchProductReviews(productId, params);
+      return { productId, reviews: response.data, params };
     } catch (error) {
       return rejectWithValue('Failed to fetch reviews');
     }

@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'sonner';
 import { addItemToCart } from '../../cart/redux/cartThunk';
 import { fetchProductReviews, reportReview } from '../redux/shopThunk';
-import { LuArrowLeft as ArrowLeft, LuShoppingCart as ShoppingCart, LuMinus as Minus, LuPlus as Plus, LuLoader as Loader2, LuPackage as Package, LuInfo as Info, LuStar as Star } from 'react-icons/lu';
+import { LuArrowLeft as ArrowLeft, LuShoppingCart as ShoppingCart, LuMinus as Minus, LuPlus as Plus, LuLoader as Loader2, LuPackage as Package, LuInfo as Info, LuStar as Star, LuChevronLeft as ChevronLeft, LuChevronRight as ChevronRight } from 'react-icons/lu';
 import ReviewModal from '../components/ReviewModal';
 
 export default function ProductDetailsPage() {
@@ -24,6 +24,8 @@ export default function ProductDetailsPage() {
     isOpen: false,
     existingReview: null
   });
+  const [reviewsCurrentPage, setReviewsCurrentPage] = useState(0);
+  const [reviewsPageSize, setReviewsPageSize] = useState(6);
 
   // We find the product from redux store since we already fetched it on the shop page,
   // or we might need to fetch it if we navigate directly to the URL.
@@ -44,9 +46,12 @@ export default function ProductDetailsPage() {
 
   useEffect(() => {
     if (product?.id) {
-      dispatch(fetchProductReviews(product.id));
+      dispatch(fetchProductReviews({ 
+        productId: product.id, 
+        params: { page: reviewsCurrentPage, size: reviewsPageSize, sortBy: 'createdAt_desc' } 
+      }));
     }
-  }, [dispatch, product?.id]);
+  }, [dispatch, product?.id, reviewsCurrentPage, reviewsPageSize]);
 
   const handleAddToCart = async () => {
     if (!product) return;
@@ -105,7 +110,8 @@ export default function ProductDetailsPage() {
 
   const rawReviews = reviews?.data?.[product.id];
   const productReviews = rawReviews?.content || rawReviews?._embedded?.reviewResponseList || (Array.isArray(rawReviews) ? rawReviews : []);
-  const displayCount = productReviews.length > 0 ? productReviews.length : (product.totalReviews || 0);
+  const reviewsPagination = rawReviews?.page || (rawReviews?.totalPages !== undefined ? rawReviews : null);
+  const displayCount = reviewsPagination?.totalElements !== undefined ? reviewsPagination.totalElements : (productReviews.length > 0 ? productReviews.length : (product.totalReviews || 0));
   const displayRating = productReviews.length > 0 
     ? (productReviews.reduce((acc, r) => acc + r.rating, 0) / productReviews.length).toFixed(1) 
     : (product.averageRating > 0 ? product.averageRating.toFixed(1) : '0.0');
@@ -330,6 +336,100 @@ export default function ProductDetailsPage() {
                     </div>
                   </div>
                 ))}
+              </div>
+            )}
+            
+            {/* Reviews Pagination Controls */}
+            {reviewsPagination && (reviewsPagination.totalPages > 1 || reviewsPagination.totalElements > 0) && (
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-8 pt-6 border-t border-border">
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <span>Page <strong className="text-foreground">{reviewsPagination.number + 1}</strong> of <strong className="text-foreground">{reviewsPagination.totalPages || 1}</strong></span>
+                  <span>({reviewsPagination.totalElements} reviews)</span>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-1.5 sm:border-r border-border sm:pr-3">
+                    <label htmlFor="reviewsPageSize" className="text-xs font-semibold text-muted-foreground">Show:</label>
+                    <select
+                      id="reviewsPageSize"
+                      value={reviewsPageSize}
+                      onChange={(e) => {
+                        setReviewsPageSize(Number(e.target.value));
+                        setReviewsCurrentPage(0);
+                      }}
+                      className="bg-background border border-border rounded-lg px-2 py-1 text-xs font-bold text-foreground focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    >
+                      <option value={4}>4</option>
+                      <option value={6}>6</option>
+                      <option value={12}>12</option>
+                    </select>
+                  </div>
+
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => setReviewsCurrentPage((prev) => Math.max(0, prev - 1))}
+                      disabled={reviewsPagination.number === 0 || reviews.loading}
+                      className="p-1.5 rounded-lg border border-border bg-background hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed transition-colors text-foreground"
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                    </button>
+
+                    {(() => {
+                      const total = reviewsPagination.totalPages || 1;
+                      const current = reviewsPagination.number || 0;
+                      let pages = [];
+                      if (total <= 5) {
+                        pages = Array.from({ length: total }, (_, i) => i);
+                      } else {
+                        if (current <= 2) pages = [0, 1, 2, 3, total - 1];
+                        else if (current >= total - 3) pages = [0, total - 4, total - 3, total - 2, total - 1];
+                        else pages = [0, current - 1, current, current + 1, total - 1];
+                      }
+                      return pages.map((pageIdx, idx) => {
+                        if (idx > 0 && pageIdx - pages[idx - 1] > 1) {
+                          return (
+                            <React.Fragment key={`ellipsis-${pageIdx}`}>
+                              <span className="px-1 text-xs text-muted-foreground">...</span>
+                              <button
+                                onClick={() => setReviewsCurrentPage(pageIdx)}
+                                disabled={reviews.loading}
+                                className={`w-7 h-7 rounded-lg text-xs font-bold transition-colors ${
+                                  current === pageIdx
+                                    ? 'bg-primary-500 text-white shadow-sm shadow-primary-500/20'
+                                    : 'border border-border bg-background hover:bg-muted text-foreground'
+                                }`}
+                              >
+                                {pageIdx + 1}
+                              </button>
+                            </React.Fragment>
+                          );
+                        }
+                        return (
+                          <button
+                            key={pageIdx}
+                            onClick={() => setReviewsCurrentPage(pageIdx)}
+                            disabled={reviews.loading}
+                            className={`w-7 h-7 rounded-lg text-xs font-bold transition-colors ${
+                              current === pageIdx
+                                ? 'bg-primary-500 text-white shadow-sm shadow-primary-500/20'
+                                : 'border border-border bg-background hover:bg-muted text-foreground'
+                            }`}
+                          >
+                            {pageIdx + 1}
+                          </button>
+                        );
+                      });
+                    })()}
+
+                    <button
+                      onClick={() => setReviewsCurrentPage((prev) => Math.min((reviewsPagination.totalPages || 1) - 1, prev + 1))}
+                      disabled={reviewsPagination.number >= ((reviewsPagination.totalPages || 1) - 1) || reviews.loading || reviewsPagination.totalPages === 0}
+                      className="p-1.5 rounded-lg border border-border bg-background hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed transition-colors text-foreground"
+                    >
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
               </div>
             )}
           </div>
