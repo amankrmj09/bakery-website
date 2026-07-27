@@ -37,7 +37,17 @@ export const fetchStorefront = createAsyncThunk(
   }
 );
 
-
+export const fetchProductById = createAsyncThunk(
+  'shop/fetchProductById',
+  async (productId, { rejectWithValue }) => {
+    try {
+      const response = await shopApi.fetchProductById(productId);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue('Failed to fetch product');
+    }
+  }
+);
 
 export const fetchProductReviews = createAsyncThunk(
   'shop/fetchProductReviews',

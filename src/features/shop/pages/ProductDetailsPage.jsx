@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'sonner';
 import { addItemToCart } from '../../cart/redux/cartThunk';
-import { fetchProductReviews, reportReview } from '../redux/shopThunk';
+import { fetchProductReviews, reportReview, fetchProductById } from '../redux/shopThunk';
 import { LuArrowLeft as ArrowLeft, LuShoppingCart as ShoppingCart, LuMinus as Minus, LuPlus as Plus, LuLoader as Loader2, LuPackage as Package, LuInfo as Info, LuStar as Star, LuChevronLeft as ChevronLeft, LuChevronRight as ChevronRight } from 'react-icons/lu';
 import ReviewModal from '../components/ReviewModal';
 
@@ -34,17 +34,29 @@ export default function ProductDetailsPage() {
   // For simplicity, assuming it's in the store or we can get it from there.
   // In a real scenario, we'd fetch the specific product by ID if not found.
   useEffect(() => {
-    if (products.data.length > 0) {
-      const found = products.data.find(p => p.id === id);
-      setProduct(found || null);
-      setLoading(false);
-    } else {
-      // If products are not loaded (e.g. direct link), we should ideally fetch it.
-      // For now, we will just rely on what we have, or show an error.
-      // In the context of this project, we can just redirect to shop if not found or wait.
-      setLoading(false);
-    }
-  }, [id, products.data]);
+    const fetchProduct = async () => {
+      setLoading(true);
+      if (products.data.length > 0) {
+        const found = products.data.find(p => p.id === id);
+        if (found) {
+          setProduct(found);
+          setLoading(false);
+          return;
+        }
+      }
+      
+      try {
+        const res = await dispatch(fetchProductById(id)).unwrap();
+        setProduct(res);
+      } catch (error) {
+        setProduct(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchProduct();
+  }, [id, products.data, dispatch]);
 
   useEffect(() => {
     if (product?.id) {
@@ -163,12 +175,12 @@ export default function ProductDetailsPage() {
             
             {/* Thumbnails if multiple images */}
             {allImages.length > 1 && (
-              <div className="flex gap-4 mt-4 overflow-x-auto pb-2 custom-scrollbar w-full max-w-full min-w-0">
+              <div className="flex gap-4 mt-2 overflow-x-auto py-2 px-1 custom-scrollbar w-full max-w-full min-w-0">
                 {allImages.map((url, idx) => (
                   <button 
                     key={idx} 
                     onClick={() => setSelectedImage(url)}
-                    className={`w-20 h-20 flex-shrink-0 bg-muted/30 rounded-xl overflow-hidden border transition-all ${displayImage === url ? 'border-primary-500 ring-2 ring-primary-500/50' : 'border-border hover:border-primary-500/50'}`}
+                    className={`w-20 h-20 flex-shrink-0 bg-muted/30 rounded-xl overflow-hidden border transition-all ${displayImage === url ? 'border-primary-500 ring-2 ring-primary-500/50 ring-offset-2 ring-offset-background' : 'border-border hover:border-primary-500/50'}`}
                   >
                      <img src={url} alt={`${product.name} view ${idx + 1}`} className="w-full h-full object-cover mix-blend-multiply" />
                   </button>
@@ -208,81 +220,99 @@ export default function ProductDetailsPage() {
             </div>
             
             {/* Tabs Section */}
-            <div className="flex flex-col min-h-[300px] bg-muted/30 rounded-2xl border border-border/50 mb-8 p-1">
-              <div className="flex overflow-x-auto custom-scrollbar border-b border-border/50 pb-2 mb-4 p-4 gap-2">
-                <button 
-                  onClick={() => setActiveTab('about')}
-                  className={`px-4 py-2 font-bold text-sm whitespace-nowrap rounded-lg transition-colors ${activeTab === 'about' ? 'bg-primary-500 text-white shadow-sm' : 'text-muted-foreground hover:bg-muted'}`}
-                >
-                  About the Product
-                </button>
-                {product.ingredients && product.ingredients.length > 0 && (
+            <div className="flex flex-col min-h-[350px] bg-card border border-border/50 rounded-[2.5rem] shadow-lg mb-8 overflow-hidden relative">
+              {/* Decorative background accent */}
+              <div className="absolute -top-12 -right-12 w-64 h-64 bg-primary-500/10 rounded-full blur-3xl pointer-events-none z-0"></div>
+
+              {/* Attached segmented control tabs */}
+              <div className="flex overflow-x-auto custom-scrollbar p-6 md:px-10 md:pt-8 border-b border-border/50 bg-muted/10 relative z-10">
+                <div className="inline-flex bg-muted/60 p-1.5 rounded-[1.25rem] border border-border/50">
                   <button 
-                    onClick={() => setActiveTab('ingredients')}
-                    className={`px-4 py-2 font-bold text-sm whitespace-nowrap rounded-lg transition-colors ${activeTab === 'ingredients' ? 'bg-primary-500 text-white shadow-sm' : 'text-muted-foreground hover:bg-muted'}`}
+                    onClick={() => setActiveTab('about')}
+                    className={`px-5 py-2 text-[11px] uppercase tracking-wider font-bold whitespace-nowrap rounded-xl transition-all duration-300 ${activeTab === 'about' ? 'bg-background text-foreground shadow-sm ring-1 ring-border/50' : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'}`}
                   >
-                    Ingredients
+                    About the Product
                   </button>
-                )}
-                {product.allergens && product.allergens.length > 0 && (
-                  <button 
-                    onClick={() => setActiveTab('allergens')}
-                    className={`px-4 py-2 font-bold text-sm whitespace-nowrap rounded-lg transition-colors ${activeTab === 'allergens' ? 'bg-orange-500 text-white shadow-sm' : 'text-muted-foreground hover:bg-muted'}`}
-                  >
-                    Allergens
-                  </button>
-                )}
-                {(product.caloriesPerUnit || product.shelfLifeHours) && (
-                  <button 
-                    onClick={() => setActiveTab('other')}
-                    className={`px-4 py-2 font-bold text-sm whitespace-nowrap rounded-lg transition-colors ${activeTab === 'other' ? 'bg-primary-500 text-white shadow-sm' : 'text-muted-foreground hover:bg-muted'}`}
-                  >
-                    Other Details
-                  </button>
-                )}
+                  {product.ingredients && product.ingredients.length > 0 && (
+                    <button 
+                      onClick={() => setActiveTab('ingredients')}
+                      className={`px-5 py-2 text-[11px] uppercase tracking-wider font-bold whitespace-nowrap rounded-xl transition-all duration-300 ${activeTab === 'ingredients' ? 'bg-background text-foreground shadow-sm ring-1 ring-border/50' : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'}`}
+                    >
+                      Ingredients
+                    </button>
+                  )}
+                  {product.allergens && product.allergens.length > 0 && (
+                    <button 
+                      onClick={() => setActiveTab('allergens')}
+                      className={`px-5 py-2 text-[11px] uppercase tracking-wider font-bold whitespace-nowrap rounded-xl transition-all duration-300 ${activeTab === 'allergens' ? 'bg-background text-orange-600 shadow-sm ring-1 ring-orange-500/20' : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'}`}
+                    >
+                      Allergens
+                    </button>
+                  )}
+                  {(product.caloriesPerUnit || product.shelfLifeHours) && (
+                    <button 
+                      onClick={() => setActiveTab('other')}
+                      className={`px-5 py-2 text-[11px] uppercase tracking-wider font-bold whitespace-nowrap rounded-xl transition-all duration-300 ${activeTab === 'other' ? 'bg-background text-foreground shadow-sm ring-1 ring-border/50' : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'}`}
+                    >
+                      Other Details
+                    </button>
+                  )}
+                </div>
               </div>
               
-              <div className="flex-1 p-4 pt-0">
-                {activeTab === 'about' && (
-                  <div>
-                    <h3 className="font-bold flex items-center text-foreground mb-2"><Info className="w-4 h-4 mr-2 text-primary-500" /> Description</h3>
-                    <p className="text-muted-foreground text-base leading-relaxed">
-                      {product.description || 'A delicious treat fresh from our bakery, crafted with the finest ingredients.'}
-                    </p>
-                  </div>
-                )}
-                {activeTab === 'ingredients' && product.ingredients && product.ingredients.length > 0 && (
-                  <div>
-                    <h3 className="font-bold flex items-center text-foreground mb-2">Ingredients</h3>
-                    <p className="font-medium text-foreground text-sm mt-1 leading-relaxed">
-                      {product.ingredients.join(', ')}
-                    </p>
-                  </div>
-                )}
-                {activeTab === 'allergens' && product.allergens && product.allergens.length > 0 && (
-                  <div>
-                    <h3 className="font-bold flex items-center text-orange-600 dark:text-orange-400 mb-2">Contains Allergens</h3>
-                    <p className="font-bold text-orange-800 dark:text-orange-300 text-sm mt-1">
-                      {product.allergens.join(', ')}
-                    </p>
-                  </div>
-                )}
-                {activeTab === 'other' && (product.caloriesPerUnit || product.shelfLifeHours) && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {product.caloriesPerUnit && (
-                      <div className="bg-card border border-border rounded-xl p-4 shadow-sm">
-                        <span className="text-xs font-semibold text-muted-foreground uppercase">Calories</span>
-                        <p className="font-bold text-foreground text-lg">{product.caloriesPerUnit} kcal</p>
+              {/* Tab Content */}
+              <div className="flex-1 p-6 md:p-10 relative z-10">
+                  {activeTab === 'about' && (
+                    <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+                      <h3 className="font-extrabold text-2xl flex items-center text-foreground mb-4">Description</h3>
+                      <p className="text-muted-foreground text-lg leading-relaxed max-w-3xl">
+                        {product.description || 'A delicious treat fresh from our bakery, crafted with the finest ingredients.'}
+                      </p>
+                    </div>
+                  )}
+                  {activeTab === 'ingredients' && product.ingredients && product.ingredients.length > 0 && (
+                    <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+                      <h3 className="font-extrabold text-2xl flex items-center text-foreground mb-6">Ingredients</h3>
+                      <ul className="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-8 max-w-4xl">
+                        {product.ingredients.map((ingredient, index) => (
+                          <li key={index} className="flex items-center text-muted-foreground text-lg font-medium">
+                            <span className="w-2 h-2 rounded-full bg-primary-500 mr-3 flex-shrink-0"></span>
+                            {ingredient}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  {activeTab === 'allergens' && product.allergens && product.allergens.length > 0 && (
+                    <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+                      <h3 className="font-extrabold text-2xl flex items-center text-orange-600 dark:text-orange-400 mb-4">Contains Allergens</h3>
+                      <div className="inline-block bg-orange-50 dark:bg-orange-500/10 border border-orange-200 dark:border-orange-500/20 px-5 py-3 rounded-2xl">
+                        <p className="font-bold text-orange-800 dark:text-orange-300 text-base">
+                          {product.allergens.join(', ')}
+                        </p>
                       </div>
-                    )}
-                    {product.shelfLifeHours && (
-                      <div className="bg-card border border-border rounded-xl p-4 shadow-sm">
-                        <span className="text-xs font-semibold text-muted-foreground uppercase">Shelf Life</span>
-                        <p className="font-bold text-foreground text-lg">{product.shelfLifeHours} hrs</p>
+                    </div>
+                  )}
+                  {activeTab === 'other' && (product.caloriesPerUnit || product.shelfLifeHours) && (
+                    <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+                      <h3 className="font-extrabold text-2xl flex items-center text-foreground mb-6">Other Details</h3>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {product.caloriesPerUnit && (
+                          <div className="bg-background border border-border/80 rounded-3xl p-6 shadow-sm flex flex-col justify-center">
+                            <span className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-2">Calories</span>
+                            <p className="font-black text-foreground text-4xl">{product.caloriesPerUnit} <span className="text-lg font-medium text-muted-foreground">kcal</span></p>
+                          </div>
+                        )}
+                        {product.shelfLifeHours && (
+                          <div className="bg-background border border-border/80 rounded-3xl p-6 shadow-sm flex flex-col justify-center">
+                            <span className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-2">Shelf Life</span>
+                            <p className="font-black text-foreground text-4xl">{product.shelfLifeHours} <span className="text-lg font-medium text-muted-foreground">hrs</span></p>
+                          </div>
+                        )}
                       </div>
-                    )}
-                  </div>
-                )}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
