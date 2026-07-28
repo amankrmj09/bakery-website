@@ -16,7 +16,8 @@ import {
   LuPackageCheck as PackageCheck,
   LuStar as Star,
   LuTruck as Truck,
-  LuShoppingCart as ShoppingCart
+  LuShoppingCart as ShoppingCart,
+  LuCopy as CopyIcon
 } from 'react-icons/lu';
 
 // A mapping to dynamically render lucide icons if passed by name
@@ -384,9 +385,27 @@ export default function HomePage() {
                             >
                                 <CachedImage src={offer.imageUrl} alt={offer.title || `Special Offer ${idx + 1}`} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                                 {(offer.title || offer.description) && (
-                                    <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                        {offer.title && <h3 className="text-3xl font-bold font-serif mb-2">{offer.title}</h3>}
-                                        {offer.description && <p className="text-lg max-w-xl text-center">{offer.description}</p>}
+                                    <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent flex flex-col items-start justify-center p-8 md:p-12 transition-all duration-500 group-hover:bg-black/20">
+                                        <div className="transform transition-transform duration-500 group-hover:translate-x-2">
+                                            {offer.title && <h3 className="text-3xl md:text-4xl font-bold font-serif mb-3 text-white drop-shadow-lg">{offer.title}</h3>}
+                                            {offer.description && <p className="text-base md:text-lg max-w-md text-white/90 drop-shadow-md font-medium leading-relaxed">{offer.description}</p>}
+                                            {(offer.code || offer.couponCode || offer.discountCode) && (() => {
+                                                const code = offer.code || offer.couponCode || offer.discountCode;
+                                                return (
+                                                    <button 
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            navigator.clipboard.writeText(code);
+                                                            toast.success(`Coupon code '${code}' copied!`);
+                                                        }}
+                                                        className="inline-flex items-center gap-2 px-4 py-2 mt-4 bg-primary-500/90 hover:bg-primary-600 text-white text-sm font-bold rounded-xl backdrop-blur-sm transition-colors border border-primary-400/50 shadow-lg"
+                                                    >
+                                                        <span>Use Code: {code}</span>
+                                                        <CopyIcon className="w-4 h-4" />
+                                                    </button>
+                                                );
+                                            })()}
+                                        </div>
                                     </div>
                                 )}
                             </motion.div>

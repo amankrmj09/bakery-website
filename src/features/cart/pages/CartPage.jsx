@@ -4,8 +4,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { updateCartItem, removeCartItem, updateCartDetails } from '../redux/cartThunk';
 import { LuTrash2 as Trash2, LuPlus as Plus, LuMinus as Minus, LuArrowRight as ArrowRight, LuShoppingBag as ShoppingBag } from 'react-icons/lu';
-import { fetchActiveUserOrders } from '../../order/slice/orderSlice';
+import { fetchActiveUserOrders, cancelUserOrder } from '../../order/slice/orderSlice';
 import OrderCard from '../../order/components/OrderCard';
+import CancelOrderModal from '../../user/components/CancelOrderModal';
 
 export default function CartPage() {
   const dispatch = useDispatch();
@@ -16,6 +17,42 @@ export default function CartPage() {
   
   const [couponCode, setCouponCode] = useState('');
   const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
+  const [expandedOrderId, setExpandedOrderId] = useState(null);
+  const [cancelModalState, setCancelModalState] = useState({
+    isOpen: false,
+    orderId: null,
+    loading: false
+  });
+
+  const toggleOrderDetails = (orderId) => {
+    if (expandedOrderId === orderId) {
+      setExpandedOrderId(null);
+    } else {
+      setExpandedOrderId(orderId);
+    }
+  };
+
+  const openCancelModal = (orderId) => {
+    setCancelModalState({ isOpen: true, orderId, loading: false });
+  };
+
+  const closeCancelModal = () => {
+    if (cancelModalState.loading) return;
+    setCancelModalState({ isOpen: false, orderId: null, loading: false });
+  };
+
+  const confirmCancelOrder = async (reason) => {
+    if (!cancelModalState.orderId) return;
+    setCancelModalState((prev) => ({ ...prev, loading: true }));
+    try {
+      await dispatch(cancelUserOrder({ orderId: cancelModalState.orderId, reason })).unwrap();
+      toast.success("Order cancelled successfully!");
+      setCancelModalState({ isOpen: false, orderId: null, loading: false });
+    } catch (err) {
+      toast.error(err || "Failed to cancel order");
+      setCancelModalState((prev) => ({ ...prev, loading: false }));
+    }
+  };
 
   useEffect(() => {
     if (user?.id) {
@@ -97,7 +134,14 @@ export default function CartPage() {
             </h2>
             <div className="space-y-4">
               {activeOrders.map(order => (
-                <OrderCard key={order.id} order={order} />
+                <OrderCard 
+                  key={order.id} 
+                  order={order}
+                  expandedOrderId={expandedOrderId}
+                  toggleOrderDetails={toggleOrderDetails}
+                  openCancelModal={openCancelModal}
+                  user={user}
+                />
               ))}
             </div>
           </div>
@@ -256,6 +300,13 @@ export default function CartPage() {
         </button>
       </div>
       )}
+      <CancelOrderModal
+        isOpen={cancelModalState.isOpen}
+        onClose={closeCancelModal}
+        onConfirm={confirmCancelOrder}
+        orderId={cancelModalState.orderId}
+        loading={cancelModalState.loading}
+      />
     </div>
   );
 }

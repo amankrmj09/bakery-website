@@ -92,9 +92,9 @@ export default function MainLayout() {
                                 </div>
                             </Link>
                             <button
-                                onClick={() => {
-                                    dispatch(logout());
-                                    toast.success('Logged out successfully');
+                                onClick={async () => {
+                                    await dispatch(logout());
+                                    window.location.href = '/';
                                 }}
                                 className="p-2 rounded-full hover:bg-red-500/10 text-muted-foreground hover:text-red-500 transition-colors"
                                 title="Logout"

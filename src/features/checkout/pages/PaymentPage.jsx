@@ -57,7 +57,7 @@ export default function PaymentPage() {
         paymentMethod: paymentMethod,
         paymentGateway: 'MOCK',
         amount: Number((amount > 0 ? amount : 10.00).toFixed(2)),
-        currencyCode: 'USD',
+        currencyCode: 'INR',
       };
       
       const response = await paymentApi.createPayment(payload);
