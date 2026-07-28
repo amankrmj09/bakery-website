@@ -1,18 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { updateCartItem, removeCartItem, updateCartDetails } from '../redux/cartThunk';
 import { LuTrash2 as Trash2, LuPlus as Plus, LuMinus as Minus, LuArrowRight as ArrowRight, LuShoppingBag as ShoppingBag } from 'react-icons/lu';
+import { fetchActiveUserOrders } from '../../order/slice/orderSlice';
+import OrderCard from '../../order/components/OrderCard';
 
 export default function CartPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { cart, loading } = useSelector((state) => state.cart);
   const { user } = useSelector((state) => state.auth);
+  const { activeOrders } = useSelector((state) => state.order);
   
   const [couponCode, setCouponCode] = useState('');
   const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
+
+  useEffect(() => {
+    if (user?.id) {
+      dispatch(fetchActiveUserOrders(user.id));
+    }
+  }, [dispatch, user?.id]);
 
   const handleUpdateQuantity = (itemId, currentQty, delta) => {
     const newQty = currentQty + delta;
@@ -44,9 +53,11 @@ export default function CartPage() {
     return <div className="p-8 text-center text-muted-foreground">Loading cart...</div>;
   }
 
-  if (!cart || cart.items?.length === 0) {
+  const isCartEmpty = !cart || cart.items?.length === 0;
+
+  if (isCartEmpty && (!activeOrders || activeOrders.length === 0)) {
     return (
-      <div className="flex flex-col items-center justify-center h-full p-8 text-center">
+      <div className="flex flex-col items-center justify-center h-[calc(100vh-5rem)] p-8 text-center">
         <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mb-6">
           <ShoppingBag className="w-10 h-10 text-muted-foreground/50" />
         </div>
@@ -62,12 +73,40 @@ export default function CartPage() {
   return (
     <div className="h-[calc(100vh-5rem)] flex flex-col md:flex-row bg-background">
       <div className="flex-1 overflow-y-auto p-6 md:border-r border-border bg-card custom-scrollbar">
+        {activeOrders && activeOrders.length > 0 && (
+          <div className="mb-10">
+            <h2 className="text-xl font-bold text-foreground tracking-tight mb-4 flex items-center gap-2">
+              <span className="relative flex h-3 w-3">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-primary-500"></span>
+              </span>
+              Active Orders
+            </h2>
+            <div className="space-y-4">
+              {activeOrders.map(order => (
+                <OrderCard key={order.id} order={order} />
+              ))}
+            </div>
+          </div>
+        )}
+
         <div className="flex justify-between items-end mb-6 border-b border-border pb-4">
           <h2 className="text-2xl font-bold text-foreground tracking-tight">Shopping Cart</h2>
-          <span className="text-sm font-medium text-muted-foreground">{cart.totalQuantity} Items</span>
+          {!isCartEmpty && <span className="text-sm font-medium text-muted-foreground">{cart.totalQuantity} Items</span>}
         </div>
 
-        <div className="space-y-6">
+        {isCartEmpty ? (
+          <div className="flex flex-col items-center justify-center py-12 text-center">
+            <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-4">
+              <ShoppingBag className="w-8 h-8 text-muted-foreground/50" />
+            </div>
+            <h3 className="text-lg font-bold text-foreground mb-2">Your cart is empty</h3>
+            <Link to="/" className="bg-primary-500 text-white px-5 py-2.5 rounded-xl font-medium hover:bg-primary-600 transition-colors mt-2">
+              Start Shopping
+            </Link>
+          </div>
+        ) : (
+          <div className="space-y-6">
           {cart.items.map((item) => (
             <div key={item.id} className="flex gap-4 p-4 rounded-xl border border-border bg-background shadow-sm">
               <div className="w-24 h-24 bg-muted rounded-lg overflow-hidden flex-shrink-0">
@@ -125,11 +164,13 @@ export default function CartPage() {
               </div>
             </div>
           ))}
-        </div>
+          </div>
+        )}
       </div>
 
-      <div className="w-full md:w-96 bg-card p-6 flex flex-col flex-shrink-0 shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.1)] md:shadow-none z-10 overflow-y-auto custom-scrollbar">
-        <h3 className="text-lg font-bold text-foreground mb-6 flex-shrink-0">Order Summary</h3>
+      {!isCartEmpty && (
+        <div className="w-full md:w-96 bg-card p-6 flex flex-col flex-shrink-0 shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.1)] md:shadow-none z-10 overflow-y-auto custom-scrollbar">
+          <h3 className="text-lg font-bold text-foreground mb-6 flex-shrink-0">Order Summary</h3>
         
         <div className="space-y-4 text-sm mb-6 flex-1 min-h-[min-content]">
           <div className="flex justify-between text-muted-foreground">
@@ -192,6 +233,7 @@ export default function CartPage() {
           <ArrowRight className="w-5 h-5" />
         </button>
       </div>
+      )}
     </div>
   );
 }

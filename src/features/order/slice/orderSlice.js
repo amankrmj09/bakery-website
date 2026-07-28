@@ -23,6 +23,20 @@ export const fetchUserOrders = createAsyncThunk(
   }
 );
 
+export const fetchActiveUserOrders = createAsyncThunk(
+  'order/fetchActiveUserOrders',
+  async (userId, { rejectWithValue }) => {
+    try {
+      const response = await orderApi.getActiveUserOrders(userId);
+      return response;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || 'Failed to fetch active user orders'
+      );
+    }
+  }
+);
+
 export const cancelUserOrder = createAsyncThunk(
   'order/cancelUserOrder',
   async ({ orderId, reason }, { rejectWithValue }) => {
@@ -39,6 +53,7 @@ export const cancelUserOrder = createAsyncThunk(
 
 const initialState = {
   orders: [],
+  activeOrders: [],
   isFiltered: false,
   pagination: {
     number: 0,
@@ -84,12 +99,28 @@ const orderSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
+      .addCase(fetchActiveUserOrders.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchActiveUserOrders.fulfilled, (state, action) => {
+        state.loading = false;
+        state.activeOrders = action.payload || [];
+      })
+      .addCase(fetchActiveUserOrders.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
       .addCase(cancelUserOrder.fulfilled, (state, action) => {
         const cancelledOrder = action.payload;
         if (cancelledOrder && cancelledOrder.id) {
           const idx = state.orders.findIndex(o => o.id === cancelledOrder.id);
           if (idx !== -1) {
             state.orders[idx] = cancelledOrder;
+          }
+          const activeIdx = state.activeOrders.findIndex(o => o.id === cancelledOrder.id);
+          if (activeIdx !== -1) {
+            state.activeOrders.splice(activeIdx, 1);
           }
         }
       });

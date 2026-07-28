@@ -8,6 +8,11 @@ export const orderApi = {
     return response.data;
   },
 
+  getActiveUserOrders: async (userId) => {
+    const response = await axiosInstance.get(`${BASE_URL}/user/${userId}/active`);
+    return response.data;
+  },
+
   getUserOrdersPaginated: async ({ userId, page = 0, size = 5 }) => {
     const response = await axiosInstance.get(`${BASE_URL}/user/${userId}/paginated`, {
       params: { page, size }
