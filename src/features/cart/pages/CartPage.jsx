@@ -49,6 +49,19 @@ export default function CartPage() {
     }
   };
 
+  const handleRemoveCoupon = async () => {
+    setIsApplyingCoupon(true);
+    try {
+      await dispatch(updateCartDetails({ cartId: cart.id, cartData: { discountCode: ' ' } })).unwrap();
+      setCouponCode('');
+      toast.success("Coupon removed successfully!");
+    } catch (err) {
+      toast.error(err || "Failed to remove coupon");
+    } finally {
+      setIsApplyingCoupon(false);
+    }
+  };
+
   if (loading && !cart) {
     return <div className="p-8 text-center text-muted-foreground">Loading cart...</div>;
   }
@@ -214,7 +227,16 @@ export default function CartPage() {
             </button>
           </div>
           {cart.discountCode && cart.discountAmount > 0 && (
-             <p className="text-xs text-green-500 mt-1">Applied: {cart.discountCode}</p>
+             <div className="flex items-center justify-between mt-2 px-1">
+               <p className="text-xs font-medium text-green-500">Applied: {cart.discountCode}</p>
+               <button 
+                 onClick={handleRemoveCoupon}
+                 disabled={isApplyingCoupon}
+                 className="text-xs font-semibold text-red-500 hover:text-red-600 disabled:opacity-50 transition-colors"
+               >
+                 Remove
+               </button>
+             </div>
           )}
         </div>
 
