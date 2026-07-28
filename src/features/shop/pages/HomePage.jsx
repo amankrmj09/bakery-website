@@ -222,10 +222,10 @@ export default function HomePage() {
                         <AnimatePresence mode="popLayout">
                             <motion.div
                                 key={`large-${activeIndex}`}
-                                initial={{ opacity: 0, scale: 1.05 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                exit={{ opacity: 0, scale: 0.95 }}
-                                transition={{ duration: 0.7, ease: "easeInOut" }}
+                                initial={{ opacity: 0, filter: 'blur(8px)', scale: 1.02 }}
+                                animate={{ opacity: 1, filter: 'blur(0px)', scale: 1 }}
+                                exit={{ opacity: 0, filter: 'blur(8px)', scale: 0.98 }}
+                                transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
                                 className="absolute inset-0 w-full h-full"
                             >
                                 <CachedImage 
@@ -245,10 +245,10 @@ export default function HomePage() {
                             <AnimatePresence mode="popLayout">
                                 <motion.div
                                     key={`small1-${activeIndex}`}
-                                    initial={{ opacity: 0, x: 20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    exit={{ opacity: 0, x: -20 }}
-                                    transition={{ duration: 0.7, ease: "easeInOut" }}
+                                    initial={{ opacity: 0, filter: 'blur(8px)', y: 20 }}
+                                    animate={{ opacity: 1, filter: 'blur(0px)', y: 0 }}
+                                    exit={{ opacity: 0, filter: 'blur(8px)', y: -20 }}
+                                    transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
                                     className="absolute inset-0 w-full h-full"
                                 >
                                     <CachedImage 
@@ -265,10 +265,10 @@ export default function HomePage() {
                             <AnimatePresence mode="popLayout">
                                 <motion.div
                                     key={`small2-${activeIndex}`}
-                                    initial={{ opacity: 0, x: 20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    exit={{ opacity: 0, x: -20 }}
-                                    transition={{ duration: 0.7, ease: "easeInOut", delay: 0.1 }}
+                                    initial={{ opacity: 0, filter: 'blur(8px)', y: 20 }}
+                                    animate={{ opacity: 1, filter: 'blur(0px)', y: 0 }}
+                                    exit={{ opacity: 0, filter: 'blur(8px)', y: -20 }}
+                                    transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
                                     className="absolute inset-0 w-full h-full"
                                 >
                                     <CachedImage 
@@ -432,7 +432,7 @@ export default function HomePage() {
                                 )}
                                  <div className="flex flex-col items-center md:items-start flex-1 z-10 text-white">
                                      <div
-                                         className={`w-24 h-24 rounded-full ${getCategoryColor(activeTopCategoryIndex)} flex items-center justify-center mb-4 overflow-hidden p-3 shadow-inner bg-white/20 backdrop-blur-md`}>
+                                         className={`w-32 h-32 md:w-40 md:h-40 rounded-full ${getCategoryColor(activeTopCategoryIndex)} flex items-center justify-center mb-4 overflow-hidden p-3 shadow-inner bg-white/20 backdrop-blur-md`}>
                                          <CachedImage
                                              src={activeCategory.mediaUrls?.[0]}
                                              alt={activeCategory.name}
