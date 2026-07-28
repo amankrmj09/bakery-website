@@ -56,7 +56,7 @@ export default function PaymentPage() {
         userId: user?.id || '00000000-0000-0000-0000-000000000000',
         paymentMethod: paymentMethod,
         paymentGateway: 'MOCK',
-        amount: amount > 0 ? amount : 10.00,
+        amount: Number((amount > 0 ? amount : 10.00).toFixed(2)),
         currencyCode: 'USD',
       };
       
