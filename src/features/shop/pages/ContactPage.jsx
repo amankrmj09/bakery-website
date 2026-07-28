@@ -82,10 +82,16 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="flex flex-col bg-background min-h-screen pb-20">
-      {/* Hero Section */}
-      <section className="bg-[#eab308] pt-12 pb-24 px-6 relative overflow-hidden rounded-b-[3rem] shadow-sm">
-        <div className="max-w-7xl mx-auto w-full relative z-10 text-center text-white">
+    <div className="flex flex-col bg-transparent w-full pb-20">
+      {/* Hero Background - FIXED */}
+      <div className="fixed top-20 left-0 right-0 h-[45vh] min-h-[300px] flex-shrink-0 overflow-hidden shadow-sm z-0 rounded-b-[3rem] bg-[#eab308]">
+        <img src="/images/bakery_chef.png" alt="Chef" className="absolute -left-10 md:left-10 bottom-0 h-[80%] opacity-20 object-contain" />
+        <img src="/images/hero_cake.png" alt="Cake" className="absolute -right-10 md:right-10 top-10 h-[60%] opacity-20 object-contain rotate-12" />
+      </div>
+
+      {/* Hero Content - Scrolls with the page */}
+      <div className="relative z-10 h-[45vh] min-h-[300px] flex-shrink-0 w-full flex flex-col items-center justify-center pb-20">
+        <div className="max-w-7xl mx-auto w-full text-center text-white px-6">
           <span className="text-red-500 font-bold uppercase tracking-widest text-sm mb-4 block">Get In Touch</span>
           <h1 className="text-5xl md:text-6xl font-extrabold leading-tight mb-6">
             We'd Love to Hear<br/>From You!
@@ -94,9 +100,7 @@ export default function ContactPage() {
             Have a question about our baked goods, a special order, or just want to say hi? Send us a message!
           </p>
         </div>
-        <img src="/images/bakery_chef.png" alt="Chef" className="absolute -left-10 md:left-10 bottom-0 h-[80%] opacity-20 object-contain" />
-        <img src="/images/hero_cake.png" alt="Cake" className="absolute -right-10 md:right-10 top-10 h-[60%] opacity-20 object-contain rotate-12" />
-      </section>
+      </div>
 
       {/* Main Content */}
       <section className="max-w-7xl mx-auto w-full px-6 -mt-16 z-20 relative">

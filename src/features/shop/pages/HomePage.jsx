@@ -302,8 +302,8 @@ export default function HomePage() {
                 className="max-w-7xl mx-auto w-full px-6 py-16"
             >
                 <div className="text-center mb-10">
-                    <span className="text-muted-foreground font-semibold uppercase tracking-wider text-sm">New Menu</span>
-                    <h2 className="text-4xl font-extrabold text-[#eab308] mt-2">Our Fresh Arrivals</h2>
+                    <span className="text-muted-foreground font-semibold uppercase tracking-wider text-sm">Seasonal Offerings</span>
+                    <h2 className="text-4xl font-extrabold font-serif text-[#eab308] mt-2">Freshly Baked Arrivals</h2>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     {productList.slice(0, 4).map((product, idx) => {
@@ -385,7 +385,7 @@ export default function HomePage() {
                                 <CachedImage src={offer.imageUrl} alt={offer.title || `Special Offer ${idx + 1}`} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                                 {(offer.title || offer.description) && (
                                     <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                        {offer.title && <h3 className="text-3xl font-bold mb-2">{offer.title}</h3>}
+                                        {offer.title && <h3 className="text-3xl font-bold font-serif mb-2">{offer.title}</h3>}
                                         {offer.description && <p className="text-lg max-w-xl text-center">{offer.description}</p>}
                                     </div>
                                 )}
@@ -407,7 +407,7 @@ export default function HomePage() {
                     <div className="flex items-center justify-between mb-10">
                         <div className="flex items-center space-x-2">
                             <span className="bg-muted p-2 rounded-lg"><Star className="w-5 h-5 text-foreground"/></span>
-                            <h2 className="text-2xl font-bold text-foreground">Top Categories</h2>
+                            <h2 className="text-2xl font-bold font-serif text-foreground">Artisan Collections</h2>
                         </div>
                         <div className="flex space-x-2">
                             <button
@@ -448,7 +448,7 @@ export default function HomePage() {
                                              className="w-full h-full object-cover rounded-full"
                                          />
                                      </div>
-                                     <h3 className="text-3xl font-extrabold text-white mb-2">{activeCategory.name}</h3>
+                                     <h3 className="text-3xl font-extrabold font-serif text-white mb-2">{activeCategory.name}</h3>
                                     {activeCategory.description && (
                                         <p className="text-white/80 mb-4 text-sm text-center md:text-left max-w-sm">
                                             {activeCategory.description}
@@ -518,8 +518,8 @@ export default function HomePage() {
 
                     <div className="mt-12 text-center mb-8">
                         <span
-                            className="text-muted-foreground font-semibold uppercase tracking-wider text-sm">Customer Favorites</span>
-                        <h2 className="text-3xl font-extrabold text-[#eab308] mt-2">Our Most Loved Sweets</h2>
+                            className="text-muted-foreground font-semibold uppercase tracking-wider text-sm">Signature Delights</span>
+                        <h2 className="text-3xl font-extrabold font-serif text-[#eab308] mt-2">Our Most Loved Creations</h2>
                     </div>
 
                     <div className="flex space-x-6 overflow-x-auto pb-8 no-scrollbar">
@@ -542,14 +542,14 @@ export default function HomePage() {
                     <div className="max-w-7xl mx-auto w-full px-6">
                         <div className="flex items-center space-x-2 mb-8">
                             <span className="bg-muted p-2 rounded-lg"><Star className="w-5 h-5 text-foreground"/></span>
-                            <h2 className="text-2xl font-bold text-foreground">Little Bite About Us</h2>
+                            <h2 className="text-2xl font-bold font-serif text-foreground">Our Story</h2>
                         </div>
 
                         <div
                             className="bg-card border border-border rounded-[2rem] p-10 flex flex-col md:flex-row items-center justify-between shadow-sm relative overflow-hidden mb-20">
                             <div className="md:w-1/2 z-10 pr-8">
                                 <h3 className="text-foreground font-bold mb-2">{about.tag}</h3>
-                                <h2 className="text-5xl font-black text-green-500 leading-tight mb-6">{about.title}</h2>
+                                <h2 className="text-5xl font-black font-serif text-green-500 leading-tight mb-6">{about.title}</h2>
                                 <p className="text-muted-foreground text-sm leading-relaxed mb-8 max-w-md">
                                     {about.description}
                                 </p>
@@ -623,8 +623,8 @@ export default function HomePage() {
             >
                 <div className="max-w-7xl mx-auto w-full px-6">
                     <div className="text-center mb-10">
-                        <span className="text-[#eab308] font-bold tracking-wider text-sm uppercase">Feedbacks</span>
-                        <h2 className="text-3xl font-extrabold text-foreground mt-2">What Our Customers Says</h2>
+                        <span className="text-[#eab308] font-bold tracking-wider text-sm uppercase">Client Testimonials</span>
+                        <h2 className="text-3xl font-extrabold font-serif text-foreground mt-2">Words From Our Guests</h2>
                     </div>
 
                     <AnimatePresence mode="wait">

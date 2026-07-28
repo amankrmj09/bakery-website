@@ -6,5 +6,6 @@ export const cartApi = {
   addItem: (cartId, productId, quantity) => api.post(`/api/carts/${cartId}/items`, { productId, quantity }),
   updateItem: (cartId, itemId, quantity) => api.put(`/api/carts/${cartId}/items/${itemId}`, { quantity }),
   removeItem: (cartId, itemId) => api.delete(`/api/carts/${cartId}/items/${itemId}`),
+  updateCartDetails: (cartId, cartData) => api.patch(`/api/carts/${cartId}`, cartData),
   checkout: (cartId, checkoutData) => api.post(`/api/carts/${cartId}/checkout`, checkoutData)
 };

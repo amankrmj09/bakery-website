@@ -113,7 +113,7 @@ export default function MainLayout() {
             )}
 
             {/* Main Content Area */}
-            <main className="flex-1 w-full bg-background relative overflow-y-auto flex flex-col">
+            <main className="flex-1 w-full bg-background relative flex flex-col">
                 <div className="flex-1">
                     <Outlet/>
                 </div>

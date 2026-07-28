@@ -75,7 +75,7 @@ export default function Footer() {
     const activeSocialLinks = SOCIAL_PLATFORMS.filter(p => socialLinks[p.key]?.trim());
 
     return (
-        <footer className="bg-[#fcfaf7] border-t border-border pt-12">
+        <footer className="relative z-10 bg-[#fcfaf7] border-t border-border pt-12">
             <div className="max-w-7xl mx-auto w-full px-6">
 
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8 bg-[#fdf0d5] rounded-2xl p-8 mb-12 border border-[#f5e1b8]">

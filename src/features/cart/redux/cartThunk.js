@@ -75,3 +75,18 @@ export const checkoutCart = createAsyncThunk(
     }
   }
 );
+
+export const updateCartDetails = createAsyncThunk(
+  'cart/updateCartDetails',
+  async ({ cartId, cartData }, { rejectWithValue }) => {
+    try {
+      const response = await cartApi.updateCartDetails(cartId, cartData);
+      return response.data;
+    } catch (error) {
+      if (error.response && error.response.data && error.response.data.message) {
+        return rejectWithValue(error.response.data.message);
+      }
+      return rejectWithValue('Failed to update cart details');
+    }
+  }
+);

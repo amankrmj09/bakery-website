@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { updateCartItem, removeCartItem } from '../redux/cartThunk';
+import { updateCartItem, removeCartItem, updateCartDetails } from '../redux/cartThunk';
 import { LuTrash2 as Trash2, LuPlus as Plus, LuMinus as Minus, LuArrowRight as ArrowRight, LuShoppingBag as ShoppingBag } from 'react-icons/lu';
 
 export default function CartPage() {
@@ -10,6 +10,9 @@ export default function CartPage() {
   const navigate = useNavigate();
   const { cart, loading } = useSelector((state) => state.cart);
   const { user } = useSelector((state) => state.auth);
+  
+  const [couponCode, setCouponCode] = useState('');
+  const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
 
   const handleUpdateQuantity = (itemId, currentQty, delta) => {
     const newQty = currentQty + delta;
@@ -22,6 +25,19 @@ export default function CartPage() {
 
   const handleRemove = (itemId) => {
     dispatch(removeCartItem({ cartId: cart.id, itemId }));
+  };
+
+  const handleApplyCoupon = async () => {
+    if (!couponCode) return;
+    setIsApplyingCoupon(true);
+    try {
+      await dispatch(updateCartDetails({ cartId: cart.id, cartData: { discountCode: couponCode } })).unwrap();
+      toast.success("Coupon applied successfully!");
+    } catch (err) {
+      toast.error(err || "Failed to apply coupon");
+    } finally {
+      setIsApplyingCoupon(false);
+    }
   };
 
   if (loading && !cart) {
@@ -136,6 +152,29 @@ export default function CartPage() {
             <span>Total</span>
             <span>₹{cart.totalAmount?.toFixed(2) || '0.00'}</span>
           </div>
+        </div>
+
+        <div className="mb-6 flex flex-col gap-2">
+          <label className="text-sm font-medium text-foreground">Discount Code</label>
+          <div className="flex gap-2">
+            <input 
+              type="text" 
+              value={couponCode} 
+              onChange={(e) => setCouponCode(e.target.value)} 
+              placeholder="Enter code..." 
+              className="flex h-10 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+            />
+            <button 
+              onClick={handleApplyCoupon}
+              disabled={!couponCode || isApplyingCoupon}
+              className="inline-flex items-center justify-center rounded-xl bg-secondary text-secondary-foreground hover:bg-secondary/80 h-10 px-4 py-2 text-sm font-medium transition-colors disabled:opacity-50"
+            >
+              Apply
+            </button>
+          </div>
+          {cart.discountCode && cart.discountAmount > 0 && (
+             <p className="text-xs text-green-500 mt-1">Applied: {cart.discountCode}</p>
+          )}
         </div>
 
         <button 
