@@ -213,70 +213,79 @@ export default function HomePage() {
         <div className="flex flex-col bg-background min-h-screen">
 
             {/* 1. HERO SECTION (Carousel) */}
-            <section className="w-full bg-background" style={{ height: 'calc(100dvh - 80px)' }}>
+            <section className="w-full bg-background relative" style={{ height: 'calc(100dvh - 80px)' }}>
                 {/* Inner wrapper: fills full height, flex row */}
-                <div className="w-full h-full flex flex-row gap-4 lg:gap-6 px-4 lg:px-8 py-4 lg:py-6">
-
+                <div className="w-full h-full flex flex-row gap-4 lg:gap-6 px-4 lg:px-8 py-4 lg:py-6 relative z-10">
+                    
                     {/* Main Hero Image — fills all height, 3/5 width on sm+, full width on mobile */}
-                    <div className="flex-1 sm:flex-[3] rounded-[2rem] overflow-hidden relative shadow-md bg-muted/10">
-                        <AnimatePresence mode="popLayout">
-                            <motion.div
-                                key={`large-${activeIndex}`}
-                                initial={{ opacity: 0, filter: 'blur(8px)', scale: 1.02 }}
-                                animate={{ opacity: 1, filter: 'blur(0px)', scale: 1 }}
-                                exit={{ opacity: 0, filter: 'blur(8px)', scale: 0.98 }}
-                                transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-                                className="absolute inset-0 w-full h-full"
-                            >
-                                <CachedImage 
-                                    src={campaigns[activeIndex]?.imageUrl} 
-                                    alt="Campaign Main" 
-                                    className="w-full h-full object-cover"
-                                />
-                            </motion.div>
+                    <div className="flex-1 sm:flex-[3] relative rounded-[2rem] bg-muted/10">
+                        <AnimatePresence>
+                            {campaigns.length > 0 && (
+                                <motion.div
+                                    key={`campaign-${activeIndex}`}
+                                    layoutId={`campaign-image-${activeIndex}`}
+                                    initial={{ opacity: 0, zIndex: 10 }}
+                                    animate={{ opacity: 1, zIndex: 30 }}
+                                    exit={{ opacity: 0, zIndex: 0 }}
+                                    transition={{ duration: 0.8, type: "spring", bounce: 0.15 }}
+                                    className="absolute inset-0 w-full h-full rounded-[2rem] overflow-hidden shadow-md"
+                                >
+                                    <CachedImage 
+                                        src={campaigns[activeIndex]?.imageUrl} 
+                                        alt="Campaign Main" 
+                                        className="w-full h-full object-cover"
+                                    />
+                                </motion.div>
+                            )}
                         </AnimatePresence>
                     </div>
 
                     {/* Side column — hidden on mobile, visible sm+, fills full height with two equal rows */}
                     <div className="hidden sm:flex flex-[2] flex-col gap-4 lg:gap-6">
-
-                        {/* Top side image — flex-1 so it takes exactly half the column */}
-                        <div className="flex-1 rounded-[2rem] relative overflow-hidden shadow-sm bg-muted/10">
-                            <AnimatePresence mode="popLayout">
-                                <motion.div
-                                    key={`small1-${activeIndex}`}
-                                    initial={{ opacity: 0, filter: 'blur(8px)', y: 20 }}
-                                    animate={{ opacity: 1, filter: 'blur(0px)', y: 0 }}
-                                    exit={{ opacity: 0, filter: 'blur(8px)', y: -20 }}
-                                    transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
-                                    className="absolute inset-0 w-full h-full"
-                                >
-                                    <CachedImage 
-                                        src={campaigns[(activeIndex + 1) % campaigns.length]?.imageUrl} 
-                                        alt="Campaign Side 1" 
-                                        className="w-full h-full object-cover"
-                                    />
-                                </motion.div>
+                        
+                        {/* Top side image */}
+                        <div className="flex-1 relative rounded-[2rem] bg-muted/10">
+                            <AnimatePresence>
+                                {campaigns.length > 0 && (
+                                    <motion.div
+                                        key={`campaign-${(activeIndex + 1) % campaigns.length}`}
+                                        layoutId={`campaign-image-${(activeIndex + 1) % campaigns.length}`}
+                                        initial={{ opacity: 0, scale: 0.8, zIndex: 10 }}
+                                        animate={{ opacity: 1, scale: 1, zIndex: 20 }}
+                                        exit={{ opacity: 0, zIndex: 0 }}
+                                        transition={{ duration: 0.8, type: "spring", bounce: 0.15 }}
+                                        className="absolute inset-0 w-full h-full rounded-[2rem] overflow-hidden shadow-sm"
+                                    >
+                                        <CachedImage 
+                                            src={campaigns[(activeIndex + 1) % campaigns.length]?.imageUrl} 
+                                            alt="Campaign Side 1" 
+                                            className="w-full h-full object-cover"
+                                        />
+                                    </motion.div>
+                                )}
                             </AnimatePresence>
                         </div>
 
-                        {/* Bottom side image — flex-1 so it takes the other half */}
-                        <div className="flex-1 rounded-[2rem] relative overflow-hidden shadow-sm bg-muted/10">
-                            <AnimatePresence mode="popLayout">
-                                <motion.div
-                                    key={`small2-${activeIndex}`}
-                                    initial={{ opacity: 0, filter: 'blur(8px)', y: 20 }}
-                                    animate={{ opacity: 1, filter: 'blur(0px)', y: 0 }}
-                                    exit={{ opacity: 0, filter: 'blur(8px)', y: -20 }}
-                                    transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
-                                    className="absolute inset-0 w-full h-full"
-                                >
-                                    <CachedImage 
-                                        src={campaigns[(activeIndex + 2) % campaigns.length]?.imageUrl} 
-                                        alt="Campaign Side 2" 
-                                        className="w-full h-full object-cover"
-                                    />
-                                </motion.div>
+                        {/* Bottom side image */}
+                        <div className="flex-1 relative rounded-[2rem] bg-muted/10">
+                            <AnimatePresence>
+                                {campaigns.length > 0 && (
+                                    <motion.div
+                                        key={`campaign-${(activeIndex + 2) % campaigns.length}`}
+                                        layoutId={`campaign-image-${(activeIndex + 2) % campaigns.length}`}
+                                        initial={{ opacity: 0, scale: 0.8, zIndex: 0 }}
+                                        animate={{ opacity: 1, scale: 1, zIndex: 10 }}
+                                        exit={{ opacity: 0, zIndex: 0 }}
+                                        transition={{ duration: 0.8, type: "spring", bounce: 0.15 }}
+                                        className="absolute inset-0 w-full h-full rounded-[2rem] overflow-hidden shadow-sm"
+                                    >
+                                        <CachedImage 
+                                            src={campaigns[(activeIndex + 2) % campaigns.length]?.imageUrl} 
+                                            alt="Campaign Side 2" 
+                                            className="w-full h-full object-cover"
+                                        />
+                                    </motion.div>
+                                )}
                             </AnimatePresence>
                         </div>
 
