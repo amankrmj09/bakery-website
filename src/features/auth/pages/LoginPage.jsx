@@ -101,7 +101,7 @@ export default function LoginPage() {
                   value={formData.usernameOrEmail}
                   onChange={handleChange}
                   className="w-full h-14 pl-12 pr-4 rounded-xl bg-zinc-50 border border-zinc-200 hover:border-zinc-300 focus:border-primary-500 text-zinc-900 text-sm focus:outline-none focus:ring-4 focus:ring-primary-500/10 transition-all placeholder:text-zinc-400 font-medium"
-                  placeholder="you@example.com"
+                  placeholder="Enter your email or username"
                   autoComplete="username"
                 />
               </div>
