@@ -8,7 +8,7 @@ import { CachedImage } from '../../../../components/ui/CachedImage';
 import ProductCard from '../ProductCard';
 import { addItemToCart, fetchCart } from '../../../cart/redux/cartThunk';
 
-export function TopCategoriesSection({ topCategoriesWithProducts, productList }) {
+export function TopCategoriesSection({ topCategoriesWithProducts, productList, topRatedProducts }) {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const { user } = useSelector((state) => state.auth);
@@ -193,7 +193,7 @@ export function TopCategoriesSection({ topCategoriesWithProducts, productList })
                 </div>
 
                 <div className="flex space-x-6 overflow-x-auto pb-8 no-scrollbar">
-                    {productList?.slice(0, 5).map(product => (
+                    {(topRatedProducts?.length > 0 ? topRatedProducts : productList?.slice(0, 5))?.map(product => (
                         <ProductCard key={product.id} product={product} className="min-w-[280px] w-[280px] max-w-[280px] flex-shrink-0" />
                     ))}
                 </div>
