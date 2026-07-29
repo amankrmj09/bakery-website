@@ -100,7 +100,7 @@ export default function RegisterPage() {
                         value={formData.firstName}
                         onChange={handleChange}
                         className="w-full h-14 pl-12 pr-4 rounded-xl bg-zinc-50 border border-zinc-200 hover:border-zinc-300 focus:border-primary-500 text-zinc-900 text-sm focus:outline-none focus:ring-4 focus:ring-primary-500/10 transition-all placeholder:text-zinc-400 font-medium"
-                        placeholder="John"
+                        placeholder="Enter your first name"
                       />
                     </div>
                   </div>
@@ -114,7 +114,7 @@ export default function RegisterPage() {
                         value={formData.lastName}
                         onChange={handleChange}
                         className="w-full h-14 pl-12 pr-4 rounded-xl bg-zinc-50 border border-zinc-200 hover:border-zinc-300 focus:border-primary-500 text-zinc-900 text-sm focus:outline-none focus:ring-4 focus:ring-primary-500/10 transition-all placeholder:text-zinc-400 font-medium"
-                        placeholder="Doe"
+                        placeholder="Enter your last name"
                       />
                     </div>
                   </div>
@@ -131,7 +131,7 @@ export default function RegisterPage() {
                       value={formData.username}
                       onChange={handleChange}
                       className="w-full h-14 pl-12 pr-4 rounded-xl bg-zinc-50 border border-zinc-200 hover:border-zinc-300 focus:border-primary-500 text-zinc-900 text-sm focus:outline-none focus:ring-4 focus:ring-primary-500/10 transition-all placeholder:text-zinc-400 font-medium"
-                      placeholder="johndoe123"
+                      placeholder="Enter your username"
                       autoComplete="username"
                     />
                   </div>
@@ -148,7 +148,7 @@ export default function RegisterPage() {
                       value={formData.email}
                       onChange={handleChange}
                       className="w-full h-14 pl-12 pr-4 rounded-xl bg-zinc-50 border border-zinc-200 hover:border-zinc-300 focus:border-primary-500 text-zinc-900 text-sm focus:outline-none focus:ring-4 focus:ring-primary-500/10 transition-all placeholder:text-zinc-400 font-medium"
-                      placeholder="you@example.com"
+                      placeholder="Enter your email address"
                       autoComplete="email"
                     />
                   </div>
