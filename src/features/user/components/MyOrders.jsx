@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { fetchUserOrders, cancelUserOrder } from '../../order/slice/orderSlice';
 import { LuPackage as Package, LuLoader as Loader2, LuClock as Clock, LuCheck as CheckCircle2, LuCreditCard as CreditCard, LuX as XCircle, LuChevronRight as ChevronRight, LuChevronLeft as ChevronLeft, LuChevronDown as ChevronDown, LuMapPin as MapPin } from 'react-icons/lu';
 import { format } from 'date-fns';
+import SleekDropdown from '../../../components/ui/SleekDropdown';
 import ReviewModal from '../../shop/components/ReviewModal';
 import CancelOrderModal from './CancelOrderModal';
 import { toast } from 'sonner';
@@ -172,19 +173,19 @@ export default function MyOrders() {
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-1.5 border-l border-border pl-3">
                 <label htmlFor="pageSizeTop" className="text-xs font-semibold text-muted-foreground">Show:</label>
-                <select
-                  id="pageSizeTop"
+                <SleekDropdown
+                  options={[
+                    { value: 5, label: '5' },
+                    { value: 10, label: '10' },
+                    { value: 20, label: '20' },
+                  ]}
                   value={pageSize}
-                  onChange={(e) => {
-                    setPageSize(Number(e.target.value));
+                  onChange={(val) => {
+                    setPageSize(Number(val));
                     setCurrentPage(0);
                   }}
-                  className="bg-background border border-border rounded-lg px-2 py-1 text-xs font-bold text-foreground focus:outline-none focus:ring-2 focus:ring-primary-500"
-                >
-                  <option value={5}>5</option>
-                  <option value={10}>10</option>
-                  <option value={20}>20</option>
-                </select>
+                  widthClass="w-20"
+                />
               </div>
 
               <div className="flex items-center gap-1 border-l border-border pl-3">

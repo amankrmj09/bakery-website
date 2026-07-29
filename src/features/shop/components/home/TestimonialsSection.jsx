@@ -11,6 +11,22 @@ export function TestimonialsSection({ activeTestimonial, currentTestimonialIndex
         visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: "easeOut" } }
     };
 
+    const prevIndexRef = React.useRef(currentTestimonialIndex);
+    const directionRef = React.useRef(1);
+
+    if (prevIndexRef.current !== currentTestimonialIndex) {
+        if (prevIndexRef.current === featuredTestimonials.length - 1 && currentTestimonialIndex === 0) {
+            directionRef.current = 1; // Keep swiping forwards when looping back to start
+        } else if (currentTestimonialIndex < prevIndexRef.current) {
+            directionRef.current = -1; // Swipe backwards
+        } else {
+            directionRef.current = 1;  // Swipe forwards
+        }
+        prevIndexRef.current = currentTestimonialIndex;
+    }
+    
+    const direction = directionRef.current;
+
     return (
         <motion.section 
             variants={sectionVariants}
@@ -25,54 +41,88 @@ export function TestimonialsSection({ activeTestimonial, currentTestimonialIndex
                     <h2 className="text-3xl font-extrabold font-serif text-foreground mt-2">Words From Our Guests</h2>
                 </div>
 
-                <AnimatePresence mode="wait">
-                    <motion.div 
-                        key={currentTestimonialIndex}
-                        initial={{ opacity: 0, scale: 0.98 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.98 }}
-                        transition={{ duration: 0.5 }}
-                        className="flex flex-col md:flex-row rounded-[2rem] overflow-hidden shadow-lg transition-opacity duration-500"
-                    >
-                        <div className="md:w-1/2 bg-red-600 p-12 flex items-center justify-center">
-                            <div className="bg-white rounded-3xl p-8 relative max-w-sm w-full shadow-xl">
-                                <div
-                                    className="absolute -top-6 left-8 text-6xl text-red-600 font-serif leading-none">"
-                                </div>
-                                <h4 className="font-bold text-red-600 text-lg mb-4 mt-2">Fantastic Experience!</h4>
-                                <p className="text-sm text-foreground/80 mb-6 italic leading-relaxed min-h-[80px]">
-                                    "{activeTestimonial.message}"
-                                </p>
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center space-x-3">
-                                        <div className="w-10 h-10 rounded-full bg-muted overflow-hidden flex items-center justify-center text-primary font-bold shadow-inner">
-                                            {activeTestimonial.profileImageUrl ? (
-                                                <CachedImage src={activeTestimonial.profileImageUrl} alt={activeTestimonial.name} className="w-full h-full object-cover" />
-                                            ) : (
-                                                <span>{activeTestimonial.name ? activeTestimonial.name.substring(0,2).toUpperCase() : 'U'}</span>
-                                            )}
+                <div className="flex flex-col md:flex-row rounded-[2rem] overflow-hidden shadow-lg">
+                    <div className="md:w-1/2 bg-stone-900 p-12 flex items-center justify-center relative overflow-hidden">
+                        {/* Decorative background circle */}
+                        <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 rounded-full bg-amber-800/20 blur-3xl" />
+                        <div className="absolute bottom-0 left-0 -ml-16 -mb-16 w-64 h-64 rounded-full bg-amber-600/20 blur-3xl" />
+                        
+                        <AnimatePresence mode="popLayout" custom={direction}>
+                            {(() => {
+                                const hasTitle = activeTestimonial.message?.includes('::');
+                                const [title, message] = hasTitle 
+                                    ? activeTestimonial.message.split('::') 
+                                    : ['Fantastic Experience!', activeTestimonial.message];
+
+                                const cardVariants = {
+                                    enter: (dir) => ({
+                                        opacity: 0,
+                                        x: dir > 0 ? 60 : -60
+                                    }),
+                                    center: {
+                                        opacity: 1,
+                                        x: 0
+                                    },
+                                    exit: (dir) => ({
+                                        opacity: 0,
+                                        x: dir > 0 ? -60 : 60
+                                    })
+                                };
+
+                                return (
+                                    <motion.div 
+                                        key={currentTestimonialIndex}
+                                        custom={direction}
+                                        variants={cardVariants}
+                                        initial="enter"
+                                        animate="center"
+                                        exit="exit"
+                                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                                        className="bg-white rounded-[2rem] p-8 md:p-10 relative max-w-sm w-full shadow-2xl z-10"
+                                    >
+                                        <div
+                                            className="absolute -top-6 left-8 text-7xl text-amber-500 font-serif leading-none opacity-80">"
                                         </div>
-                                        <span className="font-bold text-sm">{activeTestimonial.name || 'Anonymous User'}</span>
-                                    </div>
-                                    <div className="flex text-[#eab308]">
-                                        {[...Array(activeTestimonial.rating || 5)].map((_, i) => <Star key={i} className="w-4 h-4 fill-current"/>)}
-                                    </div>
-                                </div>
-                                {featuredTestimonials?.length > 1 && (
-                                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-1.5 opacity-60">
-                                        {featuredTestimonials.map((_, i) => (
-                                            <div key={i} className={`w-1.5 h-1.5 rounded-full transition-all ${i === currentTestimonialIndex ? 'bg-red-600 w-3' : 'bg-gray-300'}`} />
-                                        ))}
-                                    </div>
-                                )}
+                                        <h4 className="font-bold text-stone-900 text-xl mb-4 mt-2 font-serif">{title}</h4>
+                                        <p className="text-sm text-stone-600 mb-8 italic leading-relaxed min-h-[80px]">
+                                            "{message}"
+                                        </p>
+                                        <div className="flex items-center justify-between mt-auto">
+                                            <div className="flex items-center space-x-3">
+                                                <div className="w-12 h-12 rounded-full bg-stone-100 border-2 border-amber-100 overflow-hidden flex items-center justify-center text-stone-800 font-bold shadow-sm">
+                                                    {activeTestimonial.profileImageUrl ? (
+                                                        <CachedImage src={activeTestimonial.profileImageUrl} alt={activeTestimonial.name} className="w-full h-full object-cover" />
+                                                    ) : (
+                                                        <span className="text-lg">{activeTestimonial.name ? activeTestimonial.name.substring(0,2).toUpperCase() : 'U'}</span>
+                                                    )}
+                                                </div>
+                                                <span className="font-bold text-sm text-stone-800">{activeTestimonial.name || 'Anonymous User'}</span>
+                                            </div>
+                                            <div className="flex text-amber-500">
+                                                {[...Array(activeTestimonial.rating || 5)].map((_, i) => <Star key={i} className="w-4 h-4 fill-current"/>)}
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                );
+                            })()}
+                        </AnimatePresence>
+                        
+                        {/* Pagination Dots - Moved Outside Animation */}
+                        {featuredTestimonials?.length > 1 && (
+                            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex space-x-2 z-20">
+                                {featuredTestimonials.map((_, i) => (
+                                    <div key={i} className={`w-2 h-2 rounded-full transition-all duration-300 ${i === currentTestimonialIndex ? 'bg-amber-500 w-6' : 'bg-white/30'}`} />
+                                ))}
                             </div>
-                        </div>
-                        <div className="md:w-1/2 relative min-h-[300px]">
-                            <CachedImage src="/images/bakery_customers.png" alt="Happy Customers"
-                                 className="w-full h-full object-cover"/>
-                        </div>
-                    </motion.div>
-                </AnimatePresence>
+                        )}
+                    </div>
+                    <div className="md:w-1/2 relative min-h-[400px]">
+                        <CachedImage src="/images/bakery_customers.png" alt="Happy Customers"
+                             className="w-full h-full object-cover"/>
+                        {/* Gradient overlay to blend image nicely */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-stone-900/50 to-transparent md:bg-gradient-to-l md:from-transparent md:to-stone-900/20" />
+                    </div>
+                </div>
             </div>
         </motion.section>
     );

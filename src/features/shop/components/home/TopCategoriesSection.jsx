@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { LuStar as Star, LuChevronLeft as ChevronLeft, LuChevronRight as ChevronRight, LuArrowRight as ArrowRight } from 'react-icons/lu';
 import { CachedImage } from '../../../../components/ui/CachedImage';
 import ProductCard from '../ProductCard';
+import { ShowcaseCard } from '../../../../components/ui/ShowcaseCard';
 import { addItemToCart, fetchCart } from '../../../cart/redux/cartThunk';
 
 export function TopCategoriesSection({ topCategoriesWithProducts, productList, topRatedProducts }) {
@@ -131,47 +132,7 @@ export function TopCategoriesSection({ topCategoriesWithProducts, productList, t
                                     <h4 className="text-[#eab308] font-bold text-sm tracking-wider uppercase text-center md:text-left">Top Rated in {activeCategory.name}</h4>
                                 </div>
                                 {topRatedProduct ? (
-                                    <div className="bg-primary-500 rounded-[2rem] p-6 relative overflow-hidden shadow-lg aspect-square flex flex-col justify-between group w-full">
-                                        <div className="z-10 text-white w-2/3">
-                                            {topRatedProduct.categoryName && <span className="text-white/80 font-semibold text-sm uppercase">{topRatedProduct.categoryName}</span>}
-                                            <h3 className="text-2xl font-bold leading-tight mt-1 mb-2">{topRatedProduct.name}</h3>
-                                        </div>
-
-                                        {topRatedProduct.status !== 'ACTIVE' ? (
-                                            <div className="absolute top-6 right-6 z-20 bg-black/50 text-white text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wide backdrop-blur-md">
-                                                Unavailable
-                                            </div>
-                                        ) : topRatedProduct.inventory?.isOutOfStock ? (
-                                            <div className="absolute top-6 right-6 z-20 bg-red-600 text-white text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wide shadow-md">
-                                                Out of Stock
-                                            </div>
-                                        ) : topRatedProduct.inventory?.isLowStock ? (
-                                            <div className="absolute top-6 right-6 z-20 bg-orange-500 text-white text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wide shadow-md">
-                                                Limited Stock
-                                            </div>
-                                        ) : null}
-
-                                        <CachedImage
-                                            src={topRatedProduct.primaryImageUrl || topRatedProduct.mediaUrls?.[0]}
-                                            alt={topRatedProduct.name}
-                                            className="absolute -bottom-4 -right-4 h-[70%] w-[70%] object-cover rounded-full shadow-2xl group-hover:scale-110 transition-transform duration-500 border-4 border-white/20"
-                                        />
-
-                                        <button onClick={async () => {
-                                                    if (!user) {
-                                                        toast.error("You must login before checking out");
-                                                        navigate('/login');
-                                                        return;
-                                                    }
-                                                    await handleAddToCart(topRatedProduct);
-                                                    navigate('/checkout');
-                                                }}
-                                                disabled={topRatedProduct.status !== 'ACTIVE' || topRatedProduct.inventory?.isOutOfStock}
-                                                className="z-10 text-white font-medium text-sm flex items-center justify-center bg-white/20 hover:bg-white/30 backdrop-blur-md rounded-full px-5 py-2 group/btn mt-auto self-start disabled:opacity-50 disabled:cursor-not-allowed border border-white/20">
-                                            Order Now <ArrowRight
-                                            className="w-4 h-4 ml-1 group-hover/btn:translate-x-1 transition-transform"/>
-                                        </button>
-                                    </div>
+                                    <ShowcaseCard product={topRatedProduct} />
                                 ) : (
                                     <div className="p-8 border border-dashed border-border rounded-2xl flex items-center justify-center text-muted-foreground text-sm bg-muted/20">
                                         No products available in this category.

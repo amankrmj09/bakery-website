@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import { LuMail as Mail, LuPhone as Phone, LuMapPin as MapPin, LuSend as Send, LuStar as Star, LuMessageSquare as MessageSquare, LuMessageCircle as MessageCircle, LuTag as Tag } from 'react-icons/lu';
 import api from '../../../lib/axios';
 import SleekDropdown from '../../../components/ui/SleekDropdown';
+import { toast } from 'sonner';
 
 export default function ContactPage() {
   const { user } = useSelector((state) => state.auth);
@@ -13,7 +14,8 @@ export default function ContactPage() {
     email: user?.email || '', 
     message: '', 
     type: 'GENERAL', 
-    rating: 5 
+    rating: 5,
+    title: 'Fantastic Experience!'
   });
 
   useEffect(() => {
@@ -44,16 +46,28 @@ export default function ContactPage() {
   }, []);
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  
+  const handleTabChange = (tab) => {
+    if ((tab === 'feedback' || tab === 'testimonial') && !user) {
+      toast.error(`Please log in to submit a ${tab}.`);
+      return;
+    }
+    setFormType(tab);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if ((formType === 'feedback' || formType === 'testimonial') && !user) {
+      toast.error(`Please log in to submit a ${formType}.`);
+      return;
+    }
     setLoading(true);
     try {
       if (formType === 'testimonial') {
         await api.post('/api/v1/engagement/testimonials', {
           name: formData.name,
           email: formData.email,
-          message: formData.message,
+          message: `${formData.title}::${formData.message}`,
           rating: formData.rating,
           profileImageUrl: ''
         });
@@ -72,7 +86,8 @@ export default function ContactPage() {
         email: user?.email || '', 
         message: '', 
         type: 'GENERAL', 
-        rating: 5 
+        rating: 5,
+        title: 'Fantastic Experience!'
       });
     } catch (err) {
       console.error('Failed to submit form', err);
@@ -160,21 +175,21 @@ export default function ContactPage() {
             <div className="flex bg-muted/50 p-1 rounded-xl mb-8">
               <button
                 type="button"
-                onClick={() => setFormType('contact')}
+                onClick={() => handleTabChange('contact')}
                 className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-semibold rounded-lg transition-all ${formType === 'contact' ? 'bg-white shadow text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
               >
                 <Mail className="w-4 h-4" /> Message
               </button>
               <button
                 type="button"
-                onClick={() => setFormType('feedback')}
+                onClick={() => handleTabChange('feedback')}
                 className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-semibold rounded-lg transition-all ${formType === 'feedback' ? 'bg-white shadow text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
               >
                 <MessageCircle className="w-4 h-4" /> Feedback
               </button>
               <button
                 type="button"
-                onClick={() => setFormType('testimonial')}
+                onClick={() => handleTabChange('testimonial')}
                 className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-semibold rounded-lg transition-all ${formType === 'testimonial' ? 'bg-white shadow text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
               >
                 <Star className="w-4 h-4" /> Testimonial
@@ -230,6 +245,30 @@ export default function ContactPage() {
               )}
 
               {formType === 'testimonial' && (
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold text-foreground">Testimonial Title</label>
+                    <SleekDropdown
+                      icon={Star}
+                      iconColor="text-[#eab308]"
+                      headerTitle="Select a Title"
+                      fullWidth
+                      options={[
+                        { value: 'Fantastic Experience!', label: 'Fantastic Experience!' },
+                        { value: 'Incredible Quality!', label: 'Incredible Quality!' },
+                        { value: 'Highly Recommended!', label: 'Highly Recommended!' },
+                        { value: 'Simply Delicious!', label: 'Simply Delicious!' },
+                        { value: 'Best Bakery in Town!', label: 'Best Bakery in Town!' },
+                        { value: 'A Wonderful Treat!', label: 'A Wonderful Treat!' },
+                        { value: 'Beyond Expectations!', label: 'Beyond Expectations!' },
+                        { value: 'Perfect Every Time!', label: 'Perfect Every Time!' },
+                        { value: 'A Taste of Heaven!', label: 'A Taste of Heaven!' },
+                        { value: 'Will Definitely Return!', label: 'Will Definitely Return!' }
+                      ]}
+                      value={formData.title}
+                      onChange={(val) => setFormData({ ...formData, title: val })}
+                    />
+                  </div>
                 <div className="space-y-2">
                   <label className="text-sm font-bold text-foreground">Rating</label>
                   <div className="flex items-center space-x-2">
@@ -244,6 +283,7 @@ export default function ContactPage() {
                       </button>
                     ))}
                   </div>
+                </div>
                 </div>
               )}
 

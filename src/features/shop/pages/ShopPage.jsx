@@ -225,7 +225,7 @@ export default function ShopPage() {
             <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
               {/* Pagination Controls */}
               {products.pagination && (products.pagination.totalPages > 1 || products.pagination.totalElements > 0) ? (
-                <div className="flex flex-col sm:flex-row items-center gap-4 bg-card shadow-sm px-4 py-2.5 rounded-xl border border-border w-full xl:w-auto overflow-x-auto">
+                <div className="flex flex-col sm:flex-row flex-wrap items-center gap-4 bg-card shadow-sm px-4 py-2.5 rounded-xl border border-border w-full xl:w-auto">
                   <div className="flex items-center gap-2 text-xs text-muted-foreground whitespace-nowrap">
                     <span>Page <strong className="text-foreground">{products.pagination.number + 1}</strong> of <strong className="text-foreground">{products.pagination.totalPages || 1}</strong></span>
                     <span>({products.pagination.totalElements} items)</span>
@@ -234,19 +234,19 @@ export default function ShopPage() {
                   <div className="flex items-center gap-3">
                     <div className="flex items-center gap-1.5 sm:border-x border-border sm:px-3">
                       <label htmlFor="pageSize" className="text-xs font-semibold text-muted-foreground whitespace-nowrap">Show:</label>
-                      <select
-                        id="pageSize"
+                      <SleekDropdown
+                        options={[
+                          { value: 6, label: '6' },
+                          { value: 12, label: '12' },
+                          { value: 24, label: '24' },
+                        ]}
                         value={pageSize}
-                        onChange={(e) => {
-                          setPageSize(Number(e.target.value));
+                        onChange={(val) => {
+                          setPageSize(Number(val));
                           setCurrentPage(0);
                         }}
-                        className="bg-background border border-border rounded-lg px-2 py-1 text-xs font-bold text-foreground focus:outline-none focus:ring-2 focus:ring-primary-500"
-                      >
-                        <option value={6}>6</option>
-                        <option value={12}>12</option>
-                        <option value={24}>24</option>
-                      </select>
+                        widthClass="w-20"
+                      />
                     </div>
 
                     <div className="flex items-center gap-1">
