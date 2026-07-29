@@ -190,7 +190,7 @@ export default function ContactPage() {
                     required
                     value={formData.name}
                     onChange={(e) => setFormData({...formData, name: e.target.value})}
-                    placeholder="John Doe"
+                    placeholder="Enter your name"
                     disabled={!!user}
                     className="w-full bg-muted/50 border border-border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all disabled:opacity-75 disabled:cursor-not-allowed disabled:bg-muted/70"
                   />
@@ -202,7 +202,7 @@ export default function ContactPage() {
                     required
                     value={formData.email}
                     onChange={(e) => setFormData({...formData, email: e.target.value})}
-                    placeholder="john@example.com"
+                    placeholder="Enter your email address"
                     disabled={!!user}
                     className="w-full bg-muted/50 border border-border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all disabled:opacity-75 disabled:cursor-not-allowed disabled:bg-muted/70"
                   />
