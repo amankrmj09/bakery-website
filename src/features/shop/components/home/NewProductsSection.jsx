@@ -50,7 +50,7 @@ export function NewProductsSection({ productList }) {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {productList.slice(0, 4).map((product, idx) => {
-                    const cardColors = ['bg-primary-500', 'bg-[#eab308]', 'bg-red-500', 'bg-green-500'];
+                    const cardColors = ['bg-indigo-500', 'bg-rose-500', 'bg-teal-500', 'bg-amber-500'];
                     const colorClass = cardColors[idx % cardColors.length];
                     return (
                         <motion.div 
