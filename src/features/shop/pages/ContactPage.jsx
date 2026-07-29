@@ -254,7 +254,7 @@ export default function ContactPage() {
                   rows="5"
                   value={formData.message}
                   onChange={(e) => setFormData({...formData, message: e.target.value})}
-                  placeholder="How can we help you today?"
+                  placeholder={formType === 'testimonial' ? "Write your testimonial here..." : formType === 'feedback' ? "Share your feedback with us..." : "How can we help you today?"}
                   className="w-full bg-muted/50 border border-border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all resize-none"
                 ></textarea>
               </div>
