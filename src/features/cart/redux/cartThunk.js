@@ -71,7 +71,7 @@ export const checkoutCart = createAsyncThunk(
       const response = await cartApi.checkout(cartId, checkoutData);
       return response.data; 
     } catch (error) {
-      return rejectWithValue('Checkout failed');
+      return rejectWithValue(error.response?.data?.message || 'Checkout failed');
     }
   }
 );

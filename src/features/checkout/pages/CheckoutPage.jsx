@@ -90,7 +90,7 @@ export default function CheckoutPage() {
          navigate(`/payment/${order.id}`, { state: { paymentMethod: formData.paymentMethod, amount: finalTotal } });
       }
     } else {
-      toast.error('Failed to place order. Please try again.');
+      toast.error(resultAction.payload || 'Failed to place order. Please try again.');
     }
   };
 
