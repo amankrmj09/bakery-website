@@ -35,6 +35,7 @@ export default function HomePage() {
     
     const [topCategoriesWithProducts, setTopCategoriesWithProducts] = useState([]);
     const [topCategoriesLoading, setTopCategoriesLoading] = useState(true);
+    const [topRatedProducts, setTopRatedProducts] = useState([]);
 
     useEffect(() => {
         const fetchTestimonials = async () => {
@@ -63,6 +64,17 @@ export default function HomePage() {
             }
         };
         fetchTopCats();
+
+        const fetchTopRated = async () => {
+            try {
+                const res = await api.get('/api/products/active?sortBy=averageRating&sortDir=DESC&size=5');
+                const data = res.data?.content || res.data?._embedded?.productResponseList || res.data?.data || (Array.isArray(res.data) ? res.data : []);
+                setTopRatedProducts(data);
+            } catch (err) {
+                console.error('Failed to load top rated products', err);
+            }
+        };
+        fetchTopRated();
     }, []);
 
     useEffect(() => {
@@ -97,7 +109,11 @@ export default function HomePage() {
             {(isTopCategoriesLoading || isProductsLoading) ? (
                 <TopCategoriesSectionSkeleton />
             ) : (
-                <TopCategoriesSection topCategoriesWithProducts={topCategoriesWithProducts} productList={productList} />
+                <TopCategoriesSection 
+                    topCategoriesWithProducts={topCategoriesWithProducts} 
+                    productList={productList} 
+                    topRatedProducts={topRatedProducts} 
+                />
             )}
             
             {isStorefrontLoading ? <AboutUsSectionSkeleton /> : <AboutUsSection about={about} />}
