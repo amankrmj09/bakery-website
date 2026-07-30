@@ -99,15 +99,14 @@ export default function ContactPage() {
   return (
     <div className="flex flex-col bg-transparent w-full pb-20">
       {/* Hero Background - FIXED */}
-      <div className="fixed top-20 left-0 right-0 h-[45vh] min-h-[300px] flex-shrink-0 overflow-hidden shadow-sm z-0 rounded-b-[3rem] bg-[#eab308]">
-        <img src="/images/bakery_chef.png" alt="Chef" className="absolute -left-10 md:left-10 bottom-0 h-[80%] opacity-20 object-contain" />
-        <img src="/images/hero_cake.png" alt="Cake" className="absolute -right-10 md:right-10 top-10 h-[60%] opacity-20 object-contain rotate-12" />
+      <div className="fixed top-20 left-0 right-0 h-[60vh] min-h-[450px] flex-shrink-0 overflow-hidden shadow-sm z-0 rounded-b-[3rem] bg-stone-900">
+        <img src="/images/bakery_chef.png" alt="Chef Background" className="absolute inset-0 w-full h-full object-cover object-[center_25%] opacity-60" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
       </div>
 
       {/* Hero Content - Scrolls with the page */}
-      <div className="relative z-10 h-[45vh] min-h-[300px] flex-shrink-0 w-full flex flex-col items-center justify-center pb-20">
+      <div className="relative z-10 h-[60vh] min-h-[450px] flex-shrink-0 w-full flex flex-col items-center justify-center pt-24 pb-32">
         <div className="max-w-7xl mx-auto w-full text-center text-white px-6">
-          <span className="text-red-500 font-bold uppercase tracking-widest text-sm mb-4 block">Get In Touch</span>
           <h1 className="text-5xl md:text-6xl font-extrabold leading-tight mb-6">
             We'd Love to Hear<br/>From You!
           </h1>
@@ -118,11 +117,11 @@ export default function ContactPage() {
       </div>
 
       {/* Main Content */}
-      <section className="max-w-7xl mx-auto w-full px-6 -mt-16 z-20 relative">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <section className="max-w-7xl mx-auto w-full px-6 -mt-10 z-20 relative">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative items-start">
           
           {/* Info Cards */}
-          <div className="md:col-span-1 space-y-6">
+          <div className="md:col-span-1 space-y-6 md:sticky md:top-32 h-fit">
             <div className="bg-card border border-border rounded-3xl p-8 shadow-xl flex items-start space-x-4">
               <div className="w-12 h-12 bg-red-100 text-red-500 rounded-2xl flex items-center justify-center flex-shrink-0">
                 <MapPin className="w-6 h-6" />

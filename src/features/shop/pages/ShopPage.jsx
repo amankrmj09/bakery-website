@@ -9,7 +9,7 @@ import { toast } from 'sonner';
 import ProductSkeleton from '../components/ProductSkeleton';
 import ProductCard from '../components/ProductCard';
 import SearchAutocomplete from '../../../components/ui/SearchAutocomplete';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m, AnimatePresence } from 'framer-motion';
 
 const CACHE_TTL = 300000; // 5 minutes TTL
 
@@ -125,26 +125,23 @@ export default function ShopPage() {
   return (
     <div className="flex flex-col relative w-full bg-transparent">
       {/* Menu Header / Half-page BG - FIXED behind content */}
-      <div className="fixed top-20 left-0 right-0 h-[45vh] min-h-[300px] flex-shrink-0 flex flex-col items-center justify-center overflow-hidden shadow-sm z-0 rounded-b-[3rem]">
+      <div className="fixed top-20 left-0 right-0 h-[60vh] min-h-[450px] flex-shrink-0 flex flex-col items-center justify-center overflow-hidden shadow-sm z-0 rounded-b-[3rem] bg-stone-900">
         {/* Background layer */}
         <AnimatePresence mode="wait">
           {selectedCategory === null ? (
-            <motion.div 
+            <m.div 
               key="all"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.5 }}
-              className="absolute inset-0 bg-gradient-to-br from-amber-400 via-orange-400 to-amber-600 z-0"
+              className="absolute inset-0 z-0"
             >
-              <div className="absolute inset-0 bg-white/10 z-10"></div>
-              <div className="absolute top-0 left-1/4 w-96 h-96 bg-white/30 rounded-full blur-3xl z-0 transform -translate-y-1/2"></div>
-              <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-red-400/30 rounded-full blur-3xl z-0 transform translate-y-1/2"></div>
-              <img src="/images/hero_croissant.png" className="absolute -left-12 bottom-0 h-64 opacity-25 rotate-[15deg] drop-shadow-2xl z-0 transition-transform duration-700 hover:scale-110 hover:-rotate-[5deg]" alt="" />
-              <img src="/images/hero_cupcakes.png" className="absolute -right-12 top-0 h-64 opacity-25 -rotate-[15deg] drop-shadow-2xl z-0 transition-transform duration-700 hover:scale-110 hover:rotate-[5deg]" alt="" />
-            </motion.div>
+              <img src="/images/bakery_chef.png" alt="Chef Background" className="absolute inset-0 w-full h-full object-cover object-[center_25%] opacity-60" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+            </m.div>
           ) : (
-            <motion.div 
+            <m.div 
               key={selectedCategory}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -154,7 +151,7 @@ export default function ShopPage() {
               style={{ backgroundImage: `url(${heroImage})` }}
             >
               <div className="absolute inset-0 bg-black/40"></div>
-            </motion.div>
+            </m.div>
           )}
         </AnimatePresence>
       </div>
@@ -340,7 +337,7 @@ export default function ShopPage() {
           <div className="flex-1 overflow-y-auto pr-2 pb-6 scrollbar-thin scrollbar-thumb-muted-foreground/20 scrollbar-track-transparent">
             <AnimatePresence mode="wait">
               {products.loading || isTransitioning ? (
-                <motion.div 
+                <m.div 
                   key="loading"
                   initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -351,9 +348,9 @@ export default function ShopPage() {
                   <ProductSkeleton className="block" />
                   <ProductSkeleton className="hidden sm:block" />
                   <ProductSkeleton className="hidden xl:block" />
-                </motion.div>
+                </m.div>
               ) : products.data && products.data.length > 0 ? (
-                <motion.div 
+                <m.div 
                   key="products"
                   initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -364,9 +361,9 @@ export default function ShopPage() {
                   {products.data.map((product) => (
                     <ProductCard key={product.id} product={product} isNew={false} className="h-full" />
                   ))}
-                </motion.div>
+                </m.div>
               ) : (
-                <motion.div 
+                <m.div 
                   key="empty"
                   initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -379,7 +376,7 @@ export default function ShopPage() {
                   </div>
                   <h3 className="text-lg font-medium text-foreground">No products found</h3>
                   <p className="text-muted-foreground mt-1">Try adjusting your search or filters.</p>
-                </motion.div>
+                </m.div>
               )}
             </AnimatePresence>
           </div>

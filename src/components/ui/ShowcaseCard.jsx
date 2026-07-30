@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useDispatch, useSelector } from 'react-redux';
@@ -34,7 +34,7 @@ export function ShowcaseCard({ product, idx = 0 }) {
     const imageUrl = product.primaryImageUrl || product.mediaUrls?.[0];
 
     return (
-        <motion.div 
+        <m.div 
             key={product.id}
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -92,6 +92,6 @@ export function ShowcaseCard({ product, idx = 0 }) {
                 Order Now <ArrowRight
                 className="w-4 h-4 ml-1 group-hover/btn:translate-x-1 transition-transform"/>
             </button>
-        </motion.div>
+        </m.div>
     );
 }

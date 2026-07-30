@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
+import { m, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { LuStar as Star } from 'react-icons/lu';
 import { CachedImage } from '../../../../components/ui/CachedImage';
 
@@ -35,7 +35,7 @@ export function TestimonialsSection({ activeTestimonial, currentTestimonialIndex
     const direction = directionRef.current;
 
     return (
-        <motion.section 
+        <m.section 
             ref={containerRef}
             variants={sectionVariants}
             initial="hidden"
@@ -78,7 +78,7 @@ export function TestimonialsSection({ activeTestimonial, currentTestimonialIndex
                                 };
 
                                 return (
-                                    <motion.div 
+                                    <m.div 
                                         key={currentTestimonialIndex}
                                         custom={direction}
                                         variants={cardVariants}
@@ -110,7 +110,7 @@ export function TestimonialsSection({ activeTestimonial, currentTestimonialIndex
                                                 {[...Array(activeTestimonial.rating || 5)].map((_, i) => <Star key={i} className="w-4 h-4 fill-current"/>)}
                                             </div>
                                         </div>
-                                    </motion.div>
+                                    </m.div>
                                 );
                             })()}
                         </AnimatePresence>
@@ -125,15 +125,15 @@ export function TestimonialsSection({ activeTestimonial, currentTestimonialIndex
                         )}
                     </div>
                     <div className="md:w-1/2 relative min-h-[400px] overflow-hidden">
-                        <motion.div style={{ y: yParallax, scale: 1.3 }} className="absolute inset-0 w-full h-full origin-center">
+                        <m.div style={{ y: yParallax, scale: 1.3 }} className="absolute inset-0 w-full h-full origin-center">
                             <CachedImage src="/images/bakery_customers.png" alt="Happy Customers"
                                  className="w-full h-full object-cover"/>
-                        </motion.div>
+                        </m.div>
                         {/* Gradient overlay to blend image nicely */}
                         <div className="absolute inset-0 bg-gradient-to-r from-stone-900/50 to-transparent md:bg-gradient-to-l md:from-transparent md:to-stone-900/20" />
                     </div>
                 </div>
             </div>
-        </motion.section>
+        </m.section>
     );
 }

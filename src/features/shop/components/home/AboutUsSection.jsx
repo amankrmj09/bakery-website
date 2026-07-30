@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { LuStar as Star } from 'react-icons/lu';
 import { CachedImage } from '../../../../components/ui/CachedImage';
@@ -13,7 +13,7 @@ export function AboutUsSection({ about }) {
     };
 
     return (
-        <motion.section 
+        <m.section 
             variants={sectionVariants}
             initial="hidden"
             whileInView="visible"
@@ -40,7 +40,7 @@ export function AboutUsSection({ about }) {
                         </Link>
                     </div>
                     <div className="md:w-1/2 mt-12 md:mt-0 relative min-h-[400px] md:min-h-[500px] flex items-center justify-center">
-                        <motion.div 
+                        <m.div 
                             initial={{ scale: 0.8, opacity: 0 }}
                             whileInView={{ scale: 1, opacity: 1 }}
                             viewport={{ once: true, amount: 0.2 }}
@@ -49,42 +49,42 @@ export function AboutUsSection({ about }) {
                         >
                             <CachedImage src="/images/Our_Story_01.png" alt="About main"
                                  className="w-full h-full object-cover"/>
-                        </motion.div>
+                        </m.div>
 
-                        <motion.div 
+                        <m.div 
                             initial={{ opacity: 0, x: -30 }}
                             whileInView={{ opacity: 1, x: 0 }}
                             viewport={{ once: true, amount: 0.2 }}
                             transition={{ duration: 0.6, delay: 0.2 }}
                             className="absolute left-2 md:-left-8 bottom-8 z-20"
                         >
-                            <motion.div 
+                            <m.div 
                                 animate={{ y: [0, -10, 0], rotate: [-4, -8, -4] }}
                                 transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
                                 className="w-36 h-36 md:w-48 md:h-48 shadow-2xl rounded-[25%_35%_40%_30%/30%_40%_25%_35%] overflow-hidden"
                             >
                                 <CachedImage src="/images/Our_Story_02.jpg" alt="About floating 1" className="w-full h-full object-cover hover:scale-110 transition-transform duration-500" />
-                            </motion.div>
-                        </motion.div>
+                            </m.div>
+                        </m.div>
                         
-                        <motion.div 
+                        <m.div 
                             initial={{ opacity: 0, x: 30 }}
                             whileInView={{ opacity: 1, x: 0 }}
                             viewport={{ once: true, amount: 0.2 }}
                             transition={{ duration: 0.6, delay: 0.4 }}
                             className="absolute right-2 md:-right-4 top-8 z-20"
                         >
-                            <motion.div 
+                            <m.div 
                                 animate={{ y: [0, 10, 0], rotate: [4, 8, 4] }}
                                 transition={{ repeat: Infinity, duration: 5, ease: "easeInOut", delay: 1 }}
                                 className="w-32 h-32 md:w-44 md:h-44 shadow-2xl rounded-[35%_25%_30%_40%/40%_30%_35%_25%] overflow-hidden"
                             >
                                 <CachedImage src="/images/Our_Story_03.jpg" alt="About floating 2" className="w-full h-full object-cover hover:scale-110 transition-transform duration-500" />
-                            </motion.div>
-                        </motion.div>
+                            </m.div>
+                        </m.div>
                     </div>
                 </div>
             </div>
-        </motion.section>
+        </m.section>
     );
 }

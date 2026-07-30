@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { ShowcaseCard } from '../../../../components/ui/ShowcaseCard';
 
 export function NewProductsSection({ productList }) {
@@ -10,7 +10,7 @@ export function NewProductsSection({ productList }) {
     };
 
     return (
-        <motion.section 
+        <m.section 
             variants={sectionVariants} 
             initial="hidden" 
             whileInView="visible" 
@@ -26,6 +26,6 @@ export function NewProductsSection({ productList }) {
                     <ShowcaseCard key={product.id} product={product} idx={idx} />
                 ))}
             </div>
-        </motion.section>
+        </m.section>
     );
 }

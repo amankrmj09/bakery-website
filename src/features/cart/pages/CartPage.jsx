@@ -113,9 +113,14 @@ export default function CartPage() {
         </div>
         <h2 className="text-2xl font-bold text-foreground mb-2">Your cart is empty</h2>
         <p className="text-muted-foreground mb-8 max-w-md">Looks like you haven't added any delicious bakery items to your cart yet.</p>
-        <Link to="/" className="bg-primary-500 text-white px-6 py-3 rounded-xl font-medium hover:bg-primary-600 transition-colors">
-          Start Shopping
-        </Link>
+        <div className="flex gap-4">
+          <Link to="/" className="bg-primary-500 text-white px-6 py-3 rounded-xl font-medium hover:bg-primary-600 transition-colors">
+            Start Shopping
+          </Link>
+          <Link to="/profile?tab=orders" className="bg-muted text-foreground px-6 py-3 rounded-xl font-medium hover:bg-muted/80 transition-colors border border-border">
+            View Order History
+          </Link>
+        </div>
       </div>
     );
   }
@@ -158,9 +163,14 @@ export default function CartPage() {
               <ShoppingBag className="w-8 h-8 text-muted-foreground/50" />
             </div>
             <h3 className="text-lg font-bold text-foreground mb-2">Your cart is empty</h3>
-            <Link to="/" className="bg-primary-500 text-white px-5 py-2.5 rounded-xl font-medium hover:bg-primary-600 transition-colors mt-2">
-              Start Shopping
-            </Link>
+            <div className="flex gap-4 mt-2">
+              <Link to="/" className="bg-primary-500 text-white px-5 py-2.5 rounded-xl font-medium hover:bg-primary-600 transition-colors">
+                Start Shopping
+              </Link>
+              <Link to="/profile?tab=orders" className="bg-muted text-foreground px-5 py-2.5 rounded-xl font-medium hover:bg-muted/80 transition-colors border border-border">
+                Order History
+              </Link>
+            </div>
           </div>
         ) : (
           <div className="space-y-6">

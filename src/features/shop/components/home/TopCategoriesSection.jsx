@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
+import { m, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'sonner';
@@ -84,7 +84,7 @@ export function TopCategoriesSection({ topCategoriesWithProducts, productList, t
     };
 
     return (
-        <motion.section 
+        <m.section 
             ref={containerRef}
             variants={sectionVariants}
             initial="hidden"
@@ -112,7 +112,7 @@ export function TopCategoriesSection({ topCategoriesWithProducts, productList, t
 
                 <AnimatePresence mode="wait">
                     {activeCategory ? (
-                        <motion.div 
+                        <m.div 
                             key={activeCategory.id || activeCategory.name}
                             initial={{ opacity: 0, x: 20 }}
                             animate={{ opacity: 1, x: 0 }}
@@ -122,7 +122,7 @@ export function TopCategoriesSection({ topCategoriesWithProducts, productList, t
                         >
                             {activeCategory.mediaUrls?.[0] && (
                                 <>
-                                    <motion.div 
+                                    <m.div 
                                         style={{ y: yParallax, scale: 1.5 }} 
                                         className="w-full h-full absolute inset-0 z-0 origin-center pointer-events-none"
                                     >
@@ -131,7 +131,7 @@ export function TopCategoriesSection({ topCategoriesWithProducts, productList, t
                                             alt={activeCategory.name} 
                                             className="w-full h-full object-cover object-center"
                                         />
-                                    </motion.div>
+                                    </m.div>
                                     <div className="absolute inset-0 bg-black/50 z-0 pointer-events-none" />
                                 </>
                             )}
@@ -164,7 +164,7 @@ export function TopCategoriesSection({ topCategoriesWithProducts, productList, t
                                     </div>
                                 )}
                             </div>
-                        </motion.div>
+                        </m.div>
                     ) : (
                         <div className="p-8 border border-dashed border-border rounded-2xl flex items-center justify-center text-muted-foreground text-sm bg-background">
                             No top categories available.
@@ -184,6 +184,6 @@ export function TopCategoriesSection({ topCategoriesWithProducts, productList, t
                     ))}
                 </div>
             </div>
-        </motion.section>
+        </m.section>
     );
 }

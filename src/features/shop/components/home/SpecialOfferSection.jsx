@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { m, useScroll, useTransform } from 'framer-motion';
 import { toast } from 'sonner';
 import { LuCopy as CopyIcon } from 'react-icons/lu';
 import { CachedImage } from '../../../../components/ui/CachedImage';
@@ -20,7 +20,7 @@ export function SpecialOfferSection({ offers }) {
     };
 
     return (
-        <motion.section 
+        <m.section 
             ref={containerRef}
             variants={sectionVariants}
             initial="hidden"
@@ -30,7 +30,7 @@ export function SpecialOfferSection({ offers }) {
         >
             <div className="max-w-7xl mx-auto w-full px-6 flex flex-col gap-6">
                 {offers.map((offer, idx) => (
-                    <motion.div 
+                    <m.div 
                         key={idx} 
                         initial={{ opacity: 0, scale: 0.95 }}
                         whileInView={{ opacity: 1, scale: 1 }}
@@ -38,12 +38,12 @@ export function SpecialOfferSection({ offers }) {
                         transition={{ duration: 0.5, delay: idx * 0.1 }}
                         className="w-full overflow-hidden rounded-2xl shadow-lg border border-border/40 hover:shadow-xl transition-shadow aspect-[3/1] relative group"
                     >
-                        <motion.div 
+                        <m.div 
                             style={{ y: yParallax, scale: 1.5 }}
                             className="w-full h-full absolute inset-0 z-0 origin-center pointer-events-none"
                         >
                             <CachedImage src={offer.imageUrl} alt={offer.title || `Special Offer ${idx + 1}`} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                        </motion.div>
+                        </m.div>
                         {(offer.title || offer.description) && (
                             <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent flex flex-col items-start justify-center p-8 md:p-12 transition-all duration-500 group-hover:bg-black/20">
                                 <div className="transform transition-transform duration-500 group-hover:translate-x-2">
@@ -68,9 +68,9 @@ export function SpecialOfferSection({ offers }) {
                                 </div>
                             </div>
                         )}
-                    </motion.div>
+                    </m.div>
                 ))}
             </div>
-        </motion.section>
+        </m.section>
     );
 }

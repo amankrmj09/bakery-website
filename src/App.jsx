@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import Lenis from '@studio-freight/lenis';
 import AppRoutes from './routes/AppRoutes';
 import ScrollToTop from './components/layout/ScrollToTop';
+import { LazyMotion, domAnimation } from 'framer-motion';
 
 import { Toaster } from 'sonner';
 
@@ -30,10 +31,10 @@ export default function App() {
   }, []);
 
   return (
-    <>
+    <LazyMotion features={domAnimation}>
       <ScrollToTop />
       <Toaster richColors position="top-center" />
       <AppRoutes />
-    </>
+    </LazyMotion>
   );
 }

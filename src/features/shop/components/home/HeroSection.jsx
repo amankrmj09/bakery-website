@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
+import { m, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { CachedImage } from '../../../../components/ui/CachedImage';
 import { ShowcaseCard } from '../../../../components/ui/ShowcaseCard';
 import { LuChevronLeft, LuChevronRight } from 'react-icons/lu';
 import { GiCroissant, GiWheat, GiPretzel, GiCupcake, GiCakeSlice, GiCoffeeCup } from 'react-icons/gi';
+import { sliderVariants } from '../../../../utils/animations';
+import { FadeIn } from '../../../../components/animations/FadeIn';
 
 export function HeroSection({ campaigns, topRatedProducts }) {
     const navigate = useNavigate();
@@ -33,25 +35,11 @@ export function HeroSection({ campaigns, topRatedProducts }) {
         setActiveIndex((prev) => (prev === 0 ? campaigns.length - 1 : prev - 1));
     };
 
-    const slideVariants = {
-        enter: {
-            opacity: 0,
-        },
-        center: {
-            opacity: 1,
-            zIndex: 1,
-        },
-        exit: {
-            opacity: 0,
-            zIndex: 0,
-        },
-    };
-
     return (
         <section className="w-full bg-transparent relative flex items-center justify-center overflow-hidden" style={{ height: 'calc(100dvh - 80px)' }}>
             {/* Foreground Center Slider */}
             <div className="w-full h-full relative z-30 flex items-center justify-center pointer-events-none">
-                <motion.div 
+                <m.div 
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.8 }}
@@ -59,17 +47,17 @@ export function HeroSection({ campaigns, topRatedProducts }) {
                 >
                     <AnimatePresence initial={false} custom={direction}>
                         {campaigns?.length > 0 && (
-                            <motion.div
+                            <m.div
                                 key={activeIndex}
                                 custom={direction}
-                                variants={slideVariants}
+                                variants={sliderVariants}
                                 initial="enter"
                                 animate="center"
                                 exit="exit"
                                 transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
                                 className="absolute inset-0 w-full h-full overflow-hidden"
                             >
-                                <motion.div 
+                                <m.div 
                                     style={{ y: yParallax, scale: 1.4 }} 
                                     className="w-full h-full absolute inset-0 origin-bottom"
                                 >
@@ -78,82 +66,64 @@ export function HeroSection({ campaigns, topRatedProducts }) {
                                         alt={`Campaign ${activeIndex + 1}`} 
                                         className="w-full h-full object-cover object-center"
                                     />
-                                </motion.div>
+                                </m.div>
                                 <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px]" />
                                 
                                 {/* Overlay Text */}
                                 <div className="absolute inset-0 flex flex-col items-start justify-center text-left px-8 md:px-16 lg:px-24 xl:px-32 z-40 max-w-7xl mx-auto w-full">
-                                    <motion.h1 
-                                        initial={{ opacity: 0, y: 30 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
-                                        className="text-5xl md:text-7xl lg:text-8xl font-serif font-extrabold text-white drop-shadow-xl tracking-tight mb-6 max-w-3xl"
-                                    >
-                                        {campaigns[activeIndex]?.title || "Freshly Baked Perfection"}
-                                    </motion.h1>
+                                    <FadeIn delay={0.3} variant="fadeInUp">
+                                        <h1 className="text-5xl md:text-7xl lg:text-8xl font-serif font-extrabold text-white drop-shadow-xl tracking-tight mb-6 max-w-3xl">
+                                            {campaigns[activeIndex]?.title || "Freshly Baked Perfection"}
+                                        </h1>
+                                    </FadeIn>
                                     
-                                    <motion.p 
-                                        initial={{ opacity: 0, y: 30 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ duration: 0.8, delay: 0.5, ease: "easeOut" }}
-                                        className="text-lg md:text-2xl text-stone-100 font-medium max-w-xl drop-shadow-md mb-10"
-                                    >
-                                        {campaigns[activeIndex]?.description || campaigns[activeIndex]?.subtitle || "Experience the warmth of our handcrafted pastries, baked fresh daily with 100% organic ingredients and lots of love."}
-                                    </motion.p>
+                                    <FadeIn delay={0.5} variant="fadeInUp">
+                                        <p className="text-lg md:text-2xl text-stone-100 font-medium max-w-xl drop-shadow-md mb-10">
+                                            {campaigns[activeIndex]?.description || campaigns[activeIndex]?.subtitle || "Experience the warmth of our handcrafted pastries, baked fresh daily with 100% organic ingredients and lots of love."}
+                                        </p>
+                                    </FadeIn>
                                     
-                                    <motion.div
-                                        initial={{ opacity: 0, scale: 0.9 }}
-                                        animate={{ opacity: 1, scale: 1 }}
-                                        transition={{ duration: 0.8, delay: 0.7, ease: "easeOut" }}
-                                    >
+                                    <FadeIn delay={0.7} variant="scaleUp">
                                         <button 
                                             onClick={() => navigate('/shop')}
                                             className="bg-[#eab308] hover:bg-yellow-400 text-stone-900 font-bold text-lg md:text-xl px-10 py-4 rounded-full shadow-[0_0_20px_rgba(234,179,8,0.4)] hover:shadow-[0_0_30px_rgba(234,179,8,0.6)] hover:-translate-y-1 transform transition-all duration-300"
                                         >
                                             {campaigns[activeIndex]?.buttonText || "Explore Our Menu"}
                                         </button>
-                                    </motion.div>
+                                    </FadeIn>
                                     
                                     {/* Social Proof */}
-                                    <motion.div 
-                                        initial={{ opacity: 0, y: 20 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ duration: 0.8, delay: 0.9, ease: "easeOut" }}
-                                        className="flex items-center space-x-4 mt-10 backdrop-blur-sm bg-black/20 py-2 px-4 rounded-full border border-white/10"
-                                    >
-                                        <div className="flex -space-x-3">
-                                            {[1, 2, 3, 4, 5].map((i) => (
-                                                <div key={i} className="w-8 h-8 rounded-full border-2 border-stone-800 bg-white overflow-hidden relative shadow-sm" style={{ zIndex: 10 - i }}>
-                                                    <img src={`https://api.dicebear.com/9.x/avataaars/svg?seed=Customer${i + 50}&backgroundColor=fdf8f5`} alt="Customer" className="w-full h-full object-cover" />
-                                                </div>
-                                            ))}
-                                        </div>
-                                        <div className="flex flex-col items-start leading-tight">
-                                            <div className="flex text-[#eab308] text-xs">
-                                                ★★★★★
+                                    <FadeIn delay={0.9} variant="fadeInUp">
+                                        <div className="flex items-center space-x-4 mt-10 backdrop-blur-sm bg-black/20 py-2 px-4 rounded-full border border-white/10">
+                                            <div className="flex -space-x-3">
+                                                {[1, 2, 3, 4, 5].map((i) => (
+                                                    <div key={i} className="w-8 h-8 rounded-full border-2 border-stone-800 bg-white overflow-hidden relative shadow-sm" style={{ zIndex: 10 - i }}>
+                                                        <img src={`https://api.dicebear.com/9.x/avataaars/svg?seed=Customer${i + 50}&backgroundColor=fdf8f5`} alt="Customer" className="w-full h-full object-cover" />
+                                                    </div>
+                                                ))}
                                             </div>
-                                            <span className="text-stone-200 text-sm font-medium">Loved by 5,000+ pastry lovers</span>
+                                            <div className="flex flex-col items-start leading-tight">
+                                                <div className="flex text-[#eab308] text-xs">
+                                                    ★★★★★
+                                                </div>
+                                                <span className="text-stone-200 text-sm font-medium">Loved by 5,000+ pastry lovers</span>
+                                            </div>
                                         </div>
-                                    </motion.div>
+                                    </FadeIn>
 
                                 </div>
-                            </motion.div>
+                            </m.div>
                         )}
                     </AnimatePresence>
-                </motion.div>
+                </m.div>
             </div>
 
             {/* Floating Showcase Card */}
             {topRatedProducts && topRatedProducts.length > 0 && (
-                <motion.div 
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.8, delay: 1.2, ease: "easeOut" }}
-                    className="absolute bottom-8 md:bottom-12 right-6 md:right-16 lg:right-24 z-40 hidden md:block w-[260px] lg:w-[300px]"
-                >
+                <FadeIn delay={1.2} variant="slideInRight" className="absolute bottom-8 md:bottom-12 right-6 md:right-16 lg:right-24 z-40 hidden md:block w-[260px] lg:w-[300px]">
                     <div className="relative group">
                         <AnimatePresence mode="wait">
-                            <motion.div
+                            <m.div
                                 key={activeIndex}
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
@@ -171,10 +141,10 @@ export function HeroSection({ campaigns, topRatedProducts }) {
                                         idx={activeIndex} 
                                     />
                                 </div>
-                            </motion.div>
+                            </m.div>
                         </AnimatePresence>
                     </div>
-                </motion.div>
+                </FadeIn>
             )}
 
         </section>
