@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'sonner';
+import { m, useScroll, useTransform } from 'framer-motion';
 import { addItemToCart } from '../../cart/redux/cartThunk';
 import { fetchProductReviews, reportReview, fetchProductById } from '../redux/shopThunk';
 import { LuArrowLeft as ArrowLeft, LuShoppingCart as ShoppingCart, LuMinus as Minus, LuPlus as Plus, LuLoader as Loader2, LuPackage as Package, LuInfo as Info, LuStar as Star, LuChevronLeft as ChevronLeft, LuChevronRight as ChevronRight } from 'react-icons/lu';
@@ -34,6 +35,9 @@ export default function ProductDetailsPage() {
   const [reviewsPageSize, setReviewsPageSize] = useState(6);
   const [selectedImage, setSelectedImage] = useState(null);
   const [activeTab, setActiveTab] = useState('about');
+
+  const { scrollY } = useScroll();
+  const yParallax = useTransform(scrollY, [0, 800], ['0%', '30%']);
 
   // We find the product from redux store since we already fetched it on the shop page,
   // or we might need to fetch it if we navigate directly to the URL.
@@ -158,12 +162,17 @@ export default function ProductDetailsPage() {
           {/* Image Section */}
           <div className="w-full md:w-1/2">
             <div className="aspect-square bg-muted/30 rounded-3xl relative overflow-hidden flex items-center justify-center border border-border/50">
-              <img 
-                src={displayImage} 
-                alt={product.name} 
-                onError={(e) => { e.target.onerror = null; e.target.src = '/images/placeholder_bakery.png'; }}
-                className="object-cover w-full h-full mix-blend-multiply transition-transform duration-500 hover:scale-105" 
-              />
+              <m.div
+                style={{ y: yParallax, scale: 1.15 }}
+                className="w-full h-full absolute inset-0 pointer-events-none"
+              >
+                <img 
+                  src={displayImage} 
+                  alt={product.name} 
+                  onError={(e) => { e.target.onerror = null; e.target.src = '/images/placeholder_bakery.png'; }}
+                  className="object-cover w-full h-full mix-blend-multiply transition-transform duration-500 hover:scale-105 pointer-events-auto origin-center" 
+                />
+              </m.div>
               {isUnavailable ? (
                 <div className="absolute top-4 right-4 bg-red-500 text-white text-xs font-bold px-3 py-1.5 rounded-lg uppercase tracking-wide shadow-md">
                   Unavailable
