@@ -64,10 +64,10 @@ export function HeroSection({ campaigns, topRatedProducts }) {
                                     <CachedImage 
                                         src={campaigns[activeIndex]?.imageUrl} 
                                         alt={`Campaign ${activeIndex + 1}`} 
-                                        className="w-full h-full object-cover object-center"
+                                        className="w-full h-full object-cover object-top"
                                     />
                                 </m.div>
-                                <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px]" />
+                                <div className="absolute inset-0 bg-black/50" />
                                 
                                 {/* Overlay Text */}
                                 <div className="absolute inset-0 flex flex-col items-start justify-center text-left px-8 md:px-16 lg:px-24 xl:px-32 z-40 max-w-7xl mx-auto w-full">
