@@ -98,7 +98,7 @@ export function HeroSection({ campaigns, topRatedProducts }) {
                                             <div className="flex -space-x-3">
                                                 {[1, 2, 3, 4, 5].map((i) => (
                                                     <div key={i} className="w-8 h-8 rounded-full border-2 border-stone-800 bg-white overflow-hidden relative shadow-sm" style={{ zIndex: 10 - i }}>
-                                                        <img src={`https://api.dicebear.com/9.x/avataaars/svg?seed=Customer${i + 50}&backgroundColor=fdf8f5`} alt="Customer" className="w-full h-full object-cover" />
+                                                        <img src={`https://i.pravatar.cc/100?img=${i + 30}`} alt="Customer" className="w-full h-full object-cover" />
                                                     </div>
                                                 ))}
                                             </div>
