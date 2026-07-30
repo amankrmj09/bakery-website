@@ -105,7 +105,7 @@ export default function PaymentPage() {
             
             <div className="p-6 bg-background rounded-2xl border-2 border-muted flex justify-between items-center text-xl font-bold text-foreground">
               <span>Total Amount</span>
-              <span className="text-primary-600 text-2xl">${amount.toFixed(2)}</span>
+              <span className="text-primary-600 text-2xl">₹{amount.toFixed(2)}</span>
             </div>
 
             <button
