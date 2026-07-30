@@ -6,6 +6,7 @@ import { addItemToCart } from '../../cart/redux/cartThunk';
 import { fetchProductReviews, reportReview, fetchProductById } from '../redux/shopThunk';
 import { LuArrowLeft as ArrowLeft, LuShoppingCart as ShoppingCart, LuMinus as Minus, LuPlus as Plus, LuLoader as Loader2, LuPackage as Package, LuInfo as Info, LuStar as Star, LuChevronLeft as ChevronLeft, LuChevronRight as ChevronRight } from 'react-icons/lu';
 import ReviewModal from '../components/ReviewModal';
+import ReportReviewModal from '../components/ReportReviewModal';
 
 export default function ProductDetailsPage() {
   const { id } = useParams();
@@ -23,6 +24,11 @@ export default function ProductDetailsPage() {
   const [reviewModalState, setReviewModalState] = useState({
     isOpen: false,
     existingReview: null
+  });
+  const [reportModalState, setReportModalState] = useState({
+    isOpen: false,
+    reviewId: null,
+    userName: ''
   });
   const [reviewsCurrentPage, setReviewsCurrentPage] = useState(0);
   const [reviewsPageSize, setReviewsPageSize] = useState(6);
@@ -423,13 +429,12 @@ export default function ProductDetailsPage() {
                       ) : (
                         <button 
                           onClick={() => {
-                            const reason = window.prompt('Why are you reporting this review?');
-                            if (reason) {
-                              dispatch(reportReview({ productId: product.id, reviewId: review.id, reason }))
-                                .unwrap()
-                                .then(() => toast.success('Review reported for moderation'))
-                                .catch(() => toast.error('Failed to report review'));
+                            if (!user) {
+                              toast.error("You must login to report a review");
+                              navigate('/login');
+                              return;
                             }
+                            setReportModalState({ isOpen: true, reviewId: review.id, userName: review.userName });
                           }}
                           className="text-xs text-muted-foreground hover:text-primary-500 font-medium"
                         >
@@ -545,6 +550,16 @@ export default function ProductDetailsPage() {
           productName={product.name}
           existingReview={reviewModalState.existingReview}
         />
+
+        {product && (
+          <ReportReviewModal
+            isOpen={reportModalState.isOpen}
+            onClose={() => setReportModalState({ isOpen: false, reviewId: null, userName: '' })}
+            productId={product.id}
+            reviewId={reportModalState.reviewId}
+            userName={reportModalState.userName}
+          />
+        )}
       </div>
     </div>
   );
