@@ -95,3 +95,28 @@ export const logout = createAsyncThunk(
     return null;
   }
 );
+
+export const forgotPassword = createAsyncThunk(
+  'auth/forgotPassword',
+  async (email, { rejectWithValue }) => {
+    try {
+      const response = await authApi.forgotPassword({ email });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to initiate forgot password');
+    }
+  }
+);
+
+export const resetPassword = createAsyncThunk(
+  'auth/resetPassword',
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await authApi.resetPassword(data);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to reset password');
+    }
+  }
+);
+

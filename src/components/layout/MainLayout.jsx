@@ -26,7 +26,6 @@ export default function MainLayout() {
         <div className="flex flex-col min-h-screen text-foreground transition-colors duration-200 bg-transparent">
             <AnimatedBackground />
             {/* Top Navigation - GOOD FOOD Style */}
-            {!(location.pathname === '/login' || location.pathname === '/register') && (
             <header
                 className="sticky top-0 z-50 grid grid-cols-3 h-20 items-center bg-card/80 backdrop-blur-md border-b border-border/50 px-8 shadow-sm w-full">
 
@@ -102,16 +101,13 @@ export default function MainLayout() {
                     )}
                 </div>
             </header>
-            )}
 
             {/* Main Content Area */}
             <main className="flex-1 w-full bg-transparent relative flex flex-col">
                 <div className="flex-1">
                     <Outlet/>
                 </div>
-                {!(location.pathname === '/login' || location.pathname === '/register') && (
-                    <Footer />
-                )}
+                <Footer />
             </main>
         </div>
     );

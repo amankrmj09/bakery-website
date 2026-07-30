@@ -7,5 +7,7 @@ export const authApi = {
   verifyRegister: (data) => api.post('/api/auth/register/verify', data),
   resendLoginOtp: (email) => api.post('/api/auth/login/resend', { email }),
   resendRegisterOtp: (email) => api.post('/api/auth/register/resend', { email }),
+  forgotPassword: (data) => api.post('/api/auth/forgot-password', data),
+  resetPassword: (data) => api.post('/api/auth/forgot-password/reset', data),
   logout: () => api.post('/api/auth/logout')
 };

@@ -2,6 +2,7 @@ import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import MainLayout from '../components/layout/MainLayout';
+import AuthLayout from '../components/layout/AuthLayout';
 
 import HomePage from '../features/shop/pages/HomePage';
 import ShopPage from '../features/shop/pages/ShopPage';
@@ -10,6 +11,8 @@ import ContactPage from '../features/shop/pages/ContactPage';
 import LoginPage from '../features/auth/pages/LoginPage';
 import RegisterPage from '../features/auth/pages/RegisterPage';
 import OtpPage from '../features/auth/pages/OtpPage';
+import ForgotPasswordPage from '../features/auth/pages/ForgotPasswordPage';
+import ResetPasswordPage from '../features/auth/pages/ResetPasswordPage';
 import CartPage from '../features/cart/pages/CartPage';
 import CheckoutPage from '../features/checkout/pages/CheckoutPage';
 import PaymentPage from '../features/checkout/pages/PaymentPage';
@@ -29,15 +32,21 @@ const ProtectedRoute = ({ children }) => {
 export default function AppRoutes() {
   return (
     <Routes>
+      {/* Auth Routes (No MainLayout) */}
+      <Route element={<AuthLayout />}>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/verify-otp" element={<OtpPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
+      </Route>
+
       <Route path="/" element={<MainLayout />}>
         {/* Public Routes */}
         <Route index element={<HomePage />} />
         <Route path="shop" element={<ShopPage />} />
         <Route path="product/:id" element={<ProductDetailsPage />} />
         <Route path="contact" element={<ContactPage />} />
-        <Route path="login" element={<LoginPage />} />
-        <Route path="register" element={<RegisterPage />} />
-        <Route path="verify-otp" element={<OtpPage />} />
         <Route path="cart" element={<CartPage />} />
         <Route path="checkout" element={<CheckoutPage />} />
         <Route path="payment/:orderId" element={<PaymentPage />} />

@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { login, register, logout, verifyLogin, verifyRegister } from './authThunk';
+import { login, register, logout, verifyLogin, verifyRegister, forgotPassword, resetPassword } from './authThunk';
 
 const initialState = {
   user: JSON.parse(localStorage.getItem('user')) || null,
@@ -88,6 +88,18 @@ const authSlice = createSlice({
       .addCase(logout.fulfilled, (state) => {
         state.user = null;
         state.token = null;
+      })
+      .addCase(forgotPassword.pending, (state) => { state.loading = true; state.error = null; })
+      .addCase(forgotPassword.fulfilled, (state) => { state.loading = false; })
+      .addCase(forgotPassword.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(resetPassword.pending, (state) => { state.loading = true; state.error = null; })
+      .addCase(resetPassword.fulfilled, (state) => { state.loading = false; })
+      .addCase(resetPassword.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });
