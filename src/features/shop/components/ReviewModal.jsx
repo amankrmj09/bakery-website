@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { submitReview, deleteReview } from '../redux/shopThunk';
-import { fetchUserOrders } from '../../order/slice/orderSlice';
-import { LuStar as Star, LuX as X } from 'react-icons/lu';
+import { LuStar as Star } from 'react-icons/lu';
 import { toast } from 'sonner';
+import Modal from '../../../components/ui/Modal';
+import ActionButton from '../../../components/ui/ActionButton';
 
 const ReviewModal = ({ isOpen, onClose, orderId, productId, productName, existingReview }) => {
   const [rating, setRating] = useState(0);
@@ -46,7 +47,7 @@ const ReviewModal = ({ isOpen, onClose, orderId, productId, productName, existin
       
       const result = await dispatch(submitReview({ productId, reviewData })).unwrap();
       toast.success('Review submitted successfully!');
-      onClose(); // Close modal on success
+      onClose();
       setRating(0);
       setComment('');
       setError(null);
@@ -68,91 +69,90 @@ const ReviewModal = ({ isOpen, onClose, orderId, productId, productName, existin
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-xl max-w-md w-full overflow-hidden">
-        <div className="flex items-center justify-between p-4 border-b border-gray-100">
-          <h3 className="text-lg font-bold text-gray-800">Rate Product</h3>
-          <button 
-            onClick={onClose}
-            className="p-1 hover:bg-gray-100 rounded-full transition-colors"
-          >
-            <X className="w-5 h-5 text-gray-500" />
-          </button>
+    <Modal isOpen={isOpen} onClose={onClose} title={existingReview ? "Edit Review" : "Rate Product"} maxWidth="max-w-md">
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1">Product</p>
+          <p className="font-bold text-foreground text-lg">{productName}</p>
         </div>
         
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
-          <div>
-            <p className="text-sm text-gray-500 mb-1">Product</p>
-            <p className="font-medium text-gray-900">{productName}</p>
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Rating
-            </label>
-            <div className="flex gap-2">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <button
-                  key={star}
-                  type="button"
-                  onClick={() => setRating(star)}
-                  className="focus:outline-none"
-                >
-                  <Star 
-                    className={`w-8 h-8 ${star <= rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} 
-                  />
-                </button>
-              ))}
-            </div>
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Comment (Optional)
-            </label>
-            <textarea
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              rows="4"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8E5A45] focus:border-transparent resize-none"
-              placeholder="What did you think about this product?"
-            ></textarea>
-          </div>
-          
-          {error && (
-            <div className="text-red-500 text-sm bg-red-50 p-3 rounded-lg border border-red-100">
-              {error}
-            </div>
-          )}
-          
-          <div className="flex gap-3 pt-2">
-            {existingReview && (
+        <div>
+          <label className="block text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">
+            Rating
+          </label>
+          <div className="flex gap-2">
+            {[1, 2, 3, 4, 5].map((star) => (
               <button
+                key={star}
                 type="button"
-                onClick={handleDelete}
-                className="px-4 py-2 text-red-500 hover:bg-red-50 rounded-xl font-medium transition-colors border border-transparent"
+                onClick={() => setRating(star)}
+                className="focus:outline-none transition-transform hover:scale-110 active:scale-95"
               >
-                Delete
+                <Star 
+                  className={`w-10 h-10 transition-colors ${star <= rating ? 'fill-amber-400 text-amber-400' : 'text-muted/50 stroke-1'}`} 
+                />
               </button>
-            )}
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 font-medium transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={loading}
-              className="flex-1 px-4 py-2 bg-[#8E5A45] text-white rounded-xl hover:bg-[#7A4D3B] font-medium transition-colors disabled:opacity-50"
-            >
-              {loading ? 'Submitting...' : 'Submit Review'}
-            </button>
+            ))}
           </div>
-        </form>
-      </div>
-    </div>
+        </div>
+        
+        <div>
+          <label className="block text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">
+            Comment (Optional)
+          </label>
+          <textarea
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+            rows="4"
+            className="w-full px-4 py-3 bg-background border border-border rounded-xl focus:border-[#8E5A45] focus:outline-none focus:ring-2 focus:ring-[#8E5A45]/20 text-sm font-medium transition-all resize-none"
+            placeholder="What did you think about this product?"
+          ></textarea>
+        </div>
+        
+        {error && (
+          <div className="text-red-500 text-sm font-medium bg-red-500/10 p-3 rounded-xl border border-red-500/20">
+            {error}
+          </div>
+        )}
+        
+        <div className="pt-4 border-t border-border flex flex-wrap sm:flex-nowrap gap-3">
+          {existingReview && (
+            <ActionButton
+              text="Delete"
+              type="button"
+              onClick={handleDelete}
+              bgClass="bg-red-500/10"
+              textClass="text-red-600 dark:text-red-400"
+              borderClass="border-red-500/20"
+              hoverBgClass="bg-red-500/20"
+              showArrow={false}
+              className="w-full sm:w-auto flex-none px-4"
+            />
+          )}
+          <ActionButton
+            text="Cancel"
+            type="button"
+            onClick={onClose}
+            bgClass="bg-background"
+            textClass="text-foreground"
+            borderClass="border-border"
+            hoverBgClass="bg-muted"
+            showArrow={false}
+            className="flex-1"
+          />
+          <ActionButton
+            text={loading ? "Submitting..." : "Submit Review"}
+            type="submit"
+            isLoading={loading}
+            bgClass="bg-[#8E5A45]"
+            textClass="text-white"
+            hoverBgClass="bg-[#7A4D3B]/50"
+            showArrow={false}
+            className="flex-[2] shadow-lg shadow-[#8E5A45]/25"
+          />
+        </div>
+      </form>
+    </Modal>
   );
 };
 
