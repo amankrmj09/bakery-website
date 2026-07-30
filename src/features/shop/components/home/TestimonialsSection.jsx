@@ -1,5 +1,5 @@
-import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useRef } from 'react';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { LuStar as Star } from 'react-icons/lu';
 import { CachedImage } from '../../../../components/ui/CachedImage';
 
@@ -11,8 +11,15 @@ export function TestimonialsSection({ activeTestimonial, currentTestimonialIndex
         visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: "easeOut" } }
     };
 
-    const prevIndexRef = React.useRef(currentTestimonialIndex);
-    const directionRef = React.useRef(1);
+    const prevIndexRef = useRef(currentTestimonialIndex);
+    const directionRef = useRef(1);
+    const containerRef = useRef(null);
+
+    const { scrollYProgress } = useScroll({
+        target: containerRef,
+        offset: ["start end", "end start"]
+    });
+    const yParallax = useTransform(scrollYProgress, [0, 1], ['-15%', '15%']);
 
     if (prevIndexRef.current !== currentTestimonialIndex) {
         if (prevIndexRef.current === featuredTestimonials.length - 1 && currentTestimonialIndex === 0) {
@@ -29,11 +36,12 @@ export function TestimonialsSection({ activeTestimonial, currentTestimonialIndex
 
     return (
         <motion.section 
+            ref={containerRef}
             variants={sectionVariants}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.1 }}
-            className="bg-card py-16"
+            className="py-16"
         >
             <div className="max-w-7xl mx-auto w-full px-6">
                 <div className="text-center mb-10">
@@ -116,9 +124,11 @@ export function TestimonialsSection({ activeTestimonial, currentTestimonialIndex
                             </div>
                         )}
                     </div>
-                    <div className="md:w-1/2 relative min-h-[400px]">
-                        <CachedImage src="/images/bakery_customers.png" alt="Happy Customers"
-                             className="w-full h-full object-cover"/>
+                    <div className="md:w-1/2 relative min-h-[400px] overflow-hidden">
+                        <motion.div style={{ y: yParallax, scale: 1.3 }} className="absolute inset-0 w-full h-full origin-center">
+                            <CachedImage src="/images/bakery_customers.png" alt="Happy Customers"
+                                 className="w-full h-full object-cover"/>
+                        </motion.div>
                         {/* Gradient overlay to blend image nicely */}
                         <div className="absolute inset-0 bg-gradient-to-r from-stone-900/50 to-transparent md:bg-gradient-to-l md:from-transparent md:to-stone-900/20" />
                     </div>

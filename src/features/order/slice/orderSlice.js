@@ -72,6 +72,17 @@ const orderSlice = createSlice({
     clearOrderError: (state) => {
       state.error = null;
     },
+    markOrderAsPaid: (state, action) => {
+      const orderId = action.payload;
+      const orderIdx = state.orders.findIndex(o => o.id === orderId);
+      if (orderIdx !== -1) {
+        state.orders[orderIdx].paymentStatus = 'COMPLETED';
+      }
+      const activeIdx = state.activeOrders.findIndex(o => o.id === orderId);
+      if (activeIdx !== -1) {
+        state.activeOrders[activeIdx].paymentStatus = 'COMPLETED';
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -127,6 +138,6 @@ const orderSlice = createSlice({
   },
 });
 
-export const { clearOrderError } = orderSlice.actions;
+export const { clearOrderError, markOrderAsPaid } = orderSlice.actions;
 
 export default orderSlice.reducer;

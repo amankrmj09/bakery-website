@@ -1,10 +1,17 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useRef } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { toast } from 'sonner';
 import { LuCopy as CopyIcon } from 'react-icons/lu';
 import { CachedImage } from '../../../../components/ui/CachedImage';
 
 export function SpecialOfferSection({ offers }) {
+    const containerRef = useRef(null);
+    const { scrollYProgress } = useScroll({
+        target: containerRef,
+        offset: ["start end", "end start"]
+    });
+    const yParallax = useTransform(scrollYProgress, [0, 1], ['-25%', '25%']);
+
     if (!offers || offers.length === 0) return null;
 
     const sectionVariants = {
@@ -14,11 +21,12 @@ export function SpecialOfferSection({ offers }) {
 
     return (
         <motion.section 
+            ref={containerRef}
             variants={sectionVariants}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.1 }}
-            className="bg-background py-8 lg:py-16"
+            className="py-8 lg:py-16"
         >
             <div className="max-w-7xl mx-auto w-full px-6 flex flex-col gap-6">
                 {offers.map((offer, idx) => (
@@ -28,9 +36,14 @@ export function SpecialOfferSection({ offers }) {
                         whileInView={{ opacity: 1, scale: 1 }}
                         viewport={{ once: true, amount: 0.2 }}
                         transition={{ duration: 0.5, delay: idx * 0.1 }}
-                        className="w-full overflow-hidden rounded-2xl shadow-lg border border-border/40 hover:shadow-xl transition-shadow aspect-[4/1] relative group"
+                        className="w-full overflow-hidden rounded-2xl shadow-lg border border-border/40 hover:shadow-xl transition-shadow aspect-[3/1] relative group"
                     >
-                        <CachedImage src={offer.imageUrl} alt={offer.title || `Special Offer ${idx + 1}`} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                        <motion.div 
+                            style={{ y: yParallax, scale: 1.5 }}
+                            className="w-full h-full absolute inset-0 z-0 origin-center pointer-events-none"
+                        >
+                            <CachedImage src={offer.imageUrl} alt={offer.title || `Special Offer ${idx + 1}`} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                        </motion.div>
                         {(offer.title || offer.description) && (
                             <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent flex flex-col items-start justify-center p-8 md:p-12 transition-all duration-500 group-hover:bg-black/20">
                                 <div className="transform transition-transform duration-500 group-hover:translate-x-2">

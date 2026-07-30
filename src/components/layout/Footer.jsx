@@ -117,7 +117,7 @@ export default function Footer() {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-5 gap-8 pb-12 border-b border-border">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pb-12 border-b border-border">
                     <div className="md:col-span-2">
                         <div className="flex items-center space-x-3 mb-4">
                             <img src="/icon-192.png" alt="Blubug Logo" className="h-12 w-auto object-contain mix-blend-multiply"/>
@@ -147,15 +147,6 @@ export default function Footer() {
                             <li><Link to="/contact" className="hover:text-primary-500">About Us</Link></li>
                             <li><Link to="/shop" className="hover:text-primary-500">Store</Link></li>
                             <li><Link to="/contact" className="hover:text-primary-500">FAQ</Link></li>
-                        </ul>
-                    </div>
-
-                    <div>
-                        <h4 className="font-bold text-foreground mb-4">Services</h4>
-                        <ul className="space-y-2 text-sm text-muted-foreground">
-                            <li><a href="#" className="hover:text-primary-500">Delivery</a></li>
-                            <li><a href="#" className="hover:text-primary-500">Payments</a></li>
-                            <li><Link to="/contact" className="hover:text-primary-500">Contact</Link></li>
                         </ul>
                     </div>
 

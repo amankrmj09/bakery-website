@@ -99,8 +99,8 @@ export default function HomePage() {
     const isTopCategoriesLoading = topCategoriesLoading || topCategoriesWithProducts.length === 0;
 
     return (
-        <div className="flex flex-col bg-background min-h-screen">
-            {isStorefrontLoading ? <HeroSectionSkeleton /> : <HeroSection campaigns={campaigns} />}
+        <div className="flex flex-col bg-transparent min-h-screen">
+            {isStorefrontLoading ? <HeroSectionSkeleton /> : <HeroSection campaigns={campaigns} topRatedProducts={topRatedProducts} />}
             
             {isProductsLoading ? <NewProductsSectionSkeleton /> : <NewProductsSection productList={productList} />}
             

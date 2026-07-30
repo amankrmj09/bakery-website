@@ -47,7 +47,7 @@ export function ShowcaseCard({ product, idx = 0 }) {
                     <CachedImage
                         src={imageUrl}
                         alt={product.name}
-                        className="absolute inset-0 w-full h-full object-cover object-center scale-x-[-1.5] scale-y-[1.5] blur-[0.5px] group-hover:scale-x-[-1.7] group-hover:scale-y-[1.7] transition-transform duration-700 z-0"
+                        className="absolute inset-0 w-full h-full object-cover object-center scale-x-[-1.5] scale-y-[1.5] group-hover:scale-x-[-1.7] group-hover:scale-y-[1.7] transition-transform duration-700 z-0"
                     />
                     <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors duration-500 z-0" />
                 </>

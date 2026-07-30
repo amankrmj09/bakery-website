@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'sonner';
@@ -16,8 +16,25 @@ export function TopCategoriesSection({ topCategoriesWithProducts, productList, t
     const { cart } = useSelector((state) => state.cart);
 
     const [activeTopCategoryIndex, setActiveTopCategoryIndex] = useState(0);
+    
+    const containerRef = React.useRef(null);
+    const { scrollYProgress } = useScroll({
+        target: containerRef,
+        offset: ["start end", "end start"]
+    });
+    const yParallax = useTransform(scrollYProgress, [0, 1], ['-25%', '25%']);
 
     const topCategories = topCategoriesWithProducts?.map(t => t.category) || [];
+
+    useEffect(() => {
+        if (topCategories.length > 1) {
+            const timer = setInterval(() => {
+                setActiveTopCategoryIndex(prev => (prev === topCategories.length - 1 ? 0 : prev + 1));
+            }, 5000);
+            return () => clearInterval(timer);
+        }
+    }, [topCategories.length]);
+
     const activeCategory = topCategories[activeTopCategoryIndex];
 
     const categoryProducts = activeCategory && topCategoriesWithProducts[activeTopCategoryIndex]
@@ -68,11 +85,12 @@ export function TopCategoriesSection({ topCategoriesWithProducts, productList, t
 
     return (
         <motion.section 
+            ref={containerRef}
             variants={sectionVariants}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.1 }}
-            className="bg-card py-10"
+            className="bg-transparent py-10"
         >
             <div className="max-w-7xl mx-auto w-full px-6">
                 <div className="flex items-center justify-between mb-10">
@@ -101,14 +119,21 @@ export function TopCategoriesSection({ topCategoriesWithProducts, productList, t
                             exit={{ opacity: 0, x: -20 }}
                             transition={{ duration: 0.4 }}
                             className="flex flex-col md:flex-row items-center gap-6 bg-background border border-border rounded-[2rem] p-8 shadow-sm relative overflow-hidden min-h-[300px]"
-                            style={{
-                                backgroundImage: activeCategory.mediaUrls?.[0] ? `url(${activeCategory.mediaUrls[0]})` : 'none',
-                                backgroundSize: 'cover',
-                                backgroundPosition: 'center'
-                            }}
                         >
                             {activeCategory.mediaUrls?.[0] && (
-                                <div className="absolute inset-0 bg-black/50 z-0" />
+                                <>
+                                    <motion.div 
+                                        style={{ y: yParallax, scale: 1.5 }} 
+                                        className="w-full h-full absolute inset-0 z-0 origin-center pointer-events-none"
+                                    >
+                                        <CachedImage 
+                                            src={activeCategory.mediaUrls[0]} 
+                                            alt={activeCategory.name} 
+                                            className="w-full h-full object-cover object-center"
+                                        />
+                                    </motion.div>
+                                    <div className="absolute inset-0 bg-black/50 z-0 pointer-events-none" />
+                                </>
                             )}
                              <div className="flex flex-col items-center md:items-start flex-1 z-10 text-white">
                                  <div

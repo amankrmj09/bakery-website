@@ -124,8 +124,8 @@ export default function OrderCard({
         </div>
         
         <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-          {/* Pay Now button for COD or Unpaid orders */}
-          {(order.paymentStatus === 'PENDING' || order.paymentStatus === 'FAILED' || order.paymentMethod === 'CASH') && order.status !== 'CANCELLED' && order.status !== 'DELIVERED' && (
+          {/* Pay Now button: show for any unpaid/failed order (PENDING or FAILED), regardless of payment method */}
+          {(order.paymentStatus === 'PENDING' || order.paymentStatus === 'FAILED') && order.paymentStatus !== 'COMPLETED' && order.paymentStatus !== 'PAID' && order.status !== 'CANCELLED' && order.status !== 'DELIVERED' && (
             <button 
               onClick={() => navigate(`/payment/${order.id}`, { state: { amount: order.totalAmount, paymentMethod: 'CARD' } })}
               className="flex-1 sm:flex-none flex items-center justify-center bg-primary-50 text-primary-600 border border-primary-200 hover:bg-primary-100 px-5 py-2.5 rounded-xl font-bold text-sm transition-colors"
@@ -134,8 +134,8 @@ export default function OrderCard({
             </button>
           )}
           
-          {/* Cancel Order button: only if payment is NOT made */}
-          {order.paymentStatus !== 'COMPLETED' && order.paymentStatus !== 'PAID' && order.status !== 'CANCELLED' && order.status !== 'DELIVERED' && (
+          {/* Cancel Order button: show up until OUT_FOR_DELIVERY */}
+          {order.status !== 'CANCELLED' && order.status !== 'DELIVERED' && order.status !== 'OUT_FOR_DELIVERY' && (
             <button 
               onClick={() => openCancelModal && openCancelModal(order.id)}
               className="flex-1 sm:flex-none flex items-center justify-center bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 px-5 py-2.5 rounded-xl font-bold text-sm transition-colors"

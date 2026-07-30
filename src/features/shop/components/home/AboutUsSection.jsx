@@ -18,7 +18,7 @@ export function AboutUsSection({ about }) {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.1 }}
-            className="bg-background py-16"
+            className="py-16"
         >
             <div className="max-w-7xl mx-auto w-full px-6">
                 <div className="flex items-center space-x-2 mb-8">
@@ -47,7 +47,7 @@ export function AboutUsSection({ about }) {
                             transition={{ duration: 0.6 }}
                             className="relative z-10 w-64 h-64 md:w-80 md:h-80 flex items-center justify-center rounded-[30%_35%_25%_40%/35%_25%_40%_30%] overflow-hidden shadow-2xl"
                         >
-                            <CachedImage src={about.image1Url} alt="About main"
+                            <CachedImage src="/images/Our_Story_01.png" alt="About main"
                                  className="w-full h-full object-cover"/>
                         </motion.div>
 
@@ -63,7 +63,7 @@ export function AboutUsSection({ about }) {
                                 transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
                                 className="w-36 h-36 md:w-48 md:h-48 shadow-2xl rounded-[25%_35%_40%_30%/30%_40%_25%_35%] overflow-hidden"
                             >
-                                <CachedImage src={about.image2Url} alt="About floating 1" className="w-full h-full object-cover hover:scale-110 transition-transform duration-500" />
+                                <CachedImage src="/images/Our_Story_02.jpg" alt="About floating 1" className="w-full h-full object-cover hover:scale-110 transition-transform duration-500" />
                             </motion.div>
                         </motion.div>
                         
@@ -79,7 +79,7 @@ export function AboutUsSection({ about }) {
                                 transition={{ repeat: Infinity, duration: 5, ease: "easeInOut", delay: 1 }}
                                 className="w-32 h-32 md:w-44 md:h-44 shadow-2xl rounded-[35%_25%_30%_40%/40%_30%_35%_25%] overflow-hidden"
                             >
-                                <CachedImage src={about.image3Url} alt="About floating 2" className="w-full h-full object-cover hover:scale-110 transition-transform duration-500" />
+                                <CachedImage src="/images/Our_Story_03.jpg" alt="About floating 2" className="w-full h-full object-cover hover:scale-110 transition-transform duration-500" />
                             </motion.div>
                         </motion.div>
                     </div>

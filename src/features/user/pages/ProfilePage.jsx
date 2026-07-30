@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
-import { LuUser as User, LuShoppingBag as ShoppingBag, LuMapPin as MapPin } from 'react-icons/lu';
+import { LuUser as User, LuShoppingBag as ShoppingBag, LuMapPin as MapPin, LuLogOut } from 'react-icons/lu';
 import { fetchUserOrders } from '../../order/slice/orderSlice';
 import { fetchUserAddresses } from '../redux/addressSlice';
+import { logout } from '../../auth/redux/authThunk';
 
 import ProfileDetails from '../components/ProfileDetails';
 import MyOrders from '../components/MyOrders';
@@ -34,12 +35,12 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="flex-1 flex flex-col bg-zinc-50/50 dark:bg-background py-8 px-4 sm:px-6 lg:px-8 overflow-y-auto">
-      <div className="max-w-5xl mx-auto w-full">
+    <div className="flex-1 flex flex-col bg-zinc-50/50 dark:bg-background py-8 px-2 sm:px-4 lg:px-8">
+      <div className="max-w-7xl mx-auto w-full">
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Sidebar / Tabs */}
           <div className="w-full lg:w-64 flex-shrink-0">
-            <div className="bg-card border border-border rounded-2xl p-4 shadow-sm sticky top-8">
+            <div className="bg-card border border-border rounded-2xl p-4 shadow-sm sticky top-[104px]">
               <nav className="flex flex-row lg:flex-col gap-2 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0 custom-scrollbar">
                 {tabs.map((tab) => {
                   const Icon = tab.icon;
@@ -59,6 +60,19 @@ export default function ProfilePage() {
                     </button>
                   );
                 })}
+
+                <div className="hidden lg:block my-2 border-t border-border"></div>
+                
+                <button
+                  onClick={async () => {
+                      await dispatch(logout());
+                      window.location.href = '/';
+                  }}
+                  className="flex items-center space-x-3 px-4 py-3 rounded-xl font-bold text-sm transition-all whitespace-nowrap text-red-500 hover:bg-red-500/10 hover:text-red-600"
+                >
+                  <LuLogOut className="w-5 h-5 text-red-500" />
+                  <span>Logout</span>
+                </button>
               </nav>
             </div>
           </div>

@@ -8,7 +8,7 @@ import { TestimonialsSectionSkeleton } from './TestimonialsSectionSkeleton';
 
 export function HomePageSkeleton() {
     return (
-        <div className="flex flex-col bg-background min-h-screen">
+        <div className="flex flex-col bg-transparent min-h-screen">
             <HeroSectionSkeleton />
             <NewProductsSectionSkeleton />
             <SpecialOfferSectionSkeleton />

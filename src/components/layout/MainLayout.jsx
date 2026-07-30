@@ -6,6 +6,7 @@ import {logout} from '../../features/auth/redux/authThunk';
 import {fetchCart} from '../../features/cart/redux/cartThunk';
 import Footer from './Footer';
 import SearchAutocomplete from '../ui/SearchAutocomplete';
+import AnimatedBackground from '../ui/AnimatedBackground';
 import { toast } from 'sonner';
 
 export default function MainLayout() {
@@ -22,7 +23,8 @@ export default function MainLayout() {
     const cartItemCount = cart?.totalQuantity || 0;
 
     return (
-        <div className="flex flex-col min-h-screen bg-background text-foreground transition-colors duration-200">
+        <div className="flex flex-col min-h-screen text-foreground transition-colors duration-200 bg-transparent">
+            <AnimatedBackground />
             {/* Top Navigation - GOOD FOOD Style */}
             {!(location.pathname === '/login' || location.pathname === '/register') && (
             <header
@@ -91,16 +93,6 @@ export default function MainLayout() {
                                     {user.firstName?.charAt(0) || user.username?.charAt(0) || 'U'}
                                 </div>
                             </Link>
-                            <button
-                                onClick={async () => {
-                                    await dispatch(logout());
-                                    window.location.href = '/';
-                                }}
-                                className="p-2 rounded-full hover:bg-red-500/10 text-muted-foreground hover:text-red-500 transition-colors"
-                                title="Logout"
-                            >
-                                <FiLogOut className="w-5 h-5"/>
-                            </button>
                         </div>
                     ) : (
                         <Link to="/login"
@@ -113,7 +105,7 @@ export default function MainLayout() {
             )}
 
             {/* Main Content Area */}
-            <main className="flex-1 w-full bg-background relative flex flex-col">
+            <main className="flex-1 w-full bg-transparent relative flex flex-col">
                 <div className="flex-1">
                     <Outlet/>
                 </div>

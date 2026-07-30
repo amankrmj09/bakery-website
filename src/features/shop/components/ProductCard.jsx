@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { addItemToCart, fetchCart } from '../../cart/redux/cartThunk';
@@ -19,6 +20,13 @@ export default function ProductCard({ product, className = "", isNew = false }) 
         : (product.averageRating > 0 ? product.averageRating.toFixed(1) : '0.0');
     
     const [addingToCart, setAddingToCart] = useState(null);
+
+    const containerRef = useRef(null);
+    const { scrollYProgress } = useScroll({
+        target: containerRef,
+        offset: ["start end", "end start"]
+    });
+    const yParallax = useTransform(scrollYProgress, [0, 1], ['-8%', '8%']);
 
     const handleAddToCart = async () => {
         setAddingToCart(product.id);
@@ -44,17 +52,19 @@ export default function ProductCard({ product, className = "", isNew = false }) 
     };
 
     return (
-        <div className={`group bg-card border border-border rounded-[2rem] shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col p-4 relative ${(isNew || product?.isNew) ? 'animate-card-appear' : ''} ${className}`}>
+        <motion.div ref={containerRef} className={`group bg-card border border-border rounded-[2rem] shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col p-4 relative ${(isNew || product?.isNew) ? 'animate-card-appear' : ''} ${className}`}>
             <div 
                 className="aspect-square bg-muted/30 rounded-2xl relative overflow-hidden flex items-center justify-center cursor-pointer"
                 onClick={() => navigate(`/product/${product.id}`)}
             >
-                <img 
-                    src={product.primaryImageUrl || product.mediaUrls?.[0] || '/images/placeholder_bakery.png'} 
-                    alt={product.name} 
-                    onError={(e) => { e.target.onerror = null; e.target.src = '/images/placeholder_bakery.png'; }}
-                    className="object-cover w-full h-full mix-blend-multiply group-hover:scale-110 transition-transform duration-500" 
-                />
+                <motion.div style={{ y: yParallax, scale: 1.15 }} className="absolute inset-0 w-full h-full pointer-events-none origin-center">
+                    <img 
+                        src={product.primaryImageUrl || product.mediaUrls?.[0] || '/images/placeholder_bakery.png'} 
+                        alt={product.name} 
+                        onError={(e) => { e.target.onerror = null; e.target.src = '/images/placeholder_bakery.png'; }}
+                        className="object-cover w-full h-full mix-blend-multiply group-hover:scale-110 transition-transform duration-500" 
+                    />
+                </motion.div>
                 {product.status !== 'ACTIVE' ? (
                     <div className="absolute top-2 right-2 z-20 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wide">
                         Unavailable
@@ -141,6 +151,6 @@ export default function ProductCard({ product, className = "", isNew = false }) 
                     </div>
                 </div>
             </div>
-        </div>
+        </motion.div>
     );
 }

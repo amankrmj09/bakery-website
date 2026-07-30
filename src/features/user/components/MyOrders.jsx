@@ -159,12 +159,15 @@ export default function MyOrders() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-2">
-        <h2 className="text-xl font-bold text-foreground">Order History</h2>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-card border border-border rounded-2xl p-6 shadow-sm mb-2">
+        <div>
+          <h2 className="text-xl font-bold text-foreground">Order History</h2>
+          <p className="text-muted-foreground text-sm mt-1">View and track your previous purchases</p>
+        </div>
         
         {/* Pagination Controls at Top */}
         {effectivePagination && (effectivePagination.totalPages > 1 || effectivePagination.totalElements > 5 || matchingOrders.length > 0) && (
-          <div className="flex flex-col sm:flex-row items-center gap-4 bg-card px-4 py-2.5 rounded-xl border border-border shadow-sm">
+          <div className="flex flex-col sm:flex-row items-center gap-4 bg-background px-4 py-2.5 rounded-xl border border-border shadow-sm">
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <span>Page <strong className="text-foreground">{effectivePagination.number + 1}</strong> of <strong className="text-foreground">{effectivePagination.totalPages || 1}</strong></span>
               <span>({effectivePagination.totalElements || matchingOrders.length})</span>
