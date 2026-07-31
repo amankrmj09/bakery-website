@@ -8,7 +8,7 @@ import { GiCroissant, GiWheat, GiPretzel, GiCupcake, GiCakeSlice, GiCoffeeCup } 
 import { sliderVariants } from '../../../../utils/animations';
 import { FadeIn } from '../../../../components/animations/FadeIn';
 
-export function HeroSection({ campaigns, topRatedProducts }) {
+export function HeroSection({ heroBanners, topRatedProducts }) {
     const navigate = useNavigate();
     const [activeIndex, setActiveIndex] = useState(0);
     const [direction, setDirection] = useState(1);
@@ -17,22 +17,22 @@ export function HeroSection({ campaigns, topRatedProducts }) {
     const yParallax = useTransform(scrollY, [0, 1000], ['0%', '40%']);
 
     useEffect(() => {
-        if (!campaigns || campaigns.length === 0) return;
+        if (!heroBanners || heroBanners.length === 0) return;
         const interval = setInterval(() => {
             setDirection(1);
-            setActiveIndex((prev) => (prev + 1) % campaigns.length);
+            setActiveIndex((prev) => (prev + 1) % heroBanners.length);
         }, 6000);
         return () => clearInterval(interval);
-    }, [campaigns]);
+    }, [heroBanners]);
 
     const handleNext = () => {
         setDirection(1);
-        setActiveIndex((prev) => (prev + 1) % campaigns.length);
+        setActiveIndex((prev) => (prev + 1) % heroBanners.length);
     };
 
     const handlePrev = () => {
         setDirection(-1);
-        setActiveIndex((prev) => (prev === 0 ? campaigns.length - 1 : prev - 1));
+        setActiveIndex((prev) => (prev === 0 ? heroBanners.length - 1 : prev - 1));
     };
 
     return (
@@ -46,7 +46,7 @@ export function HeroSection({ campaigns, topRatedProducts }) {
                     className="w-full h-full relative overflow-hidden bg-white group pointer-events-auto"
                 >
                     <AnimatePresence initial={false} custom={direction}>
-                        {campaigns?.length > 0 && (
+                        {heroBanners?.length > 0 && (
                             <m.div
                                 key={activeIndex}
                                 custom={direction}
@@ -62,8 +62,8 @@ export function HeroSection({ campaigns, topRatedProducts }) {
                                     className="w-full h-full absolute inset-0 origin-bottom"
                                 >
                                     <CachedImage 
-                                        src={campaigns[activeIndex]?.imageUrl} 
-                                        alt={`Campaign ${activeIndex + 1}`} 
+                                        src={heroBanners[activeIndex]?.imageUrl} 
+                                        alt={`Banner ${activeIndex + 1}`} 
                                         className="w-full h-full object-cover object-top"
                                     />
                                 </m.div>
@@ -73,13 +73,13 @@ export function HeroSection({ campaigns, topRatedProducts }) {
                                 <div className="absolute inset-0 flex flex-col items-start justify-center text-left px-8 md:px-16 lg:px-24 xl:px-32 z-40 max-w-7xl mx-auto w-full">
                                     <FadeIn delay={0.3} variant="fadeInUp">
                                         <h1 className="text-5xl md:text-7xl lg:text-8xl font-serif font-extrabold text-white drop-shadow-xl tracking-tight mb-6 max-w-3xl">
-                                            {campaigns[activeIndex]?.title || "Freshly Baked Perfection"}
+                                            {heroBanners[activeIndex]?.title || "Freshly Baked Perfection"}
                                         </h1>
                                     </FadeIn>
                                     
                                     <FadeIn delay={0.5} variant="fadeInUp">
                                         <p className="text-lg md:text-2xl text-stone-100 font-medium max-w-xl drop-shadow-md mb-10">
-                                            {campaigns[activeIndex]?.description || campaigns[activeIndex]?.subtitle || "Experience the warmth of our handcrafted pastries, baked fresh daily with 100% organic ingredients and lots of love."}
+                                            {heroBanners[activeIndex]?.description || heroBanners[activeIndex]?.subtitle || "Experience the warmth of our handcrafted pastries, baked fresh daily with 100% organic ingredients and lots of love."}
                                         </p>
                                     </FadeIn>
                                     
@@ -88,7 +88,7 @@ export function HeroSection({ campaigns, topRatedProducts }) {
                                             onClick={() => navigate('/shop')}
                                             className="bg-[#eab308] hover:bg-yellow-400 text-stone-900 font-bold text-lg md:text-xl px-10 py-4 rounded-full shadow-[0_0_20px_rgba(234,179,8,0.4)] hover:shadow-[0_0_30px_rgba(234,179,8,0.6)] hover:-translate-y-1 transform transition-all duration-300"
                                         >
-                                            {campaigns[activeIndex]?.buttonText || "Explore Our Menu"}
+                                            {heroBanners[activeIndex]?.buttonText || "Explore Our Menu"}
                                         </button>
                                     </FadeIn>
                                     

@@ -90,7 +90,7 @@ export default function HomePage() {
     const productList = Array.isArray(products.data) ? products.data : [];
     const config = storefront.data || {};
 
-    const campaigns = config?.heroSection?.campaigns || [];
+    const heroBanners = config?.heroSection?.heroBanners || [];
     const about = config?.aboutSection || null;
     const offers = config?.specialOfferSection?.offers || [];
 
@@ -100,7 +100,7 @@ export default function HomePage() {
 
     return (
         <div className="flex flex-col bg-transparent min-h-screen">
-            {isStorefrontLoading ? <HeroSectionSkeleton /> : <HeroSection campaigns={campaigns} topRatedProducts={topRatedProducts} />}
+            {isStorefrontLoading ? <HeroSectionSkeleton /> : <HeroSection heroBanners={heroBanners} topRatedProducts={topRatedProducts} />}
             
             {isProductsLoading ? <NewProductsSectionSkeleton /> : <NewProductsSection productList={productList} />}
             
