@@ -23,11 +23,15 @@ const cartSlice = createSlice({
     updateQuantityLocally: (state, action) => {
       const { itemId, quantity } = action.payload;
       if (state.cart && state.cart.items) {
-        const item = state.cart.items.find(i => i.id === itemId);
-        if (item) {
-          item.quantity = quantity;
-          item.totalPrice = item.unitPrice * quantity;
-          // Note: Cart total will be updated perfectly by backend after debounce
+        if (quantity === 0) {
+          state.cart.items = state.cart.items.filter(i => i.id !== itemId);
+        } else {
+          const item = state.cart.items.find(i => i.id === itemId);
+          if (item) {
+            item.quantity = quantity;
+            item.totalPrice = item.unitPrice * quantity;
+            // Note: Cart total will be updated perfectly by backend after debounce
+          }
         }
       }
     }

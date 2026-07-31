@@ -67,6 +67,10 @@ export default function CartPage() {
     const item = cart.items.find(i => i.id === itemId);
     const newQty = currentQty + delta;
     if (newQty < 1) {
+      if (updateTimeouts.current[itemId]) {
+        clearTimeout(updateTimeouts.current[itemId]);
+      }
+      dispatch(updateQuantityLocally({ itemId, quantity: 0 }));
       dispatch(removeCartItem({ cartId: cart.id, itemId }));
       return;
     }
@@ -96,6 +100,10 @@ export default function CartPage() {
   };
 
   const handleRemove = (itemId) => {
+    if (updateTimeouts.current[itemId]) {
+      clearTimeout(updateTimeouts.current[itemId]);
+    }
+    dispatch(updateQuantityLocally({ itemId, quantity: 0 }));
     dispatch(removeCartItem({ cartId: cart.id, itemId }));
   };
 
