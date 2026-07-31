@@ -19,6 +19,17 @@ const cartSlice = createSlice({
   reducers: {
     clearCheckoutState: (state) => {
       state.checkoutState = { loading: false, orderId: null, error: null };
+    },
+    updateQuantityLocally: (state, action) => {
+      const { itemId, quantity } = action.payload;
+      if (state.cart && state.cart.items) {
+        const item = state.cart.items.find(i => i.id === itemId);
+        if (item) {
+          item.quantity = quantity;
+          item.totalPrice = item.unitPrice * quantity;
+          // Note: Cart total will be updated perfectly by backend after debounce
+        }
+      }
     }
   },
   extraReducers: (builder) => {
@@ -64,5 +75,5 @@ const cartSlice = createSlice({
   },
 });
 
-export const { clearCheckoutState } = cartSlice.actions;
+export const { clearCheckoutState, updateQuantityLocally } = cartSlice.actions;
 export default cartSlice.reducer;

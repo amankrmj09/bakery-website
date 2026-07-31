@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { updateCartItem, removeCartItem, updateCartDetails } from '../redux/cartThunk';
+import { updateQuantityLocally } from '../redux/cartSlice';
 import { LuTrash2 as Trash2, LuPlus as Plus, LuMinus as Minus, LuArrowRight as ArrowRight, LuShoppingBag as ShoppingBag } from 'react-icons/lu';
 import { fetchActiveUserOrders, cancelUserOrder } from '../../order/slice/orderSlice';
 import OrderCard from '../../order/components/OrderCard';
@@ -23,6 +24,8 @@ export default function CartPage() {
     orderId: null,
     loading: false
   });
+
+  const updateTimeouts = useRef({});
 
   const toggleOrderDetails = (orderId) => {
     if (expandedOrderId === orderId) {
@@ -61,12 +64,35 @@ export default function CartPage() {
   }, [dispatch, user?.id]);
 
   const handleUpdateQuantity = (itemId, currentQty, delta) => {
+    const item = cart.items.find(i => i.id === itemId);
     const newQty = currentQty + delta;
     if (newQty < 1) {
       dispatch(removeCartItem({ cartId: cart.id, itemId }));
       return;
     }
-    dispatch(updateCartItem({ cartId: cart.id, itemId, quantity: newQty }));
+    
+    const maxStock = item?.stockQuantity ?? item?.metadata?.stockLimit;
+    if (delta > 0 && maxStock != null && newQty > maxStock) {
+      toast.error(`Only ${maxStock} items available in stock`);
+      return;
+    }
+    
+    // Update local state instantly so UI doesn't freeze
+    dispatch(updateQuantityLocally({ itemId, quantity: newQty }));
+    
+    // Clear previous timeout if user clicks rapidly
+    if (updateTimeouts.current[itemId]) {
+      clearTimeout(updateTimeouts.current[itemId]);
+    }
+    
+    // Debounce the backend API call by 1000ms (1 second)
+    updateTimeouts.current[itemId] = setTimeout(() => {
+      dispatch(updateCartItem({ cartId: cart.id, itemId, quantity: newQty }))
+        .unwrap()
+        .catch(err => {
+           toast.error(err);
+        });
+    }, 1000);
   };
 
   const handleRemove = (itemId) => {

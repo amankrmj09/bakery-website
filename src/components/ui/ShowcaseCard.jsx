@@ -24,10 +24,15 @@ export function ShowcaseCard({ product, idx = 0 }) {
                 toast.error('Unable to initialize cart');
                 return;
             }
-            await dispatch(addItemToCart({ cartId: currentCartId, productId: product.id, quantity: 1 })).unwrap();
+            await dispatch(addItemToCart({ 
+                cartId: currentCartId, 
+                productId: product.id, 
+                quantity: 1,
+                metadata: { stockLimit: product.inventory?.stockQuantity }
+            })).unwrap();
             toast.success(`${product.name} added to cart`);
         } catch (error) {
-            toast.error(`Failed to add ${product.name} to cart`);
+            toast.error(typeof error === 'string' ? error : `Failed to add ${product.name} to cart`);
         }
     };
 

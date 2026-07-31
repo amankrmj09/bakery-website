@@ -87,10 +87,15 @@ export default function ProductDetailsPage() {
         return;
       }
 
-      await dispatch(addItemToCart({ cartId: currentCartId, productId: product.id, quantity })).unwrap();
+      await dispatch(addItemToCart({ 
+        cartId: currentCartId, 
+        productId: product.id, 
+        quantity,
+        metadata: { stockLimit: product.inventory?.stockQuantity }
+      })).unwrap();
       toast.success(`${quantity} ${product.name} added to cart`);
     } catch (error) {
-      toast.error(`Failed to add ${product.name} to cart`);
+      toast.error(typeof error === 'string' ? error : `Failed to add ${product.name} to cart`);
     } finally {
       setAddingToCart(false);
     }
@@ -354,7 +359,7 @@ export default function ProductDetailsPage() {
                   </button>
                   <span className="flex-1 text-center font-bold text-lg text-foreground">{quantity}</span>
                   <button 
-                    disabled={!canPurchase || (product.maxOrderQuantity && quantity >= product.maxOrderQuantity)}
+                    disabled={!canPurchase || (product.maxOrderQuantity && quantity >= product.maxOrderQuantity) || (product.inventory?.stockQuantity != null && quantity >= product.inventory.stockQuantity)}
                     onClick={() => setQuantity(q => q + 1)}
                     className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-muted transition-colors disabled:opacity-50 text-foreground"
                   >

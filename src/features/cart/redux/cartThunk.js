@@ -35,7 +35,7 @@ export const addItemToCart = createAsyncThunk(
       const response = await cartApi.addItem(cartId, productId, quantity);
       return response.data;
     } catch (error) {
-      return rejectWithValue('Failed to add item to cart');
+      return rejectWithValue(error.response?.data?.message || 'Failed to add item to cart');
     }
   }
 );
@@ -47,7 +47,7 @@ export const updateCartItem = createAsyncThunk(
       const response = await cartApi.updateItem(cartId, itemId, quantity);
       return response.data;
     } catch (error) {
-      return rejectWithValue('Failed to update cart item');
+      return rejectWithValue(error.response?.data?.message || 'Failed to update cart item');
     }
   }
 );
