@@ -1,6 +1,6 @@
 import axiosInstance from '../../../lib/axios';
 
-const BASE_URL = 'http://bakery-api.blubug.me/api/orders';
+const BASE_URL = '/api/v1/orders';
 
 export const orderApi = {
   getUserOrders: async (userId) => {

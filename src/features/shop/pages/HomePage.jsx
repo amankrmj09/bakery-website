@@ -55,7 +55,7 @@ export default function HomePage() {
         const fetchTopCats = async () => {
             setTopCategoriesLoading(true);
             try {
-                const res = await api.get('/api/categories/top-with-products');
+                const res = await api.get('/api/v1/categories/top-with-products');
                 setTopCategoriesWithProducts(Array.isArray(res.data) ? res.data : []);
             } catch (err) {
                 console.error('Failed to load top categories', err);
@@ -67,7 +67,7 @@ export default function HomePage() {
 
         const fetchTopRated = async () => {
             try {
-                const res = await api.get('/api/products/active?sortBy=averageRating&sortDir=DESC&size=5');
+                const res = await api.get('/api/v1/products/active?sortBy=averageRating&sortDir=DESC&size=5');
                 const data = res.data?.content || res.data?._embedded?.productResponseList || res.data?.data || (Array.isArray(res.data) ? res.data : []);
                 setTopRatedProducts(data);
             } catch (err) {
