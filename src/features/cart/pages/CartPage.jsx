@@ -160,8 +160,8 @@ export default function CartPage() {
   }
 
   return (
-    <div className="h-[calc(100vh-5rem)] flex flex-col md:flex-row bg-background">
-      <div className="flex-1 overflow-y-auto p-6 md:border-r border-border bg-card custom-scrollbar">
+    <div className="min-h-[calc(100vh-5rem)] flex flex-col md:flex-row bg-background">
+      <div className="flex-1 p-6 md:border-r border-border bg-card">
         {activeOrders && activeOrders.length > 0 && (
           <div className="mb-10">
             <h2 className="text-xl font-bold text-foreground tracking-tight mb-4 flex items-center gap-2">
@@ -270,7 +270,7 @@ export default function CartPage() {
       </div>
 
       {!isCartEmpty && (
-        <div className="w-full md:w-96 bg-card p-6 flex flex-col flex-shrink-0 shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.1)] md:shadow-none z-10 overflow-y-auto custom-scrollbar">
+        <div className="w-full md:w-96 bg-card p-6 flex flex-col flex-shrink-0 shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.1)] md:shadow-none z-10 md:sticky md:top-20 md:h-[calc(100vh-5rem)] overflow-y-auto custom-scrollbar">
           <h3 className="text-lg font-bold text-foreground mb-6 flex-shrink-0">Order Summary</h3>
         
         <div className="space-y-4 text-sm mb-6 flex-1 min-h-[min-content]">
