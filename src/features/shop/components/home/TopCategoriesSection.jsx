@@ -179,7 +179,7 @@ export function TopCategoriesSection({ topCategoriesWithProducts, productList, t
                 </div>
 
                 <div className="flex space-x-6 overflow-x-auto pb-8 no-scrollbar">
-                    {(topRatedProducts?.length > 0 ? topRatedProducts : productList?.slice(0, 5))?.map(product => (
+                    {(topRatedProducts?.length > 0 ? topRatedProducts.slice(0, 4) : productList?.slice(0, 4))?.map(product => (
                         <ProductCard key={product.id} product={product} className="min-w-[280px] w-[280px] max-w-[280px] flex-shrink-0" />
                     ))}
                 </div>

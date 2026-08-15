@@ -67,7 +67,7 @@ export default function HomePage() {
 
         const fetchTopRated = async () => {
             try {
-                const res = await api.get('/api/v1/products/active?sortBy=averageRating&sortDir=DESC&size=5');
+                const res = await api.get('/api/v1/products/active?sortBy=averageRating&sortDir=DESC&size=4');
                 const data = res.data?.content || res.data?._embedded?.productResponseList || res.data?.data || (Array.isArray(res.data) ? res.data : []);
                 setTopRatedProducts(data);
             } catch (err) {

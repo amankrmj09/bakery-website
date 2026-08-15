@@ -85,7 +85,7 @@ export default function Footer() {
                         </div>
                         <div>
                             <h4 className="font-bold text-foreground">Free Shipping</h4>
-                            <p className="text-xs text-muted-foreground">Free Shipping On All IND</p>
+                            <p className="text-xs text-muted-foreground">Free Shipping Across Varanasi, Uttar Pradesh</p>
                         </div>
                     </div>
                     <div className="flex items-center space-x-4">
@@ -111,8 +111,8 @@ export default function Footer() {
                             <HeadphonesIcon className="w-6 h-6"/>
                         </div>
                         <div>
-                            <h4 className="font-bold text-foreground">Support 24/7</h4>
-                            <p className="text-xs text-muted-foreground">Contact Us 24 Hours A Day</p>
+                            <h4 className="font-bold text-foreground">Dedicated Support</h4>
+                            <p className="text-xs text-muted-foreground">Here to Help During Store Hours</p>
                         </div>
                     </div>
                 </div>
