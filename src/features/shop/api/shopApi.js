@@ -31,7 +31,7 @@ export const shopApi = {
   fetchTopCategoriesWithProducts: () => api.get('/api/v1/categories/top-with-products'),
   fetchStorefront: () => api.get('/api/v1/storefront/frontpage'),
   fetchProductReviews: (productId, params) => {
-    let url = `/api/v1/products/${productId}/reviews`;
+    let url = `/api/v1/engagement/reviews/product/${productId}`;
     
     if (params) {
         const urlParams = new URLSearchParams();
@@ -50,9 +50,9 @@ export const shopApi = {
     
     return api.get(url);
   },
-  submitReview: (productId, reviewData) => api.post(`/api/v1/products/${productId}/reviews`, reviewData),
-  deleteReview: (productId, reviewId) => api.delete(`/api/v1/products/${productId}/reviews/${reviewId}`),
-  reportReview: (productId, reviewId, reason) => api.post(`/api/v1/products/${productId}/reviews/${reviewId}/report`, { reason }),
+  submitReview: (productId, reviewData) => api.post(`/api/v1/engagement/reviews/product/${productId}`, reviewData),
+  deleteReview: (productId, reviewId) => api.delete(`/api/v1/engagement/reviews/product/${productId}/${reviewId}`),
+  reportReview: (productId, reviewId, reason) => api.post(`/api/v1/engagement/reviews/product/${productId}/${reviewId}/report`, { reason }),
   fetchProductById: (productId) => api.get(`/api/v1/products/${productId}`),
 };
 
