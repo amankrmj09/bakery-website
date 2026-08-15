@@ -58,6 +58,11 @@ export default function ContactPage() {
       return;
     }
     setLoading(true);
+    const successMessages = {
+      testimonial: '⭐ Thank you for your kind words! Your testimonial has been submitted for review.',
+      feedback:    '💬 Feedback received! We genuinely appreciate you helping us improve.',
+      contact:     '✉️ Message sent! Our team will get back to you as soon as possible.',
+    };
     try {
       if (formType === 'testimonial') {
         await api.post('/api/v1/engagement/testimonials', {
@@ -74,8 +79,9 @@ export default function ContactPage() {
           type: formType === 'feedback' ? formData.type : 'CONTACT_US'
         });
       }
+      toast.success(successMessages[formType]);
       setSubmitted(true);
-      setTimeout(() => setSubmitted(false), 3000);
+      setTimeout(() => setSubmitted(false), 4000);
       setFormData({ 
         name: user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username || '' : '', 
         email: user?.email || '', 
@@ -86,6 +92,7 @@ export default function ContactPage() {
       });
     } catch (err) {
       console.error('Failed to submit form', err);
+      toast.error('Something went wrong. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -162,7 +169,11 @@ export default function ContactPage() {
             {submitted && (
               <div className="bg-green-500/10 border border-green-500/20 text-green-600 rounded-xl p-4 mb-6 font-medium flex items-center">
                 <Send className="w-5 h-5 mr-3" />
-                Message sent successfully! We'll be in touch soon.
+                {formType === 'testimonial'
+                  ? 'Thank you! Your testimonial has been submitted and is pending review.'
+                  : formType === 'feedback'
+                  ? 'Feedback received! We appreciate your input and will use it to improve.'
+                  : 'Message sent! We\'ll get back to you shortly.'}
               </div>
             )}
 

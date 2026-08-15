@@ -57,10 +57,10 @@ export function TestimonialsSection({ activeTestimonial, currentTestimonialIndex
                         
                         <AnimatePresence mode="popLayout" custom={direction}>
                             {(() => {
-                                const hasTitle = activeTestimonial.message?.includes('::');
+                                const hasTitle = activeTestimonial.content?.includes('::');
                                 const [title, message] = hasTitle 
-                                    ? activeTestimonial.message.split('::') 
-                                    : ['Fantastic Experience!', activeTestimonial.message];
+                                    ? activeTestimonial.content.split('::') 
+                                    : ['Fantastic Experience!', activeTestimonial.content];
 
                                 const cardVariants = {
                                     enter: (dir) => ({
@@ -98,13 +98,13 @@ export function TestimonialsSection({ activeTestimonial, currentTestimonialIndex
                                         <div className="flex items-center justify-between mt-auto">
                                             <div className="flex items-center space-x-3">
                                                 <div className="w-12 h-12 rounded-full bg-stone-100 border-2 border-amber-100 overflow-hidden flex items-center justify-center text-stone-800 font-bold shadow-sm">
-                                                    {activeTestimonial.profileImageUrl ? (
-                                                        <CachedImage src={activeTestimonial.profileImageUrl} alt={activeTestimonial.name} className="w-full h-full object-cover" />
+                                                    {activeTestimonial.avatarUrl ? (
+                                                        <CachedImage src={activeTestimonial.avatarUrl} alt={activeTestimonial.authorName} className="w-full h-full object-cover" />
                                                     ) : (
-                                                        <span className="text-lg">{activeTestimonial.name ? activeTestimonial.name.substring(0,2).toUpperCase() : 'U'}</span>
+                                                        <span className="text-lg">{activeTestimonial.authorName ? activeTestimonial.authorName.substring(0,2).toUpperCase() : 'U'}</span>
                                                     )}
                                                 </div>
-                                                <span className="font-bold text-sm text-stone-800">{activeTestimonial.name || 'Anonymous User'}</span>
+                                                <span className="font-bold text-sm text-stone-800">{activeTestimonial.authorName || 'Anonymous User'}</span>
                                             </div>
                                             <div className="flex text-amber-500">
                                                 {[...Array(activeTestimonial.rating || 5)].map((_, i) => <Star key={i} className="w-4 h-4 fill-current"/>)}
