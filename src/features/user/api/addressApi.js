@@ -5,7 +5,7 @@ const BASE_URL = '/api/v1/users/addresses';
 export const addressApi = {
   getUserAddresses: async () => {
     const response = await axiosInstance.get(BASE_URL);
-    return response.data;
+    return response.data?.content || response.data || [];
   },
 
   addAddress: async (addressData) => {
