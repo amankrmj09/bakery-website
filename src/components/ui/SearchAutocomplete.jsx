@@ -144,7 +144,7 @@ const SearchAutocomplete = ({
                             {results.map((product) => (
                                 <li key={product.id}>
                                     <button
-                                        onClick={() => handleResultClick(product.id)}
+                                        onClick={() => handleResultClick(product.sku || product.id)}
                                         className="w-full text-left px-4 py-3 hover:bg-muted transition-colors flex items-center gap-4 group"
                                     >
                                         <div className="w-12 h-12 rounded-lg bg-muted/50 overflow-hidden flex-shrink-0 flex items-center justify-center">

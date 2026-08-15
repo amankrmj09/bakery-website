@@ -60,7 +60,7 @@ export default function ProductCard({ product, className = "", isNew = false }) 
         <m.div ref={containerRef} className={`group bg-card border border-border rounded-[2rem] shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col p-4 relative ${(isNew || product?.isNew) ? 'animate-card-appear' : ''} ${className}`}>
             <div 
                 className="aspect-square bg-muted/30 rounded-2xl relative overflow-hidden flex items-center justify-center cursor-pointer"
-                onClick={() => navigate(`/product/${product.id}`)}
+                onClick={() => navigate(`/product/${product.sku || product.id}`)}
             >
                 <m.div style={{ y: yParallax, scale: 1.15 }} className="absolute inset-0 w-full h-full pointer-events-none origin-center">
                     <img 
@@ -95,7 +95,7 @@ export default function ProductCard({ product, className = "", isNew = false }) 
                     <h3 
                         className="font-extrabold text-lg text-foreground leading-tight line-clamp-1 cursor-pointer hover:text-primary-500 transition-colors" 
                         title={product.name}
-                        onClick={() => navigate(`/product/${product.id}`)}
+                        onClick={() => navigate(`/product/${product.sku || product.id}`)}
                     >
                         {product.name}
                     </h3>
