@@ -61,11 +61,10 @@ export default function ContactPage() {
     try {
       if (formType === 'testimonial') {
         await api.post('/api/v1/engagement/testimonials', {
-          name: formData.name,
-          email: formData.email,
-          message: `${formData.title}::${formData.message}`,
+          authorName: formData.name,
+          content: `${formData.title}::${formData.message}`,
           rating: formData.rating,
-          profileImageUrl: ''
+          avatarUrl: ''
         });
       } else {
         await api.post('/api/v1/engagement/feedback', {
