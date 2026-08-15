@@ -60,7 +60,7 @@ export default function ShopPage() {
   const { user } = useSelector((state) => state.auth);
   
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const [sortBy, setSortBy] = useState('name_asc');
+  const [sortBy, setSortBy] = useState('createdAt_desc');
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize, setPageSize] = useState(12);
 
@@ -321,6 +321,8 @@ export default function ShopPage() {
                 iconColor="text-primary-500"
                 headerTitle="Sort By"
                 options={[
+                  { value: 'createdAt_desc', label: 'Latest Products' },
+                  { value: 'popular_desc', label: 'Popular' },
                   { value: 'name_asc',    label: 'Name (A–Z)' },
                   { value: 'name_desc',   label: 'Name (Z–A)' },
                   { value: 'price_asc',   label: 'Price: Low to High' },
