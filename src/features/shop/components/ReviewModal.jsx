@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { submitReview, deleteReview } from '../redux/shopThunk';
-import { LuStar as Star } from 'react-icons/lu';
+import { FaStar, FaRegStar } from 'react-icons/fa';
 import { toast } from 'sonner';
 import Modal from '../../../components/ui/Modal';
 import ActionButton from '../../../components/ui/ActionButton';
 
 const ReviewModal = ({ isOpen, onClose, orderId, productId, productName, existingReview }) => {
   const [rating, setRating] = useState(0);
+  const [hoverRating, setHoverRating] = useState(0);
   const [comment, setComment] = useState('');
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
@@ -80,19 +81,25 @@ const ReviewModal = ({ isOpen, onClose, orderId, productId, productName, existin
           <label className="block text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">
             Rating
           </label>
-          <div className="flex gap-2">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <button
-                key={star}
-                type="button"
-                onClick={() => setRating(star)}
-                className="focus:outline-none transition-transform hover:scale-110 active:scale-95"
-              >
-                <Star 
-                  className={`w-10 h-10 transition-colors ${star <= rating ? 'fill-amber-400 text-amber-400' : 'text-muted/50 stroke-1'}`} 
-                />
-              </button>
-            ))}
+          <div className="flex gap-1.5">
+            {[1, 2, 3, 4, 5].map((star) => {
+              const filled = star <= (hoverRating || rating);
+              return (
+                <button
+                  key={star}
+                  type="button"
+                  onClick={() => setRating(star)}
+                  onMouseEnter={() => setHoverRating(star)}
+                  onMouseLeave={() => setHoverRating(0)}
+                  className="focus:outline-none transition-transform hover:scale-110 active:scale-95"
+                >
+                  {filled
+                    ? <FaStar className="w-9 h-9 text-amber-400 transition-colors" style={{ fontSize: '2.25rem' }} />
+                    : <FaRegStar className="w-9 h-9 text-muted-foreground/40 transition-colors" style={{ fontSize: '2.25rem' }} />
+                  }
+                </button>
+              );
+            })}
           </div>
         </div>
         
