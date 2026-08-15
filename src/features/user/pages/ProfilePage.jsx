@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
-import { LuUser as User, LuShoppingBag as ShoppingBag, LuMapPin as MapPin, LuLogOut } from 'react-icons/lu';
+import { LuUser as User, LuShoppingBag as ShoppingBag, LuMapPin as MapPin, LuShield as Shield, LuLogOut } from 'react-icons/lu';
 import { fetchUserOrders } from '../../order/slice/orderSlice';
 import { fetchUserAddresses } from '../redux/addressSlice';
 import { logout } from '../../auth/redux/authThunk';
@@ -9,6 +9,7 @@ import { logout } from '../../auth/redux/authThunk';
 import ProfileDetails from '../components/ProfileDetails';
 import MyOrders from '../components/MyOrders';
 import MyAddresses from '../components/MyAddresses';
+import SecuritySettings from '../components/SecuritySettings';
 
 export default function ProfilePage() {
   const { user } = useSelector((state) => state.auth);
@@ -28,6 +29,7 @@ export default function ProfilePage() {
     { id: 'profile', label: 'Profile Details', icon: User },
     { id: 'orders', label: 'My Orders', icon: ShoppingBag },
     { id: 'addresses', label: 'My Addresses', icon: MapPin },
+    { id: 'security', label: 'Security', icon: Shield },
   ];
 
   const handleTabChange = (tabId) => {
@@ -82,6 +84,7 @@ export default function ProfilePage() {
             {currentTab === 'profile' && <ProfileDetails user={user} />}
             {currentTab === 'orders' && <MyOrders />}
             {currentTab === 'addresses' && <MyAddresses />}
+            {currentTab === 'security' && <SecuritySettings user={user} />}
           </div>
         </div>
       </div>
