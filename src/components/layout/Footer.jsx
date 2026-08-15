@@ -106,15 +106,7 @@ export default function Footer() {
                             <p className="text-xs text-muted-foreground">We Ensure Secure Payment</p>
                         </div>
                     </div>
-                    <div className="flex items-center space-x-4">
-                        <div className="w-12 h-12 flex items-center justify-center bg-white rounded-full text-[#eab308] shadow-sm">
-                            <HeadphonesIcon className="w-6 h-6"/>
-                        </div>
-                        <div>
-                            <h4 className="font-bold text-foreground">Dedicated Support</h4>
-                            <p className="text-xs text-muted-foreground">Here to Help During Store Hours</p>
-                        </div>
-                    </div>
+
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pb-12 border-b border-border">
