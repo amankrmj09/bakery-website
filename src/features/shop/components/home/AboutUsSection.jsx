@@ -47,7 +47,7 @@ export function AboutUsSection({ about }) {
                             transition={{ duration: 0.6 }}
                             className="relative z-10 w-64 h-64 md:w-80 md:h-80 flex items-center justify-center rounded-[30%_35%_25%_40%/35%_25%_40%_30%] overflow-hidden shadow-2xl"
                         >
-                            <CachedImage src="/images/Our_Story_01.png" alt="About main"
+                            <CachedImage src="/images/Our_Story_01.jpg" alt="About main"
                                  className="w-full h-full object-cover"/>
                         </m.div>
 
