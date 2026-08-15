@@ -48,17 +48,13 @@ export default function ContactPage() {
   const [loading, setLoading] = useState(false);
   
   const handleTabChange = (tab) => {
-    if ((tab === 'feedback' || tab === 'testimonial') && !user) {
-      toast.error(`Please log in to submit a ${tab}.`);
-      return;
-    }
     setFormType(tab);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if ((formType === 'feedback' || formType === 'testimonial') && !user) {
-      toast.error(`Please log in to submit a ${formType}.`);
+    if (!user) {
+      toast.error('You must login before sending any message.');
       return;
     }
     setLoading(true);
@@ -205,7 +201,7 @@ export default function ContactPage() {
                     value={formData.name}
                     onChange={(e) => setFormData({...formData, name: e.target.value})}
                     placeholder="Enter your name"
-                    disabled={!!user}
+                    disabled={true}
                     className="w-full bg-muted/50 border border-border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all disabled:opacity-75 disabled:cursor-not-allowed disabled:bg-muted/70"
                   />
                 </div>
@@ -217,7 +213,7 @@ export default function ContactPage() {
                     value={formData.email}
                     onChange={(e) => setFormData({...formData, email: e.target.value})}
                     placeholder="Enter your email address"
-                    disabled={!!user}
+                    disabled={true}
                     className="w-full bg-muted/50 border border-border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all disabled:opacity-75 disabled:cursor-not-allowed disabled:bg-muted/70"
                   />
                 </div>
@@ -239,6 +235,7 @@ export default function ContactPage() {
                     ]}
                     value={formData.type}
                     onChange={(val) => setFormData({ ...formData, type: val })}
+                    disabled={!user}
                   />
                 </div>
               )}
@@ -266,6 +263,7 @@ export default function ContactPage() {
                       ]}
                       value={formData.title}
                       onChange={(val) => setFormData({ ...formData, title: val })}
+                      disabled={!user}
                     />
                   </div>
                 <div className="space-y-2">
@@ -275,8 +273,9 @@ export default function ContactPage() {
                       <button
                         key={star}
                         type="button"
+                        disabled={!user}
                         onClick={() => setFormData({...formData, rating: star})}
-                        className="focus:outline-none"
+                        className={`focus:outline-none ${!user ? 'cursor-not-allowed opacity-75' : ''}`}
                       >
                         <Star className={`w-8 h-8 ${formData.rating >= star ? 'fill-[#eab308] text-[#eab308]' : 'text-gray-300'}`} />
                       </button>
@@ -294,11 +293,18 @@ export default function ContactPage() {
                   value={formData.message}
                   onChange={(e) => setFormData({...formData, message: e.target.value})}
                   placeholder={formType === 'testimonial' ? "Write your testimonial here..." : formType === 'feedback' ? "Share your feedback with us..." : "How can we help you today?"}
-                  className="w-full bg-muted/50 border border-border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all resize-none"
+                  disabled={!user}
+                  className="w-full bg-muted/50 border border-border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all resize-none disabled:opacity-75 disabled:cursor-not-allowed disabled:bg-muted/70"
                 ></textarea>
               </div>
 
-              <button type="submit" disabled={loading} className="bg-primary-500 hover:bg-primary-600 text-white font-bold py-4 px-8 rounded-xl w-full sm:w-auto transition-colors flex items-center justify-center">
+              {!user && (
+                <div className="bg-red-500/10 border border-red-500/20 text-red-600 rounded-xl p-4 font-medium flex items-center justify-center text-sm">
+                  You must login before sending any message.
+                </div>
+              )}
+
+              <button type="submit" disabled={!user || loading} className={`bg-primary-500 text-white font-bold py-4 px-8 rounded-xl w-full sm:w-auto transition-colors flex items-center justify-center ${!user || loading ? 'opacity-75 cursor-not-allowed bg-muted/70 hover:bg-muted/70 text-muted-foreground' : 'hover:bg-primary-600'}`}>
                 {loading ? <span className="animate-spin mr-2 border-b-2 border-white w-4 h-4 rounded-full"></span> : <Send className="w-5 h-5 mr-2" />}
                 Submit {formType === 'testimonial' ? 'Testimonial' : formType === 'feedback' ? 'Feedback' : 'Message'}
               </button>

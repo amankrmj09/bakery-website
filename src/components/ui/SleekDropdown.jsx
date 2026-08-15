@@ -32,6 +32,7 @@ const SleekDropdown = ({
   fullWidth = false,
   placeholder,
   placement = 'auto',
+  disabled = false,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [autoPlacement, setAutoPlacement] = useState('bottom');
@@ -68,8 +69,9 @@ const SleekDropdown = ({
     <div className={`relative ${fullWidth ? 'w-full' : 'inline-block'} ${isOpen ? 'z-[9999]' : ''}`} ref={dropdownRef}>
       <button
         type="button"
+        disabled={disabled}
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex items-center gap-2 bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm font-medium text-foreground hover:border-primary-500/50 focus:outline-none focus:ring-2 focus:ring-primary-500 shadow-sm transition-all ${fullWidth ? 'w-full justify-between' : ''}`}
+        className={`flex items-center gap-2 bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm font-medium text-foreground focus:outline-none shadow-sm transition-all ${fullWidth ? 'w-full justify-between' : ''} ${disabled ? 'opacity-75 cursor-not-allowed bg-muted/70' : 'hover:border-primary-500/50 focus:ring-2 focus:ring-primary-500'}`}
       >
         <div className="flex items-center gap-2 min-w-0">
           {Icon && <Icon className={`w-4 h-4 flex-shrink-0 ${iconColor}`} />}
