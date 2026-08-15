@@ -56,7 +56,7 @@ export default function HomePage() {
             setTopCategoriesLoading(true);
             try {
                 const res = await api.get('/api/v1/categories/top-with-products');
-                setTopCategoriesWithProducts(Array.isArray(res.data) ? res.data : []);
+                setTopCategoriesWithProducts(res.data?.content || []);
             } catch (err) {
                 console.error('Failed to load top categories', err);
             } finally {

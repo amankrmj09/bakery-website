@@ -2,7 +2,7 @@ import api from '../../../lib/axios';
 
 export const shopApi = {
   fetchProducts: (params) => {
-    let url = '/api/v1/products';
+    let url = '/api/v1/products/active';
     const urlParams = new URLSearchParams();
     
     if (params?.categoryId) {
