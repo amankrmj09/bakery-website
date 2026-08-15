@@ -109,7 +109,7 @@ export default function CheckoutPage() {
     );
   }
 
-  const deliveryFee = formData.deliveryType === 'DELIVERY' ? 5.00 : 0;
+  const deliveryFee = formData.deliveryType === 'DELIVERY' ? 50.00 : 0;
   const subtotal = cart.subtotal || 0;
   const taxAmount = cart.taxAmount || 0;
   const discountAmount = cart.discountAmount || 0;
@@ -179,7 +179,7 @@ export default function CheckoutPage() {
                   {formData.deliveryType === 'DELIVERY' && <div className="absolute top-3 right-3 w-3 h-3 bg-primary-500 rounded-full animate-pulse" />}
                   <MapPin className={`w-8 h-8 mb-3 ${formData.deliveryType === 'DELIVERY' ? 'text-primary-500' : 'text-muted-foreground'}`} />
                   <span className={`text-sm font-bold ${formData.deliveryType === 'DELIVERY' ? 'text-primary-600' : 'text-foreground'}`}>Delivery</span>
-                  <span className="text-xs text-muted-foreground mt-1">₹5.00 fee</span>
+                  <span className="text-xs text-muted-foreground mt-1">₹50.00 fee</span>
                 </button>
                 <button
                   type="button"
