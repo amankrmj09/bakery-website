@@ -304,10 +304,12 @@ export default function ContactPage() {
                 </div>
               )}
 
-              <button type="submit" disabled={!user || loading} className={`bg-primary-500 text-white font-bold py-4 px-8 rounded-xl w-full sm:w-auto transition-colors flex items-center justify-center ${!user || loading ? 'opacity-75 cursor-not-allowed bg-muted/70 hover:bg-muted/70 text-muted-foreground' : 'hover:bg-primary-600'}`}>
-                {loading ? <span className="animate-spin mr-2 border-b-2 border-white w-4 h-4 rounded-full"></span> : <Send className="w-5 h-5 mr-2" />}
-                Submit {formType === 'testimonial' ? 'Testimonial' : formType === 'feedback' ? 'Feedback' : 'Message'}
-              </button>
+              {user && (
+                <button type="submit" disabled={loading} className={`bg-primary-500 text-white font-bold py-4 px-8 rounded-xl w-full sm:w-auto transition-colors flex items-center justify-center ${loading ? 'opacity-75 cursor-not-allowed bg-muted/70 hover:bg-muted/70 text-muted-foreground' : 'hover:bg-primary-600'}`}>
+                  {loading ? <span className="animate-spin mr-2 border-b-2 border-white w-4 h-4 rounded-full"></span> : <Send className="w-5 h-5 mr-2" />}
+                  Submit {formType === 'testimonial' ? 'Testimonial' : formType === 'feedback' ? 'Feedback' : 'Message'}
+                </button>
+              )}
             </form>
           </div>
         </div>
