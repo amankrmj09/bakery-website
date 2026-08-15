@@ -116,7 +116,7 @@ const orderSlice = createSlice({
       })
       .addCase(fetchActiveUserOrders.fulfilled, (state, action) => {
         state.loading = false;
-        state.activeOrders = action.payload || [];
+        state.activeOrders = action.payload?.content || action.payload || [];
       })
       .addCase(fetchActiveUserOrders.rejected, (state, action) => {
         state.loading = false;
