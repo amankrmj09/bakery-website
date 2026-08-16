@@ -60,7 +60,7 @@ export default function ShopPage() {
   const { user } = useSelector((state) => state.auth);
   
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const [sortBy, setSortBy] = useState('createdAt_desc');
+  const [sortBy, setSortBy] = useState('popular_desc');
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize, setPageSize] = useState(12);
 
